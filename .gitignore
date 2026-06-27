@@ -1,6 +1,0 @@
-.claude/
-.agents/
-.tmp-styleguide-v2/
-node_modules/
-dist/
-*.log

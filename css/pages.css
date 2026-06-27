@@ -1,0 +1,225 @@
+/* Stadium World Background */
+.stadium-world {
+  min-height: 100vh;
+  background-image:
+    radial-gradient(ellipse at 50% -10%, rgba(0, 166, 90, 0.22), transparent 50%),
+    radial-gradient(ellipse at 20% 100%, rgba(212, 166, 58, 0.08), transparent 50%),
+    linear-gradient(to bottom, #06150f 0%, #071a12 55%, #081f16 100%);
+}
+
+/* Dashboard */
+.dashboard {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 8rem;
+}
+
+@media (min-width: 640px) {
+  .dashboard {
+    padding: 1.5rem 2rem 8rem;
+  }
+}
+
+/* Section Styles */
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 1rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.section-link {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-legacy-gold);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 200ms ease;
+}
+
+.section-link:hover {
+  color: rgba(212, 166, 58, 0.8);
+}
+
+/* Matchday Hero */
+.matchday-hero {
+  position: relative;
+  padding: 2rem 1.5rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, var(--color-surface-secondary) 0%, var(--color-surface-tertiary) 100%);
+  overflow: hidden;
+  box-shadow: 0 0 80px rgba(0, 166, 90, 0.15), inset 0 0 0 1px rgba(212, 166, 58, 0.1);
+}
+
+@media (min-width: 640px) {
+  .matchday-hero {
+    padding: 2rem;
+  }
+}
+
+.pitch-lines {
+  position: absolute;
+  inset: 0;
+  opacity: 0.4;
+  background-image:
+    linear-gradient(to right, rgba(245, 245, 239, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(245, 245, 239, 0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(to bottom, transparent 10%, rgba(0, 0, 0, 0.9) 50%, transparent 100%);
+  pointer-events: none;
+}
+
+.matchday-hero__content {
+  position: relative;
+  z-index: 1;
+}
+
+.matchday-hero__live {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--color-danger);
+}
+
+.live-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--color-danger);
+  animation: live-pulse 1.5s ease-in-out infinite;
+}
+
+.matchday-hero__title {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 640px) {
+  .matchday-hero__title {
+    font-size: 3.75rem;
+  }
+}
+
+.matchday-hero__vs {
+  color: var(--color-text-tertiary);
+  margin: 0 0.75rem;
+}
+
+.matchday-hero__info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.matchday-hero__badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(212, 166, 58, 0.4);
+  background: rgba(212, 166, 58, 0.1);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-legacy-gold);
+}
+
+.matchday-hero__date {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.matchday-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* Stats Section */
+.stats-section {
+  margin-top: 2rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* News Section */
+.news-section {
+  margin-top: 2rem;
+}
+
+.news-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Squad Section */
+.squad-section {
+  margin-top: 2rem;
+}
+
+.squad-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .squad-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.player-card {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+}
+
+/* Footer */
+.dashboard-footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: center;
+}
+
+/* Animations */
+@keyframes live-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.2);
+  }
+}
