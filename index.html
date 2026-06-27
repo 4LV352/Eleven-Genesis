@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#10131b">
+    <title>Eleven Genesis</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <header class="topbar" id="topbar">
+            <div>
+                <strong id="header-club">Eleven Genesis</strong>
+                <span id="header-season">1970 - Rodada 1</span>
+            </div>
+            <button class="icon-action" id="settings-button" type="button" aria-label="Configurações" data-i18n-aria-label="nav.settings">CFG</button>
+        </header>
+
+        <main id="screen-root" aria-live="polite"></main>
+
+        <nav class="bottom-nav" id="bottom-nav" aria-label="Navegacao principal">
+            <button type="button" class="nav-button" data-screen="home" data-i18n="nav.home"></button>
+            <button type="button" class="nav-button" data-screen="squad" data-i18n="nav.squad"></button>
+            <button type="button" class="nav-button" data-screen="tactics" data-i18n="nav.tactics"></button>
+            <button type="button" class="nav-button" data-screen="market" data-i18n="nav.market"></button>
+            <button type="button" class="nav-button" data-screen="scout" data-i18n="nav.scout"></button>
+            <button type="button" class="nav-button" data-screen="academy" data-i18n="nav.academy"></button>
+            <button type="button" class="nav-button" data-screen="marketing" data-i18n="nav.marketing"></button>
+            <button type="button" class="nav-button" data-screen="league" data-i18n="nav.league"></button>
+            <button type="button" class="nav-button" data-screen="club" data-i18n="nav.club"></button>
+        </nav>
+
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+        <div class="modal-root" id="modal-root" aria-live="polite"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
