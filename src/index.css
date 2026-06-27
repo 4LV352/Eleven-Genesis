@@ -1,0 +1,192 @@
+@import "tailwindcss";
+
+/* Design Tokens as CSS Variables */
+:root {
+  /* Colors */
+  --color-genesis-turf: #00A65A;
+  --color-midnight-stadium: #071A12;
+  --color-legacy-gold: #D4A63A;
+  --color-floodlight-ivory: #F5F5EF;
+
+  --color-tactical-sky: #27B4E8;
+  --color-derby-violet: #4C5DFF;
+  --color-rival-flame: #E64141;
+  --color-locker-steel: #7E8A93;
+  --color-youth-mint: #7FD98D;
+  --color-terrace-smoke: #192B25;
+
+  --color-surface-primary: #06150F;
+  --color-surface-secondary: #0E2219;
+  --color-surface-tertiary: #192B25;
+
+  --color-success: #00A65A;
+  --color-warning: #D4A63A;
+  --color-danger: #E64141;
+  --color-info: #27B4E8;
+
+  --color-text-primary: #F5F5EF;
+  --color-text-secondary: #B8C4BF;
+  --color-text-tertiary: #8EA09A;
+  --color-text-accent: #D4A63A;
+
+  /* Typography */
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Utility classes for custom colors */
+@layer utilities {
+  .text-genesis-turf { color: var(--color-genesis-turf); }
+  .text-legacy-gold { color: var(--color-legacy-gold); }
+  .text-tactical-sky { color: var(--color-tactical-sky); }
+  .text-derby-violet { color: var(--color-derby-violet); }
+  .text-rival-flame { color: var(--color-rival-flame); }
+  .text-locker-steel { color: var(--color-locker-steel); }
+  .text-youth-mint { color: var(--color-youth-mint); }
+  .text-terrace-smoke { color: var(--color-terrace-smoke); }
+  .text-surface-primary { color: var(--color-surface-primary); }
+  .text-text-primary { color: var(--color-text-primary); }
+  .text-text-secondary { color: var(--color-text-secondary); }
+  .text-text-tertiary { color: var(--color-text-tertiary); }
+  .text-text-accent { color: var(--color-text-accent); }
+  .text-success { color: var(--color-success); }
+  .text-warning { color: var(--color-warning); }
+  .text-danger { color: var(--color-danger); }
+  .text-info { color: var(--color-info); }
+
+  .bg-genesis-turf { background-color: var(--color-genesis-turf); }
+  .bg-legacy-gold { background-color: var(--color-legacy-gold); }
+  .bg-tactical-sky { background-color: var(--color-tactical-sky); }
+  .bg-derby-violet { background-color: var(--color-derby-violet); }
+  .bg-rival-flame { background-color: var(--color-rival-flame); }
+  .bg-surface-primary { background-color: var(--color-surface-primary); }
+  .bg-surface-secondary { background-color: var(--color-surface-secondary); }
+  .bg-surface-tertiary { background-color: var(--color-surface-tertiary); }
+  .bg-success { background-color: var(--color-success); }
+  .bg-warning { background-color: var(--color-warning); }
+  .bg-danger { background-color: var(--color-danger); }
+  .bg-info { background-color: var(--color-info); }
+
+  .border-genesis-turf { border-color: var(--color-genesis-turf); }
+  .border-legacy-gold { border-color: var(--color-legacy-gold); }
+  .border-tactical-sky { border-color: var(--color-tactical-sky); }
+  .border-derby-violet { border-color: var(--color-derby-violet); }
+  .border-rival-flame { border-color: var(--color-rival-flame); }
+  .border-success { border-color: var(--color-success); }
+  .border-warning { border-color: var(--color-warning); }
+  .border-danger { border-color: var(--color-danger); }
+  .border-info { border-color: var(--color-info); }
+
+  .font-display { font-family: var(--font-display); letter-spacing: 0; }
+  .font-body { font-family: var(--font-body); }
+}
+
+/* Base Styles */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-body);
+  background: var(--color-surface-primary);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Stadium World Background */
+.stadium-world {
+  background-image:
+    radial-gradient(ellipse at 50% -10%, rgba(0, 166, 90, 0.22), transparent 50%),
+    radial-gradient(ellipse at 20% 100%, rgba(212, 166, 58, 0.08), transparent 50%),
+    linear-gradient(
+      to bottom,
+      var(--color-surface-primary) 0%,
+      var(--color-midnight-stadium) 55%,
+      var(--color-surface-secondary) 100%
+    );
+  min-height: 100vh;
+}
+
+/* Hero Spotlight */
+.hero-spotlight {
+  position: relative;
+}
+
+.hero-spotlight::before {
+  content: "";
+  position: absolute;
+  inset: -10% -10% auto;
+  height: 100%;
+  background: radial-gradient(ellipse at center, rgba(0, 166, 90, 0.18) 0%, transparent 70%);
+  pointer-events: none;
+  animation: drift 14s ease-in-out infinite;
+}
+
+/* Matchday Hero */
+.matchday-hero {
+  box-shadow:
+    0 0 80px rgba(0, 166, 90, 0.15),
+    inset 0 0 0 1px rgba(212, 166, 58, 0.1);
+}
+
+/* Pitch Lines Pattern */
+.pitch-lines {
+  background-image:
+    linear-gradient(to right, rgba(245, 245, 239, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(245, 245, 239, 0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(to bottom, transparent 10%, rgba(0, 0, 0, 0.9) 50%, transparent 100%);
+}
+
+/* Live Dot */
+.live-dot {
+  animation: live-pulse 1.5s ease-in-out infinite;
+}
+
+/* CTA Button */
+.cta-button {
+  box-shadow:
+    0 8px 24px rgba(0, 166, 90, 0.35),
+    inset 0 1px 0 rgba(245, 245, 239, 0.3);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.cta-button:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 12px 28px rgba(0, 166, 90, 0.45),
+    inset 0 1px 0 rgba(245, 245, 239, 0.5);
+}
+
+/* Animations */
+@keyframes drift {
+  0%, 100% {
+    transform: translateX(-3%);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateX(3%);
+    opacity: 1;
+  }
+}
+
+@keyframes live-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.2);
+  }
+}
+
+/* Safe Area Support for Mobile */
+@supports (padding: env(safe-area-inset-bottom)) {
+  nav.fixed.bottom-0 {
+    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+  }
+}
