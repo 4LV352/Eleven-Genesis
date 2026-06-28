@@ -1,78 +1,273 @@
-/* Design Tokens */
+/* =========================================================
+   ELEVEN GENESIS — DESIGN TOKENS
+   O DNA visual do jogo. Cada valor aqui foi pensado para
+   transmitir: Futebol, Prestígio, Estratégia e Emoção.
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&family=Oswald:wght@500;600;700&display=swap');
+
 :root {
-  /* Colors - Primary */
-  --color-genesis-turf: #00A65A;
-  --color-midnight-stadium: #071A12;
-  --color-legacy-gold: #D4A63A;
-  --color-floodlight-ivory: #F5F5EF;
+  /* =========================================================
+     PALETA PRINCIPAL — Identidade do clube/jogo
+     Por que esta paleta?
+     - VERDE GRAMADO → futebol, arena, jogo vivo
+     - DOURADO HERDADO → prestígio, conquista, troféu
+     - PRETO ESTÁDIO → elegância, profundidade, noite de jogo
+     - MARFIM REFLETOR → leitura confortável sobre fundos escuros
+     ========================================================= */
 
-  /* Colors - Secondary */
-  --color-tactical-sky: #27B4E8;
-  --color-derby-violet: #4C5DFF;
-  --color-rival-flame: #E64141;
-  --color-locker-steel: #7E8A93;
-  --color-youth-mint: #7FD98D;
-  --color-terrace-smoke: #192B25;
+  /* Genesis Turf — verde do gramado. Cor da ação e do jogo vivo. */
+  --turf-50:  #E6F7EE;
+  --turf-100: #C2ECD5;
+  --turf-200: #88D9AB;
+  --turf-300: #4DC682;
+  --turf-400: #1FB868;
+  --turf-500: #00A65A; /* principal */
+  --turf-600: #008C4C;
+  --turf-700: #006E3B;
+  --turf-800: #00522C;
+  --turf-900: #003A20;
 
-  /* Colors - Surfaces */
-  --color-surface-primary: #06150F;
-  --color-surface-secondary: #0E2219;
-  --color-surface-tertiary: #192B25;
+  /* Legacy Gold — dourado de troféu. Prestígio e conquista. */
+  --gold-50:  #FBF4E1;
+  --gold-100: #F4E2B0;
+  --gold-200: #E8C874;
+  --gold-300: #DDB34A;
+  --gold-400: #D4A63A; /* principal */
+  --gold-500: #B88A2A;
+  --gold-600: #926C1F;
+  --gold-700: #6B4F17;
+  --gold-800: #473510;
+  --gold-900: #2B2009;
 
-  /* Colors - States */
-  --color-success: #00A65A;
-  --color-warning: #D4A63A;
-  --color-danger: #E64141;
-  --color-info: #27B4E8;
+  /* Midnight Stadium — preto profundo das noites de estádio. */
+  --midnight-50:  #1C2B24;
+  --midnight-100: #172219;
+  --midnight-200: #121D16;
+  --midnight-300: #0E1913;
+  --midnight-400: #0A1510;
+  --midnight-500: #071A12; /* principal */
+  --midnight-600: #050F0A;
+  --midnight-700: #030805;
+  --midnight-800: #020503;
+  --midnight-900: #000201;
 
-  /* Colors - Text */
-  --color-text-primary: #F5F5EF;
-  --color-text-secondary: #B8C4BF;
-  --color-text-tertiary: #8EA09A;
-  --color-text-accent: #D4A63A;
+  /* Floodlight Ivory — marfim suave, como a luz dos refletores. */
+  --ivory-50:  #FFFFFF;
+  --ivory-100: #FAFAF4;
+  --ivory-200: #F5F5EF; /* principal */
+  --ivory-300: #E8E8E0;
+  --ivory-400: #D4D4C9;
+  --ivory-500: #A9A99E;
 
-  /* Typography */
-  --font-display: 'Bebas Neue', sans-serif;
+  /* =========================================================
+     PALETA SECUNDÁRIA — Status, feedback e emoções do jogo
+     ========================================================= */
+
+  /* Vitória — verde vibrante */
+  --win-400: #3DD68C;
+  --win-500: #22C55E;
+  --win-600: #16A34A;
+
+  /* Empate — âmbar equilibrado */
+  --draw-400: #FCD34D;
+  --draw-500: #F59E0B;
+  --draw-600: #D97706;
+
+  /* Derrota — vermelho de cartão */
+  --loss-400: #F87171;
+  --loss-500: #EF4444;
+  --loss-600: #DC2626;
+
+  /* Acento tático — azul de prancheta */
+  --tactic-400: #60A5FA;
+  --tactic-500: #3B82F6;
+  --tactic-600: #2563EB;
+
+  /* =========================================================
+     SUPERFÍCIES — Camadas do app (de trás pra frente)
+     ========================================================= */
+  --surface-0: var(--midnight-500);     /* fundo mais profundo — arquibancada distante */
+  --surface-1: var(--midnight-300);     /* fundo principal */
+  --surface-2: var(--midnight-200);     /* cards base */
+  --surface-3: var(--midnight-100);     /* cards elevados */
+  --surface-4: var(--midnight-50);      /* overlays e modais */
+  --surface-accent: var(--turf-700);    /* superfícies destacadas */
+
+  /* =========================================================
+     TIPOGRAFIA
+     Por que estas fontes?
+     - Bebas Neue → estilo JERSEY/CAMISA. Impacto, cabeçalhos, placar.
+     - Oswald → alternativa condensed para números e estatísticas.
+     - Inter → interface. Leitura rápida em qualquer tamanho.
+     ========================================================= */
+  --font-display: 'Bebas Neue', 'Oswald', system-ui, sans-serif;
+  --font-numeric: 'Oswald', 'Bebas Neue', system-ui, sans-serif;
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
 
-  /* Spacing */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 0.75rem;
-  --spacing-lg: 1rem;
-  --spacing-xl: 1.5rem;
-  --spacing-2xl: 2rem;
-  --spacing-3xl: 3rem;
+  /* Escala tipográfica (mobile-first) */
+  --text-xs:   0.75rem;   /* 12px */
+  --text-sm:   0.875rem;  /* 14px */
+  --text-base: 1rem;      /* 16px */
+  --text-lg:   1.125rem;  /* 18px */
+  --text-xl:   1.375rem;  /* 22px */
+  --text-2xl:  1.75rem;   /* 28px */
+  --text-3xl:  2.25rem;   /* 36px */
+  --text-4xl:  3rem;      /* 48px */
+  --text-5xl:  4rem;      /* 64px */
+  --text-6xl:  5.5rem;    /* 88px — placar, títulos épicos */
 
-  /* Border Radius */
-  --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
+  --leading-tight:  1.05;
+  --leading-snug:   1.2;
+  --leading-normal: 1.5;
+
+  --tracking-tight:  -0.02em;
+  --tracking-normal:  0;
+  --tracking-wide:    0.05em;
+  --tracking-wider:   0.1em;
+  --tracking-display: 0.04em; /* padrão do Bebas */
+
+  /* =========================================================
+     ESPAÇAMENTO — Sistema 4px, confortável para touch
+     ========================================================= */
+  --space-1:  0.25rem;  /* 4px */
+  --space-2:  0.5rem;   /* 8px */
+  --space-3:  0.75rem;  /* 12px */
+  --space-4:  1rem;     /* 16px */
+  --space-5:  1.25rem;  /* 20px */
+  --space-6:  1.5rem;   /* 24px */
+  --space-8:  2rem;     /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  --space-20: 5rem;     /* 80px */
+
+  /* =========================================================
+     BORDAS — radius e estilos
+     ========================================================= */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+  --radius-full: 999px;
+
+  --border-width: 1px;
+  --border-soft: 1px solid rgba(245, 245, 239, 0.08);
+  --border-strong: 1px solid rgba(245, 245, 239, 0.16);
+  --border-gold: 1px solid rgba(212, 166, 58, 0.35);
+  --border-turf: 1px solid rgba(0, 166, 90, 0.35);
+
+  /* =========================================================
+     SOMBRAS — Sistema de elevação com luz vinda de cima
+     (como refletores de estádio iluminando o gramado)
+     ========================================================= */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.45);
+  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55), 0 4px 8px rgba(0, 0, 0, 0.45);
+  --shadow-xl: 0 24px 48px rgba(0, 0, 0, 0.6), 0 8px 16px rgba(0, 0, 0, 0.5);
+  --shadow-glow-turf: 0 0 24px rgba(0, 166, 90, 0.45);
+  --shadow-glow-gold: 0 0 24px rgba(212, 166, 58, 0.45);
+  --shadow-glow-loss: 0 0 24px rgba(239, 68, 68, 0.4);
+  --shadow-inset: inset 0 1px 0 rgba(245, 245, 239, 0.06), inset 0 -1px 0 rgba(0,0,0,0.4);
+
+  /* =========================================================
+     GRADIENTES — Atmosfera de estádio
+     ========================================================= */
+  --grad-stadium: linear-gradient(180deg,
+    #050F0A 0%,
+    #071A12 40%,
+    #0A2518 75%,
+    #0E3520 100%);
+  --grad-pitch: linear-gradient(180deg,
+    #0A6E3C 0%,
+    #00A65A 50%,
+    #008C4C 100%);
+  --grad-floodlight: radial-gradient(ellipse at top,
+    rgba(245, 245, 239, 0.18) 0%,
+    rgba(245, 245, 239, 0.04) 40%,
+    transparent 70%);
+  --grad-gold: linear-gradient(135deg,
+    #F4E2B0 0%,
+    #D4A63A 45%,
+    #B88A2A 100%);
+  --grad-turf: linear-gradient(135deg,
+    #1FB868 0%,
+    #00A65A 50%,
+    #006E3B 100%);
+  --grad-card: linear-gradient(180deg,
+    rgba(28, 43, 36, 0.9) 0%,
+    rgba(14, 25, 19, 0.95) 100%);
+  --grad-danger: linear-gradient(135deg, #F87171 0%, #DC2626 100%);
+  --grad-success: linear-gradient(135deg, #3DD68C 0%, #16A34A 100%);
+
+  /* =========================================================
+     MOVIMENTO — Durações e easings padronizados
+     ========================================================= */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.45, 0, 0.55, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --dur-fast: 120ms;
+  --dur-base: 220ms;
+  --dur-slow: 420ms;
+
+  /* =========================================================
+     Z-INDEX — Camadas previsíveis
+     ========================================================= */
+  --z-base: 1;
+  --z-nav: 50;
+  --z-header: 60;
+  --z-modal: 100;
+  --z-toast: 200;
+  --z-loading: 300;
+
+  /* =========================================================
+     SAFE AREAS — iOS notch e barra de navegação
+     ========================================================= */
+  --safe-top: env(safe-area-inset-top, 0);
+  --safe-bottom: env(safe-area-inset-bottom, 0);
+  --safe-left: env(safe-area-inset-left, 0);
+  --safe-right: env(safe-area-inset-right, 0);
+
+  /* =========================================================
+     ALIASES SEMÂNTICOS — Use estes no dia-a-dia
+     ========================================================= */
+  --c-bg:           var(--surface-0);
+  --c-surface:      var(--surface-2);
+  --c-surface-hi:   var(--surface-3);
+  --c-text:         var(--ivory-200);
+  --c-text-muted:   var(--ivory-500);
+  --c-text-strong:  var(--ivory-100);
+  --c-primary:      var(--turf-500);
+  --c-primary-hi:   var(--turf-400);
+  --c-primary-lo:   var(--turf-700);
+  --c-accent:       var(--gold-400);
+  --c-accent-hi:    var(--gold-300);
+  --c-win:          var(--win-500);
+  --c-draw:         var(--draw-500);
+  --c-loss:         var(--loss-500);
+  --c-info:         var(--tactic-500);
 }
 
-/* Reset */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html, body {
-  margin: 0;
-  padding: 0;
+/* =========================================================
+     RESET MÍNIMO — Consistência cross-browser
+     ========================================================= */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
   font-family: var(--font-body);
-  background: var(--color-surface-primary);
-  color: var(--color-text-primary);
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
-
-/* Utility Classes */
-.font-display {
-  font-family: var(--font-display);
-  letter-spacing: 0.02em;
-}
-
-.font-body {
-  font-family: var(--font-body);
-}
+img, svg { display: block; max-width: 100%; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+a { color: inherit; text-decoration: none; }
+h1,h2,h3,h4,h5,h6 { margin: 0; font-family: var(--font-display); letter-spacing: var(--tracking-display); }

@@ -1,245 +1,254 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#06150F">
-  <title>Eleven Genesis — Centro de Comando</title>
-  <meta name="description" content="Gerencie seu clube de futebol. Sinta a emoção do jogo.">
-  
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  
-  <!-- CSS -->
-  <link rel="stylesheet" href="css/tokens.css">
-  <link rel="stylesheet" href="css/components.css">
-  <link rel="stylesheet" href="css/pages.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#071A12" />
+  <title>Eleven Genesis — Manager</title>
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/pages.css" />
 </head>
 <body>
-  <div class="stadium-world">
-    <!-- Club Header -->
-    <header class="club-header">
-      <div class="club-header__info">
-        <div class="club-header__badge">⚽</div>
-        <div>
-          <h1 class="club-header__name">Genesis FC</h1>
-          <p class="club-header__season">2025/26 • Primeira Liga</p>
-        </div>
-      </div>
-      
-      <div class="club-header__stats">
-        <div class="club-header__reputation">
-          <p class="club-header__label">Reputação</p>
-          <div class="club-header__stars">★★★★☆</div>
-        </div>
-        
-        <div class="club-header__form">
-          <span class="result-badge result-badge--win">V</span>
-          <span class="result-badge result-badge--win">V</span>
-          <span class="result-badge result-badge--draw">E</span>
-          <span class="result-badge result-badge--loss">D</span>
-          <span class="result-badge result-badge--win">V</span>
-        </div>
-      </div>
+
+  <!-- SPLASH / LOADING INICIAL -->
+  <div class="eg-loading-screen" id="splash">
+    <svg class="eg-crest eg-crest--hero" viewBox="0 0 40 48" style="position:relative;z-index:1">
+      <path d="M20 2 L38 8 V26 C38 38 28 44 20 46 C12 44 2 38 2 26 V8 Z" fill="#071A12" stroke="#D4A63A" stroke-width="1.2"/>
+      <text x="20" y="30" font-family="Bebas Neue" font-size="18" fill="#D4A63A" text-anchor="middle">11</text>
+      <circle cx="20" cy="2" r="2" fill="#D4A63A"/>
+    </svg>
+    <div class="eg-loading-screen__label" id="splashLabel">Carregando Eleven Genesis…</div>
+  </div>
+
+  <!-- APP SHELL -->
+  <div class="eg-app" id="app" style="display:none">
+
+    <!-- HEADER DINÂMICO -->
+    <header class="eg-header" id="appHeader" style="background:transparent;border:none;padding-left:0;padding-right:0">
+      <svg class="eg-crest eg-crest--sm" viewBox="0 0 40 48" aria-hidden="true">
+        <path d="M20 2 L38 8 V26 C38 38 28 44 20 46 C12 44 2 38 2 26 V8 Z" fill="#071A12" stroke="#D4A63A" stroke-width="1.5"/>
+        <text x="20" y="28" font-family="Bebas Neue" font-size="16" fill="#D4A63A" text-anchor="middle">11</text>
+      </svg>
+      <div class="eg-header__title" id="headerTitle">Genesis FC</div>
+      <span class="eg-badge eg-badge--gold" id="headerBadge">Dia 1</span>
     </header>
 
-    <!-- Main Content -->
-    <main class="dashboard">
-      <!-- Hero: Próxima Partida -->
-      <section class="matchday-hero">
-        <div class="pitch-lines"></div>
-        <div class="matchday-hero__content">
-          <div class="matchday-hero__live">
-            <span class="live-dot"></span>
-            <span>PRÓXIMA PARTIDA</span>
+    <!-- =============== VIEW: CLUBE =============== -->
+    <main class="eg-app__content eg-view" id="view-club" data-view="club">
+
+      <!-- HERO: PRÓXIMA PARTIDA -->
+      <section class="eg-match-hero">
+        <div class="eg-match-hero__header">
+          <span class="eg-eyebrow" id="matchCompetition">Primeira Liga · Rodada 1</span>
+          <span class="eg-badge eg-badge--live" id="matchCountdown">● Em breve</span>
+        </div>
+
+        <div class="eg-match-hero__teams">
+          <div class="eg-match-hero__team">
+            <div id="homeCrest"></div>
+            <div class="eg-match-hero__team-name" id="homeTeamName">Genesis FC</div>
+            <span class="eg-badge eg-badge--turf">Casa</span>
           </div>
-          
-          <h2 class="matchday-hero__title">
-            GENESIS FC <span class="matchday-hero__vs">×</span> AURORA SC
-          </h2>
-          
-          <div class="matchday-hero__info">
-            <span class="matchday-hero__badge">Primeira Liga • Rodada 26</span>
-            <span class="matchday-hero__date">Sáb, 15 Fev • 20:30</span>
+          <div class="eg-match-hero__vs">VS</div>
+          <div class="eg-match-hero__team">
+            <div id="awayCrest"></div>
+            <div class="eg-match-hero__team-name" id="awayTeamName">—</div>
+            <span class="eg-badge" id="awayPosition">—</span>
           </div>
-          
-          <div class="matchday-hero__actions">
-            <button class="btn btn--primary">Definir Escalação</button>
-            <button class="btn btn--secondary">Ver Táticas</button>
+        </div>
+
+        <div class="eg-match-hero__footer">
+          <div class="eg-match-hero__meta" id="matchMeta">
+            <strong>SÁB · 20:30</strong> · Arena Genesis
           </div>
+          <button class="eg-btn eg-btn--primary eg-btn--sm" id="btnPlayMatch">Avançar ao jogo</button>
         </div>
       </section>
 
-      <!-- Stats Grid -->
-      <section class="stats-section">
-        <h3 class="section-title">Panorama do Clube</h3>
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-card__header">
-              <span class="stat-card__label">Posição na Liga</span>
-              <span class="stat-card__icon">🏆</span>
-            </div>
-            <div class="stat-card__value">3º</div>
-            <div class="stat-card__trend stat-card__trend--up">↑ vs última semana</div>
-          </div>
-          
-          <div class="stat-card">
-            <div class="stat-card__header">
-              <span class="stat-card__label">Pontos</span>
-              <span class="stat-card__icon">⭐</span>
-            </div>
-            <div class="stat-card__value">67</div>
-          </div>
-          
-          <div class="stat-card">
-            <div class="stat-card__header">
-              <span class="stat-card__label">Saldo de Gols</span>
-              <span class="stat-card__icon">⚽</span>
-            </div>
-            <div class="stat-card__value">+24</div>
-            <div class="stat-card__trend stat-card__trend--up">↑ vs última semana</div>
-          </div>
-          
-          <div class="stat-card">
-            <div class="stat-card__header">
-              <span class="stat-card__label">Moral</span>
-              <span class="stat-card__icon">🔥</span>
-            </div>
-            <div class="stat-card__value">Alta</div>
-            <div class="stat-card__trend stat-card__trend--up">↑ vs última semana</div>
-          </div>
+      <!-- STATS -->
+      <section class="eg-section">
+        <div class="eg-section__header">
+          <h2 class="eg-heading-md">Temporada</h2>
+          <button class="eg-btn eg-btn--ghost eg-btn--sm" id="btnGoTable">Ver tabela →</button>
+        </div>
+        <div class="eg-stats-grid" id="seasonStats"></div>
+      </section>
+
+      <!-- FORM -->
+      <section class="eg-section">
+        <div class="eg-section__header">
+          <h2 class="eg-heading-md">Últimos 5 jogos</h2>
+        </div>
+        <div class="eg-card">
+          <div class="eg-form-group" id="formGroup" style="gap:8px"></div>
+          <p class="eg-text-muted eg-mt-4" id="formSummary" style="font-size:var(--text-sm)"></p>
         </div>
       </section>
 
-      <!-- Notícias -->
-      <section class="news-section">
-        <div class="section-header">
-          <h3 class="section-title">Últimas Notícias</h3>
-          <button class="section-link">Ver todas →</button>
+      <!-- NEWS -->
+      <section class="eg-section">
+        <div class="eg-section__header">
+          <h2 class="eg-heading-md">Notícias</h2>
         </div>
-        
-        <div class="news-list">
-          <article class="news-card">
-            <div class="news-card__header">
-              <span class="news-card__impact news-card__impact--high">URGENTE</span>
-              <span class="news-card__time">2h atrás</span>
-            </div>
-            <h4 class="news-card__title">Torcida lota a arena para estreia do novo técnico</h4>
-            <p class="news-card__summary">Mais de 45 mil ingressos vendidos para o clássico de sábado. Expectativa é de casa cheia.</p>
-          </article>
-          
-          <article class="news-card">
-            <div class="news-card__header">
-              <span class="news-card__impact news-card__impact--medium">IMPORTANTE</span>
-              <span class="news-card__time">5h atrás</span>
-            </div>
-            <h4 class="news-card__title">Meia-armador renova contrato até 2028</h4>
-            <p class="news-card__summary">Cláusula de rescisão aumenta para €60M. Jogador demonstra comprometimento com o projeto.</p>
-          </article>
-          
-          <article class="news-card">
-            <div class="news-card__header">
-              <span class="news-card__impact news-card__impact--low">INFORMATIVO</span>
-              <span class="news-card__time">1 dia atrás</span>
-            </div>
-            <h4 class="news-card__title">Centro de treinamento recebe nova tecnologia</h4>
-            <p class="news-card__summary">Sistema de análise de desempenho será instalado na próxima semana.</p>
-          </article>
-        </div>
+        <div class="eg-news-stack" id="newsStack"></div>
       </section>
-
-      <!-- Destaques do Elenco -->
-      <section class="squad-section">
-        <div class="section-header">
-          <h3 class="section-title">Destaques do Elenco</h3>
-          <button class="section-link">Ver elenco →</button>
-        </div>
-        
-        <div class="squad-grid">
-          <div class="player-card">
-            <div class="player-card__info">
-              <span class="player-card__position">MEI</span>
-              <h4 class="player-card__name">M. Silva</h4>
-              <span class="player-card__status">Titular</span>
-            </div>
-            <div class="player-card__stats">
-              <span class="player-card__rating">8.7</span>
-              <span class="player-card__form player-card__form--up">↑ Em alta</span>
-            </div>
-          </div>
-          
-          <div class="player-card">
-            <div class="player-card__info">
-              <span class="player-card__position">ATA</span>
-              <h4 class="player-card__name">J. Oliveira</h4>
-              <span class="player-card__status">Titular</span>
-            </div>
-            <div class="player-card__stats">
-              <span class="player-card__rating">8.2</span>
-              <span class="player-card__form player-card__form--up">↑ Em alta</span>
-            </div>
-          </div>
-          
-          <div class="player-card">
-            <div class="player-card__info">
-              <span class="player-card__position">ZAG</span>
-              <h4 class="player-card__name">R. Costa</h4>
-              <span class="player-card__status">Reserva</span>
-            </div>
-            <div class="player-card__stats">
-              <span class="player-card__rating">7.5</span>
-              <span class="player-card__form player-card__form--neutral">— Estável</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Footer -->
-      <footer class="dashboard-footer">
-        <svg class="logo" width="120" height="32" viewBox="0 0 240 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M32 4L8 14V32C8 46 18 58 32 60C46 58 56 46 56 32V14L32 4Z" fill="#10251C" stroke="#D4A63A" stroke-width="2"/>
-          <path d="M32 10L14 18V32C14 43 22 52 32 54C42 52 50 43 50 32V18L32 10Z" fill="#06150F" stroke="#00A65A" stroke-width="1.5"/>
-          <rect x="22" y="24" width="3" height="16" fill="#D4A63A"/>
-          <rect x="21" y="23" width="5" height="2" fill="#D4A63A"/>
-          <rect x="21" y="39" width="5" height="2" fill="#D4A63A"/>
-          <rect x="39" y="24" width="3" height="16" fill="#D4A63A"/>
-          <rect x="38" y="23" width="5" height="2" fill="#D4A63A"/>
-          <rect x="38" y="39" width="5" height="2" fill="#D4A63A"/>
-          <circle cx="32" cy="32" r="6" fill="#00A65A" stroke="#F5F5EF" stroke-width="0.5"/>
-          <path d="M32 16L33.5 19.5L37 19.5L34.5 21.5L35.5 25L32 23L28.5 25L29.5 21.5L27 19.5L30.5 19.5L32 16Z" fill="#D4A63A"/>
-          <text x="72" y="38" font-family="Bebas Neue, sans-serif" font-size="32" font-weight="700" fill="#F5F5EF" letter-spacing="0.02em">ELEVEN</text>
-          <text x="72" y="52" font-family="Bebas Neue, sans-serif" font-size="14" font-weight="700" fill="#D4A63A" letter-spacing="0.15em">GENESIS</text>
-        </svg>
-      </footer>
     </main>
 
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-      <button class="bottom-nav__item bottom-nav__item--active">
-        <span class="bottom-nav__icon">🏛️</span>
-        <span class="bottom-nav__label">Clube</span>
+    <!-- =============== VIEW: ELENCO =============== -->
+    <main class="eg-app__content eg-view" id="view-squad" data-view="squad" style="display:none">
+      <section class="eg-section">
+        <div class="eg-section__header">
+          <h2 class="eg-heading-md">Elenco Principal</h2>
+          <span class="eg-text-muted" id="squadCount" style="font-size:var(--text-sm)">0 jogadores</span>
+        </div>
+        <div id="squadList" style="display:flex;flex-direction:column;gap:var(--space-3)"></div>
+      </section>
+    </main>
+
+    <!-- =============== VIEW: JOGOS (TABELA + CALENDÁRIO) =============== -->
+    <main class="eg-app__content eg-view" id="view-matches" data-view="matches" style="display:none">
+      <section class="eg-section">
+        <div class="eg-section__header">
+          <h2 class="eg-heading-md">Classificação</h2>
+          <span class="eg-eyebrow">Primeira Liga</span>
+        </div>
+        <div class="eg-card" style="padding:var(--space-3);overflow-x:auto">
+          <table class="eg-table" id="leagueTable"></table>
+        </div>
+      </section>
+
+      <section class="eg-section">
+        <div class="eg-section__header">
+          <h2 class="eg-heading-md">Próximos jogos</h2>
+        </div>
+        <div id="fixturesList" style="display:flex;flex-direction:column;gap:var(--space-3)"></div>
+      </section>
+
+      <section class="eg-section">
+        <div class="eg-section__header">
+          <h2 class="eg-heading-md">Resultados</h2>
+        </div>
+        <div id="resultsList" style="display:flex;flex-direction:column;gap:var(--space-3)"></div>
+      </section>
+    </main>
+
+    <!-- =============== VIEW: MERCADO =============== -->
+    <main class="eg-app__content eg-view" id="view-market" data-view="market" style="display:none">
+      <section class="eg-section">
+        <div class="eg-section__header">
+          <h2 class="eg-heading-md">Mercado de Transferências</h2>
+          <span class="eg-badge eg-badge--gold" id="marketBudget">€ 0M</span>
+        </div>
+        <p class="eg-text-muted" style="font-size:var(--text-sm);margin-bottom:var(--space-4)">
+          Contrate jogadores para fortalecer seu elenco. Cada contratação afeta seu orçamento e a moral.
+        </p>
+        <div id="marketList" style="display:flex;flex-direction:column;gap:var(--space-3)"></div>
+      </section>
+    </main>
+
+    <!-- =============== VIEW: FINANÇAS =============== -->
+    <main class="eg-app__content eg-view" id="view-finance" data-view="finance" style="display:none">
+      <section class="eg-section">
+        <div class="eg-section__header">
+          <h2 class="eg-heading-md">Finanças do Clube</h2>
+        </div>
+        <div class="eg-card eg-card--gold">
+          <div class="eg-card__meta eg-text-gold">SALDO ATUAL</div>
+          <div style="font-family:var(--font-display);font-size:var(--text-5xl);color:var(--c-text-strong);line-height:1;margin-top:var(--space-2)" id="finBalance">€ 0M</div>
+        </div>
+
+        <div class="eg-stats-grid eg-mt-4">
+          <div class="eg-stat-card">
+            <span class="eg-stat-card__label">Receita / semana</span>
+            <span class="eg-stat-card__value eg-text-turf" id="finIncome" style="color:var(--c-primary)">€ 0M</span>
+          </div>
+          <div class="eg-stat-card">
+            <span class="eg-stat-card__label">Folha / semana</span>
+            <span class="eg-stat-card__value" id="finWages" style="color:var(--c-loss)">€ 0M</span>
+          </div>
+          <div class="eg-stat-card">
+            <span class="eg-stat-card__label">Lucro / semana</span>
+            <span class="eg-stat-card__value" id="finProfit">€ 0M</span>
+          </div>
+          <div class="eg-stat-card">
+            <span class="eg-stat-card__label">Reputação</span>
+            <span class="eg-stat-card__value eg-text-gold" id="finRep">★★★</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="eg-section">
+        <div class="eg-section__header">
+          <h2 class="eg-heading-md">Extrato recente</h2>
+        </div>
+        <div id="transactionsList" class="eg-card" style="display:flex;flex-direction:column;gap:var(--space-2)"></div>
+      </section>
+
+      <section class="eg-section">
+        <div class="eg-card eg-card--flat">
+          <h2 class="eg-heading-md">Carreira</h2>
+          <p class="eg-text-muted eg-mt-2" style="font-size:var(--text-sm)">Reinicia a temporada, elenco, mercado e finanças salvas neste aparelho.</p>
+          <button class="eg-btn eg-btn--danger eg-btn--block eg-mt-4" id="btnNewCareer">Nova carreira</button>
+        </div>
+      </section>
+    </main>
+
+    <!-- BOTTOM NAV -->
+    <nav class="eg-nav-bottom" id="bottomNav" aria-label="Navegação principal">
+      <button class="eg-nav-bottom__item eg-nav-bottom__item--active" data-nav="club" aria-current="page">
+        <span class="eg-icon eg-icon--md"><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2h-4v-6H9v6H5a2 2 0 0 1-2-2z"/></svg></span>
+        Clube
       </button>
-      <button class="bottom-nav__item">
-        <span class="bottom-nav__icon">👥</span>
-        <span class="bottom-nav__label">Elenco</span>
+      <button class="eg-nav-bottom__item" data-nav="squad">
+        <span class="eg-icon eg-icon--md"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M17 11a3 3 0 1 0 0-6M3 20c0-3 3-5 6-5s6 2 6 5M17 14c2 0 4 2 4 4"/></svg></span>
+        Elenco
       </button>
-      <button class="bottom-nav__item">
-        <span class="bottom-nav__icon">⚽</span>
-        <span class="bottom-nav__label">Partidas</span>
+      <button class="eg-nav-bottom__item" data-nav="matches">
+        <span class="eg-icon eg-icon--md"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"/></svg></span>
+        Jogos
       </button>
-      <button class="bottom-nav__item">
-        <span class="bottom-nav__icon">💼</span>
-        <span class="bottom-nav__label">Mercado</span>
+      <button class="eg-nav-bottom__item" data-nav="market">
+        <span class="eg-icon eg-icon--md"><svg viewBox="0 0 24 24"><path d="M3 3h18v4H3zM3 10h18v4H3zM3 17h18v4H3z"/></svg></span>
+        Mercado
       </button>
-      <button class="bottom-nav__item">
-        <span class="bottom-nav__icon">💰</span>
-        <span class="bottom-nav__label">Finanças</span>
+      <button class="eg-nav-bottom__item" data-nav="finance">
+        <span class="eg-icon eg-icon--md"><svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
+        Finanças
       </button>
     </nav>
   </div>
 
+  <!-- MODAL: RESULTADO DA PARTIDA -->
+  <div class="eg-modal" id="modalMatch" aria-hidden="true">
+    <div class="eg-modal__backdrop"></div>
+    <div class="eg-modal__card">
+      <div class="eg-eyebrow eg-text-center" id="modalCompetition">Primeira Liga</div>
+      <h2 class="eg-heading-lg eg-text-center eg-mt-2" id="modalStatus">FIM DE JOGO</h2>
+      <div class="eg-score eg-mt-4">
+        <div style="text-align:center">
+          <div id="modalHomeCrest"></div>
+          <div class="eg-display eg-text-strong" style="font-size:var(--text-lg);margin-top:var(--space-2)" id="modalHomeName">Casa</div>
+        </div>
+        <span id="modalHomeScore">0</span>
+        <span class="eg-score__sep">×</span>
+        <span id="modalAwayScore">0</span>
+        <div style="text-align:center">
+          <div id="modalAwayCrest"></div>
+          <div class="eg-display eg-text-strong" style="font-size:var(--text-lg);margin-top:var(--space-2)" id="modalAwayName">Fora</div>
+        </div>
+      </div>
+      <div class="eg-card eg-card--flat eg-mt-4" id="modalSummary" style="font-size:var(--text-sm)"></div>
+      <div class="eg-mt-4" style="display:flex;gap:var(--space-2)">
+        <button class="eg-btn eg-btn--primary eg-btn--block" id="btnModalClose">Continuar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="eg-toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/game.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>
