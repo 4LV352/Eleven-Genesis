@@ -4089,6 +4089,138 @@
         return record;
     }
 
+
+    function eg4GetRhythmState() {
+        const morale = getSquadMoraleSummary();
+        const fanMood = getFanMood();
+        const position = currentPosition();
+        const lastResults = (GameState.league?.results || []).slice(0, 5).filter((result) => result.home === GameState.club.name || result.away === GameState.club.name);
+        let losses = 0;
+        let wins = 0;
+        lastResults.forEach((result) => {
+            const isHome = result.home === GameState.club.name;
+            const gf = isHome ? result.homeGoals : result.awayGoals;
+            const ga = isHome ? result.awayGoals : result.homeGoals;
+            if (gf > ga) wins += 1;
+            if (gf < ga) losses += 1;
+        });
+        const remaining = Math.max(0, GameState.league.clubs.length ? ((GameState.league.clubs.length - 1) * 2) - GameState.round : 38 - GameState.round);
+        if (remaining <= 5) return { key: "decisive", label: "Reta decisiva", tone: "Cada ponto pesa mais.", className: "eg4-rhythm-decisive" };
+        if (losses >= 3 || fanMood.score < 42 || GameState.boardConfidence < 45) return { key: "crisis", label: "Crise", tone: "O clube cobra uma resposta.", className: "eg4-rhythm-crisis" };
+        if (wins >= 3 || position <= 3 || fanMood.score >= 70) return { key: "belief", label: "Embalado", tone: "O ambiente acredita no trabalho.", className: "eg4-rhythm-belief" };
+        if (GameState.round <= 4) return { key: "calm", label: "Construção", tone: "Ainda há espaço para testar ideias.", className: "eg4-rhythm-calm" };
+        return { key: "pressure", label: "Pressão controlada", tone: "A temporada começa a revelar o caráter do grupo.", className: "eg4-rhythm-pressure" };
+    }
+
+    function eg4GetLastClubResult() {
+        return (GameState.league?.results || []).find((result) => result.home === GameState.club.name || result.away === GameState.club.name) || null;
+    }
+
+    function eg4DescribeResult(result) {
+        if (!result) return "A semana ainda espera uma história para ser escrita.";
+        const isHome = result.home === GameState.club.name;
+        const gf = isHome ? result.homeGoals : result.awayGoals;
+        const ga = isHome ? result.awayGoals : result.homeGoals;
+        if (gf > ga) return `Vitória por ${gf}x${ga}. O grupo ganhou respiro, mas o próximo jogo já cobra continuidade.`;
+        if (gf < ga) return `Derrota por ${gf}x${ga}. O vestiário precisa transformar dor em resposta.`;
+        return `Empate em ${gf}x${ga}. Ficou a sensação de que alguns detalhes ainda separam o time da vitória.`;
+    }
+
+    function eg4GetNextMatchStory(opponent, matchLocation, rhythm) {
+        const result = eg4GetLastClubResult();
+        const rivalTone = opponent?.reputation > 74 ? "Um adversário de camisa pesada vem aí." : "O próximo rival pode parecer acessível, mas exige seriedade.";
+        const locationTone = matchLocation === t("home.home") ? "A torcida espera atitude desde o primeiro minuto." : "Fora de casa, o silêncio do estádio adversário também é pressão.";
+        const rhythmTone = rhythm.key === "crisis" ? "Mais do que três pontos, este jogo pede caráter." :
+            rhythm.key === "decisive" ? "A margem para erro está desaparecendo." :
+            rhythm.key === "belief" ? "O momento é bom, mas confiança demais também derruba times." :
+            "A semana é uma chance de consolidar o trabalho.";
+        return `${rivalTone} ${locationTone} ${rhythmTone}`;
+    }
+
+    function eg4GetCoachQuestion(rhythm) {
+        const questions = {
+            crisis: "Quem você protege quando o clube inteiro cobra mudanças?",
+            decisive: "Qual convicção você leva para o jogo que pode definir a temporada?",
+            belief: "Você mantém o plano ou usa a boa fase para ousar?",
+            calm: "Qual identidade este elenco precisa começar a reconhecer em você?",
+            pressure: "Qual problema precisa ser resolvido antes que vire crise?"
+        };
+        return questions[rhythm.key] || questions.pressure;
+    }
+
+    function eg4PlayerPersonalityLine(player) {
+        if (!player) return "O relatório ainda não trouxe uma leitura humana suficiente.";
+        const age = calculateAge(player, GameState.currentYear);
+        const overall = calculateCurrentOverall(player);
+        const potential = player.potential || overall;
+        if (age <= 20 && potential - overall >= 10) return "O olheiro vê um talento que ainda precisa ser protegido da própria expectativa.";
+        if ((player.morale || 0) < 45) return "Há qualidade, mas também sinais de desgaste emocional. A decisão exige cuidado.";
+        if ((player.attributes?.leadership || 0) >= 78) return "Perfil de liderança. Pode influenciar o vestiário antes mesmo de virar titular.";
+        if ((player.attributes?.mentality || 0) >= 80) return "Mentalidade forte. Parece o tipo que cresce quando o jogo aperta.";
+        if ((player.marketValue || 0) > GameState.budget * 0.45) return "Boa oportunidade técnica, mas o preço pode comprometer outras necessidades.";
+        return buildScoutCardNote(player);
+    }
+
+    function eg4MarketOpportunityLine(player) {
+        if (!player) return "O mercado ainda está procurando uma história.";
+        const age = calculateAge(player, GameState.currentYear);
+        const overall = calculateCurrentOverall(player);
+        if (age <= 21 && (player.potential || overall) >= overall + 8) return "Aposta de futuro. Contratar agora é comprar tempo antes do resto do mercado perceber.";
+        if (overall >= 80) return "Impacto imediato. Chegaria para mudar a hierarquia do elenco.";
+        if ((player.contract?.weeksRemaining || player.contractUntil || 0) <= 52) return "Situação contratual pode abrir uma negociação inteligente.";
+        if ((player.morale || 0) < 45) return "Jogador inquieto. Pode procurar recomeço, mas traz perguntas para o vestiário.";
+        return "Opção de elenco. Vale entender encaixe, salário e personalidade antes de negociar.";
+    }
+
+    function eg4GetWeekMicroStories(summary) {
+        const stories = [];
+        const result = eg4GetLastClubResult();
+        const morale = getSquadMoraleSummary();
+        const fanMood = getFanMood();
+        const best = getBestSquadPlayer();
+        const young = GameState.academy?.prospects?.slice().sort((a, b) => (b.potential || 0) - (a.potential || 0))[0];
+        const marketName = GameState.market?.[0]?.name || "um nome desconhecido";
+        stories.push({ day: "Segunda", title: result ? "O vestiário processa o jogo" : "O CT reabre em silêncio", text: eg4DescribeResult(result) });
+        stories.push({ day: "Terça", title: "Relatório de olheiro", text: `A equipe de scout voltou a citar ${marketName}. Ainda não é decisão, é curiosidade que merece acompanhamento.` });
+        if (young) stories.push({ day: "Quarta", title: "Base em observação", text: `${young.name} apareceu de novo nos relatórios internos. Potencial existe; a dúvida é quando expor o garoto.` });
+        stories.push({ day: "Quinta", title: "Clima do grupo", text: morale.average < 55 ? "O grupo treina, mas as conversas paralelas dizem que a semana pesa." : "O treino teve concentração. O elenco parece entender o que a semana pede." });
+        stories.push({ day: "Sexta", title: "Véspera de decisão", text: `${best?.name || "O capitão"} foi um dos últimos a deixar o CT. ${fanMood.score < 50 ? "Lá fora, a torcida cobra resposta." : "A torcida começa a acreditar no próximo passo."}` });
+        return stories.slice(0, 5);
+    }
+
+    function eg4InjectEmotionalWeekEvents(context) {
+        const rhythm = eg4GetRhythmState();
+        const best = getBestSquadPlayer();
+        const lowMorale = [...GameState.squad].sort((a, b) => (a.morale || 0) - (b.morale || 0))[0];
+        if (rhythm.key === "crisis" && lowMorale) {
+            addNews("Vestiário", "Conversa pesada no CT", `${lowMorale.name} deixou o treino cabisbaixo e será observado pela comissão.`, "O momento do clube aumenta o peso das pequenas reações. O treinador precisa decidir se protege, cobra ou espera.");
+        } else if (rhythm.key === "belief" && best) {
+            addNews("Torcida", `${best.name} ganha canto nas arquibancadas`, `A boa fase transformou ${best.name} em símbolo momentâneo do trabalho.`, "A torcida ainda não fala em idolatria, mas já reconhece protagonismo.");
+        } else {
+            addNews("Clube", "Semana de bastidores no centro de treinamento", "Pequenos sinais do grupo foram registrados pela comissão.", "Nem toda semana explode em manchetes. Algumas semanas constroem confiança em silêncio.");
+        }
+        if (GameState.academy?.prospects?.length && Math.random() < 0.35) {
+            const prospect = [...GameState.academy.prospects].sort((a, b) => (b.potential || 0) - (a.potential || 0))[0];
+            addNews("Jovens", `${prospect.name} chama atenção no treino da base`, `A comissão vê personalidade em ${prospect.name}, mas quer evitar pressa.`, "Promover um jovem é uma promessa, não uma transação.");
+        }
+    }
+
+    function eg4RenderWeekStory(summary) {
+        const stories = eg4GetWeekMicroStories(summary);
+        return `
+            <div class="eg4-week-story">
+                ${stories.map((story) => `
+                    <article class="eg4-week-day">
+                        <span>${escapeHtml(story.day)}</span>
+                        <strong>${escapeHtml(story.title)}</strong>
+                        <p>${escapeHtml(story.text)}</p>
+                    </article>
+                `).join("")}
+            </div>
+        `;
+    }
+
+
     function renderDashboard() {
         const opponent = getClubById(GameState.nextOpponentId) || pickNextOpponent();
         const position = currentPosition();
@@ -4097,53 +4229,70 @@
         const finances = getFinanceSummary();
         const morale = getSquadMoraleSummary();
         const fanMood = getFanMood();
+        const rhythm = eg4GetRhythmState();
         const nextMatchDate = getNextMatchDate();
         const matchLocation = GameState.round % 2 === 1 ? t("home.home") : t("home.away");
         const latestNews = getLatestNews(3);
         const financeAlerts = updateFinanceAlerts(finances);
         const alerts = [
             ...financeAlerts.slice(0, 1).map((alert) => ({ icon: "⚠", text: alert.text, action: "finances" })),
-            morale.average < 55 ? { icon: "🧠", text: "O vestiário pede uma resposta antes da próxima partida.", action: "dressing" } : null,
-            fanMood.score < 48 ? { icon: "📣", text: "A torcida está impaciente. O próximo jogo ganhou peso.", action: "fans" } : null
-        ].filter(Boolean).slice(0, 3);
+            morale.average < 55 ? { icon: "🧠", text: "O grupo precisa de uma conversa antes do próximo jogo.", action: "dressing" } : null,
+            fanMood.score < 48 ? { icon: "📣", text: "A arquibancada está perdendo paciência.", action: "fans" } : null
+        ].filter(Boolean).slice(0, 2);
         const news = latestNews.length ? latestNews : [{ title: "Semana de trabalho", category: "Clube", text: "O clube prepara o próximo compromisso." }];
+        document.body.dataset.clubRhythm = rhythm.key;
 
         document.getElementById("screen-root").innerHTML = `
-            <section class="screen eg3-dashboard" aria-label="Sala do treinador">
-                <section class="eg3-next-match" data-director-action="match" role="button" tabindex="0">
-                    <div class="eg3-section-kicker">${escapeHtml(t("home.nextMatch"))}</div>
-                    <div class="eg3-match-row">
-                        <div class="eg3-match-team">
-                            ${renderClubCrest(GameState.club)}
-                            <strong>${escapeHtml(GameState.club.name)}</strong>
+            <section class="screen eg4-dashboard ${escapeHtml(rhythm.className)}" aria-label="Sala do treinador">
+                <div class="eg4-dashboard-grid">
+                    <section class="eg4-match-hero" data-director-action="match" role="button" tabindex="0">
+                        <div class="eg4-match-top">
+                            <span>${escapeHtml(rhythm.label)}</span>
+                            <em>${escapeHtml(rhythm.tone)}</em>
                         </div>
-                        <div class="eg3-match-center">
-                            <b>VS</b>
-                            <span>${escapeHtml(nextMatchDate)}</span>
-                            <small>${escapeHtml(GameState.league.name)}</small>
+                        <div class="eg4-match-body">
+                            <div class="eg4-team">
+                                ${renderClubCrest(GameState.club, "large")}
+                                <strong>${escapeHtml(GameState.club.name)}</strong>
+                                <small>${position}º · ${leagueRow.points} pts</small>
+                            </div>
+                            <div class="eg4-versus">
+                                <b>VS</b>
+                                <span>${escapeHtml(nextMatchDate)}</span>
+                                <small>${escapeHtml(GameState.league.name)}</small>
+                            </div>
+                            <div class="eg4-team">
+                                ${renderClubCrest(opponent, "large")}
+                                <strong>${escapeHtml(opponent.name)}</strong>
+                                <small>${escapeHtml(matchLocation)}</small>
+                            </div>
                         </div>
-                        <div class="eg3-match-team">
-                            ${renderClubCrest(opponent)}
-                            <strong>${escapeHtml(opponent.name)}</strong>
+                        <p class="eg4-match-story">${escapeHtml(eg4GetNextMatchStory(opponent, matchLocation, rhythm))}</p>
+                        <div class="eg4-match-actions">
+                            <button class="btn btn-primary" type="button" data-director-action="match">${escapeHtml(t("home.prepareMatch"))} →</button>
+                            <button class="btn btn-ghost" id="advance-week" type="button">${escapeHtml(t("home.advanceWeek"))}</button>
                         </div>
-                    </div>
-                    <div class="eg3-match-footer">
-                        <span>${escapeHtml(matchLocation)} · ${position}º colocado · ${leagueRow.points} pts</span>
-                        <button class="btn btn-primary" type="button" data-director-action="match">${escapeHtml(t("home.prepareMatch"))} →</button>
-                    </div>
-                </section>
+                    </section>
 
-                <div class="eg3-dashboard-main">
-                    <section class="eg3-dashboard-primary">
-                        ${alerts.length ? `<div class="eg3-alerts">${alerts.map((alert) => `
-                            <button class="eg3-alert" type="button" data-director-action="${escapeHtml(alert.action)}"><span>${escapeHtml(alert.icon)}</span><strong>${escapeHtml(alert.text)}</strong><em>→</em></button>
+                    <aside class="eg4-coach-panel">
+                        <span class="eg4-eyebrow">Pergunta da semana</span>
+                        <h2>${escapeHtml(eg4GetCoachQuestion(rhythm))}</h2>
+                        <div class="eg4-club-pulse">
+                            <p><span>Vestiário</span><strong>${morale.average}/99</strong></p>
+                            <p><span>Torcida</span><strong>${escapeHtml(fanMood.label)}</strong></p>
+                            <p><span>Diretoria</span><strong>${GameState.boardConfidence}%</strong></p>
+                        </div>
+                    </aside>
+
+                    <section class="eg4-main-column">
+                        ${alerts.length ? `<div class="eg4-alerts">${alerts.map((alert) => `
+                            <button class="eg4-alert" type="button" data-director-action="${escapeHtml(alert.action)}"><span>${escapeHtml(alert.icon)}</span><strong>${escapeHtml(alert.text)}</strong><em>Resolver →</em></button>
                         `).join("")}</div>` : ""}
-
-                        <section class="eg3-panel eg3-news-panel">
-                            <div class="eg3-panel-head"><span>Últimos acontecimentos</span><strong>${news.length}</strong></div>
-                            <div class="eg3-news-list">
+                        <section class="eg4-panel">
+                            <div class="eg4-panel-head"><span>O clube hoje</span><strong>${news.length}</strong></div>
+                            <div class="eg4-news-feed">
                                 ${news.slice(0, 3).map((item) => `
-                                    <button class="eg3-news-item" type="button" data-director-action="news">
+                                    <button class="eg4-news-line" type="button" data-director-action="news">
                                         <span>${escapeHtml(item.category || "Clube")}</span>
                                         <strong>${escapeHtml(item.title || item.text)}</strong>
                                         <small>${escapeHtml(item.text || "Acompanhe os bastidores do clube.")}</small>
@@ -4153,38 +4302,24 @@
                         </section>
                     </section>
 
-                    <aside class="eg3-dashboard-side">
-                        <details class="eg3-accordion" open>
+                    <aside class="eg4-secondary-column">
+                        <details class="eg4-accordion" open>
                             <summary><span>Objetivo da diretoria</span><strong>${objective.progressValue}%</strong></summary>
-                            <div class="eg3-accordion-body">
+                            <div>
                                 <h3>${escapeHtml(objective.main)}</h3>
                                 <p>${escapeHtml(objective.progress)}</p>
-                                <i class="eg3-progress"><b style="width:${clamp(objective.progressValue || 0, 0, 100)}%"></b></i>
+                                <i class="eg4-progress"><b style="width:${clamp(objective.progressValue || 0, 0, 100)}%"></b></i>
                             </div>
                         </details>
-                        <details class="eg3-accordion">
+                        <details class="eg4-accordion">
                             <summary><span>Finanças</span><strong>${money(GameState.budget)}</strong></summary>
-                            <div class="eg3-accordion-body eg3-finance-lines">
+                            <div class="eg4-lines">
                                 <p><span>Receita semanal</span><strong>${money(finances.weekIncome)}</strong></p>
                                 <p><span>Despesa semanal</span><strong>${money(finances.weekExpenses)}</strong></p>
                                 <p><span>Saldo projetado</span><strong>${money(GameState.budget + finances.weekIncome - finances.weekExpenses)}</strong></p>
                             </div>
                         </details>
-                        <details class="eg3-accordion">
-                            <summary><span>Clima do clube</span><strong>${escapeHtml(fanMood.label)}</strong></summary>
-                            <div class="eg3-accordion-body eg3-finance-lines">
-                                <p><span>Moral média</span><strong>${morale.average}/99</strong></p>
-                                <p><span>Energia</span><strong>${morale.energy}/99</strong></p>
-                                <p><span>Torcida</span><strong>${escapeHtml(fanMood.description)}</strong></p>
-                            </div>
-                        </details>
                     </aside>
-                </div>
-
-                <div class="director-actions eg3-director-actions">
-                    <button class="btn btn-primary advance-week" id="advance-week" type="button">${escapeHtml(t("home.advanceWeek"))}</button>
-                    <button class="btn" id="manual-save" type="button">${escapeHtml(t("home.save"))}</button>
-                    <button class="btn btn-ghost" id="back-menu" type="button">${escapeHtml(t("home.menu"))}</button>
                 </div>
             </section>
         `;
@@ -4198,8 +4333,6 @@
             });
         });
         document.getElementById("advance-week")?.addEventListener("click", advanceWeek);
-        document.getElementById("manual-save")?.addEventListener("click", () => { saveCareer(); showToast("Carreira salva."); });
-        document.getElementById("back-menu")?.addEventListener("click", renderMenu);
         updateChrome();
     }
 
@@ -5200,6 +5333,7 @@
             generateRandomWeeklyEvent();
             maybeCreateQuestionEvent();
         }, context);
+        runWeeklyStep("Registrar bastidores emocionais", () => eg4InjectEmotionalWeekEvents(context), context);
         runWeeklyStep("Atualizar Dashboard", () => {
             GameState.currentScreen = "home";
             updateCalendarRecord("after");
@@ -7029,39 +7163,56 @@
             updateChrome();
             return;
         }
-        const players = getVisibleMarketPlayers().slice(0, 18);
+        const players = getVisibleMarketPlayers().slice(0, 14);
         const favorites = getMarketFavorites().map((id) => GameState.market.find((player) => player.id === id)).filter(Boolean);
         const filterKeys = ["position", "age", "overall", "potential", "nationality", "value", "salary", "contract", "club", "phase"];
         const hasFilters = filterKeys.some((key) => GameState.marketView.filters[key] && GameState.marketView.filters[key] !== "ALL" && GameState.marketView.filters[key] !== "any");
+        const spotlight = players[0];
         document.getElementById("screen-root").innerHTML = `
-            <section class="screen eg3-market">
-                <header class="eg3-list-topbar">
+            <section class="screen eg4-market" aria-label="Mercado">
+                <header class="eg4-market-hero">
+                    <div>
+                        <span class="eg4-eyebrow">Janela de oportunidades</span>
+                        <h1>Quem muda o seu elenco?</h1>
+                        <p>${spotlight ? escapeHtml(eg4MarketOpportunityLine(spotlight)) : "O mercado ainda não trouxe um nome que mereça manchete."}</p>
+                    </div>
+                    <aside>
+                        <span>Saldo disponível</span>
+                        <strong>${money(GameState.budget)}</strong>
+                    </aside>
+                </header>
+                <div class="eg4-list-controls">
                     <div class="eg3-searchbar"><span>🔍</span><input id="market-search" type="search" value="${escapeHtml(GameState.marketView.search)}" placeholder="${escapeHtml(t("market.searchPlaceholder"))}"></div>
                     <button class="eg3-filter-trigger ${hasFilters ? "has-filters" : ""}" id="market-filters-open" type="button">Filtros${hasFilters ? " •" : ""}</button>
-                </header>
-                <div class="eg3-chip-row">
+                </div>
+                <div class="eg3-chip-row eg4-chip-row">
                     ${["ST", "CAM", "CM", "CB", "GK"].map((position) => `<button class="chip-pos ${GameState.marketView.filters.position === position ? "active" : ""}" type="button" data-market-pos="${position}">${escapeHtml(translatePosition(position))}</button>`).join("")}
                     <button class="chip-pos ${GameState.marketView.sort === "potential" ? "active" : ""}" type="button" data-market-sort-fast="potential">Potencial</button>
                     <button class="chip-pos ${favorites.length ? "active" : ""}" type="button" data-director-action="scout">Observados ${favorites.length}</button>
                     ${(hasFilters || GameState.marketView.search) ? `<button class="chip-pos eg3-clear-chip" id="market-clear-filters" type="button">Limpar</button>` : ""}
                 </div>
-                <div class="eg3-market-meta"><span>Saldo disponível</span><strong>${money(GameState.budget)}</strong></div>
-                <div class="eg3-card-list eg3-market-list">
+                <div class="eg4-market-list">
                     ${players.map((player) => {
                         const overall = calculateCurrentOverall(player);
                         const observed = GameState.transferMarket.observedPlayerIds.includes(player.id);
                         return `
-                            <article class="eg3-person-card eg3-market-card">
-                                <div class="eg3-person-avatar">${escapeHtml(player.primaryPosition)}</div>
-                                <div class="eg3-person-main">
-                                    <strong>${escapeHtml(player.name)}</strong>
-                                    <span>${escapeHtml(translatePosition(player.primaryPosition))} · ${calculateAge(player, GameState.currentYear)} anos · ${escapeHtml(getPlayerCurrentClub(player))}</span>
-                                    <p>OVR ${overall} · POT ${player.potential} · ${money(player.marketValue)}</p>
-                                </div>
-                                <div class="eg3-person-side market-actions">
+                            <article class="eg4-transfer-card">
+                                <button type="button" class="eg4-transfer-main" data-market-detail="${player.id}">
+                                    <span class="eg4-avatar">${escapeHtml(player.primaryPosition)}</span>
+                                    <span class="eg4-transfer-info">
+                                        <strong>${escapeHtml(player.name)}</strong>
+                                        <em>${escapeHtml(translatePosition(player.primaryPosition))} · ${calculateAge(player, GameState.currentYear)} anos · ${escapeHtml(getPlayerCurrentClub(player))}</em>
+                                        <small>${escapeHtml(eg4MarketOpportunityLine(player))}</small>
+                                    </span>
+                                    <span class="eg4-transfer-values">
+                                        <b>OVR ${overall}</b>
+                                        <b>POT ${player.potential}</b>
+                                        <em>${money(player.marketValue)}</em>
+                                    </span>
+                                </button>
+                                <div class="eg4-transfer-actions">
                                     <button type="button" data-observe-player="${player.id}">${observed ? "Observado" : "Observar"}</button>
                                     <button type="button" data-offer-player="${player.id}">Negociar</button>
-                                    <button type="button" data-market-detail="${player.id}">Perfil</button>
                                 </div>
                             </article>
                         `;
@@ -7213,42 +7364,47 @@
         let results = getScoutSearchResults().filter((player) => !keyword || player.name.toLocaleLowerCase().includes(keyword.toLocaleLowerCase())).slice(0, 12);
         const filterKeys = ["age", "position", "overall", "potential", "nationality", "value"];
         const hasAdvancedFilters = filterKeys.some((key) => search[key] && search[key] !== "ALL" && search[key] !== "any");
+        const lead = results[0];
 
         document.getElementById("screen-root").innerHTML = `
-            <section class="screen eg3-scout" aria-label="Scout">
-                <header class="eg3-list-topbar">
+            <section class="screen eg4-scout" aria-label="Scout">
+                <header class="eg4-scout-brief">
+                    <div>
+                        <span class="eg4-eyebrow">Sala dos olheiros</span>
+                        <h1>Quem vale observar?</h1>
+                        <p>${lead ? escapeHtml(eg4PlayerPersonalityLine(lead)) : "Nenhum relatório forte chegou à mesa do treinador."}</p>
+                    </div>
+                    <aside><strong>${results.length}</strong><span>nomes na mesa</span></aside>
+                </header>
+                <div class="eg4-list-controls">
                     <div class="eg3-searchbar"><span>🔍</span><input id="scout-search-name" type="search" value="${escapeHtml(keyword)}" placeholder="Buscar jogador..."></div>
                     <button class="eg3-filter-trigger ${hasAdvancedFilters ? "has-filters" : ""}" type="button" id="scout-filter-toggle">Filtros${hasAdvancedFilters ? " •" : ""}</button>
-                </header>
-                <div class="eg3-chip-row" aria-label="Filtros rápidos">
+                </div>
+                <div class="eg3-chip-row eg4-chip-row" aria-label="Filtros rápidos">
                     ${["ST", "CF", "CAM", "CM", "CB", "GK"].map((pos) => `<button class="chip-pos ${search.position === pos ? "active" : ""}" type="button" data-scout-chip="${pos}">${escapeHtml(translatePosition(pos))}</button>`).join("")}
                     <button class="chip-pos ${search.potential === "o88" ? "active" : ""}" type="button" data-scout-potential="o88">★★★★★</button>
                     <button class="chip-pos ${search.age === "u21" ? "active" : ""}" type="button" data-scout-age="u21">Jovem</button>
                     ${(hasAdvancedFilters || keyword) ? `<button class="chip-pos eg3-clear-chip" type="button" id="scout-clear-filters">Limpar</button>` : ""}
                 </div>
-                <div class="eg3-scout-summary">
-                    <strong>${results.length}</strong><span>nomes recomendados</span>
-                    <em>${latestReport ? `${escapeHtml(latestReport.playerName)} foi o último relatório` : escapeHtml(t("scout.noReport"))}</em>
-                </div>
-                <div class="eg3-card-list eg3-scout-list">
+                <div class="eg4-scout-list">
                     ${results.map((player) => `
-                        <article class="eg3-person-card eg3-scout-card" data-drawer-player="${player.id}">
-                            <div class="eg3-person-avatar">⚽</div>
-                            <div class="eg3-person-main">
-                                <strong>${escapeHtml(player.name)}</strong>
-                                <span>${escapeHtml(translatePosition(player.primaryPosition))} · ${calculateAge(player, GameState.currentYear)} anos · ${escapeHtml(translateCountry(player.country))}</span>
-                                <p>${escapeHtml(buildScoutCardNote(player))}</p>
-                            </div>
-                            <div class="eg3-person-side">
-                                <small>POT</small>
-                                <b>${player.potential}</b>
-                                <em>${money(player.marketValue)}</em>
-                                <button type="button" data-scout-add-result="${player.id}">${GameState.scout.assignments[player.id] ? "Em obs." : "Observar"}</button>
+                        <article class="eg4-report-card" data-drawer-player="${player.id}">
+                            <button type="button" class="eg4-report-main">
+                                <span class="eg4-avatar">⚽</span>
+                                <span class="eg4-report-info">
+                                    <strong>${escapeHtml(player.name)}</strong>
+                                    <em>${escapeHtml(translatePosition(player.primaryPosition))} · ${calculateAge(player, GameState.currentYear)} anos · ${escapeHtml(translateCountry(player.country))}</em>
+                                    <small>${escapeHtml(eg4PlayerPersonalityLine(player))}</small>
+                                </span>
+                                <span class="eg4-report-pot"><small>POT</small><b>${player.potential}</b><em>${money(player.marketValue)}</em></span>
+                            </button>
+                            <div class="eg4-report-actions">
+                                <button type="button" data-scout-add-result="${player.id}">${GameState.scout.assignments[player.id] ? "Em observação" : "Enviar olheiro"}</button>
                             </div>
                         </article>
                     `).join("") || `<div class="empty-state">Nenhum jogador encontrado.</div>`}
                 </div>
-                <details class="eg3-accordion eg3-observed-panel">
+                <details class="eg4-accordion eg4-observed">
                     <summary><span>Relatórios em andamento</span><strong>${assignments.length}/${getScoutCapacity()}</strong></summary>
                     <div class="eg3-observed-list">
                         ${assignments.length ? assignments.map(({ player, assignment }) => renderScoutAssignment(player, assignment)).join("") : `<div class="empty-state">${escapeHtml(t("scout.noObserved"))}</div>`}
@@ -7734,48 +7890,41 @@
     function showWeeklySummaryModal(summary) {
         const root = document.getElementById("modal-root");
         if (!root || !summary) return;
+        const result = eg4GetLastClubResult();
+        const resultLine = summary.football?.result || eg4DescribeResult(result);
         root.innerHTML = `
-            <div class="weekly-summary-overlay" role="dialog" aria-modal="true">
-                <section class="weekly-summary-modal">
-                    <div class="row-main">
+            <div class="weekly-summary-overlay eg4-week-overlay" role="dialog" aria-modal="true">
+                <section class="weekly-summary-modal eg4-week-modal">
+                    <div class="eg4-week-head">
                         <div>
-                            <span class="menu-kicker">${escapeHtml(t("summary.title"))}</span>
+                            <span class="menu-kicker">A semana no clube</span>
                             <h1>${escapeHtml(summary.month)} · ${escapeHtml(t("calendar.week"))} ${summary.week}</h1>
+                            <p>${escapeHtml(resultLine)}</p>
                         </div>
                         <button class="icon-action" id="weekly-summary-close" type="button">${escapeHtml(t("summary.close"))}</button>
                     </div>
-                    <div class="weekly-summary-grid">
-                        ${renderWeeklySummaryBlock(t("summary.football"), [summary.football.result, `${t("summary.best")}: ${summary.football.bestPlayer}`, `${t("summary.worst")}: ${summary.football.worstPlayer}`, `${t("summary.position")}: ${summary.football.position}`])}
-                        ${renderWeeklySummaryBlock(t("summary.club"), [`${t("summary.fans")}: ${summary.club.fanMood}`, `${t("summary.morale")}: ${summary.club.morale}`, `${t("summary.board")}: ${summary.club.board}`])}
-                        ${renderWeeklySummaryBlock(t("summary.finance"), [`${t("summary.income")}: ${money(summary.finance.income)}`, `${t("summary.expenses")}: ${money(summary.finance.expenses)}`, `${t("summary.balance")}: ${money(summary.finance.balance)}`])}
-                        ${renderWeeklySummaryBlock(t("summary.market"), [`${t("summary.observed")}: ${summary.market.observed}`, `${t("summary.negotiations")}: ${summary.market.negotiations}`, `${t("summary.opportunities")}: ${summary.market.opportunities.join(", ") || t("summary.noUpdates")}`])}
-                        ${renderWeeklySummaryBlock(t("summary.academy"), [`${t("summary.newTalents")}: ${summary.academy.newTalents}`, `${t("academy.averageQuality")}: ${summary.academy.averageQuality}`])}
-                        ${renderWeeklySummaryBlock(t("summary.structure"), [`${t("summary.activeImprovements")}: ${summary.structure.active}`, `${t("summary.previousQueue")}: ${summary.structure.previous}`])}
-                    </div>
-                    <div class="card card-pad stack">
-                        <h2>${escapeHtml(t("summary.news"))}</h2>
-                        ${summary.headlines.length ? summary.headlines.map((headline) => `<div class="row-card">${escapeHtml(headline)}</div>`).join("") : `<div class="empty-state">${escapeHtml(t("summary.noNews"))}</div>`}
-                    </div>
-                    <div class="card card-pad stack">
-                        <h2>${escapeHtml(t("summary.narratives"))}</h2>
-                        ${summary.narratives.map((item) => `<div class="row-card">${escapeHtml(item)}</div>`).join("")}
-                    </div>
+                    ${eg4RenderWeekStory(summary)}
+                    <details class="eg4-accordion eg4-week-details">
+                        <summary><span>Ver relatório completo</span><strong>dados</strong></summary>
+                        <div class="weekly-summary-grid">
+                            ${renderWeeklySummaryBlock(t("summary.football"), [summary.football.result, `${t("summary.best")}: ${summary.football.bestPlayer}`, `${t("summary.worst")}: ${summary.football.worstPlayer}`, `${t("summary.position")}: ${summary.football.position}`])}
+                            ${renderWeeklySummaryBlock(t("summary.club"), [`${t("summary.fans")}: ${summary.club.fanMood}`, `${t("summary.morale")}: ${summary.club.morale}`, `${t("summary.board")}: ${summary.club.board}`])}
+                            ${renderWeeklySummaryBlock(t("summary.finance"), [`${t("summary.income")}: ${money(summary.finance.income)}`, `${t("summary.expenses")}: ${money(summary.finance.expenses)}`, `${t("summary.balance")}: ${money(summary.finance.balance)}`])}
+                            ${renderWeeklySummaryBlock(t("summary.market"), [`${t("summary.observed")}: ${summary.market.observed}`, `${t("summary.negotiations")}: ${summary.market.negotiations}`, `${t("summary.opportunities")}: ${summary.market.opportunities.join(", ") || t("summary.noUpdates")}`])}
+                        </div>
+                    </details>
                     <div class="button-row">
-                        <button class="btn btn-primary" id="weekly-summary-calendar" type="button">${escapeHtml(t("summary.openCalendar"))}</button>
-                        <button class="btn" id="weekly-summary-notifications" type="button">${escapeHtml(t("summary.notifications"))}</button>
+                        <button class="btn btn-primary" id="weekly-summary-continue" type="button">Voltar à sala do treinador</button>
                     </div>
                 </section>
             </div>
         `;
-        document.getElementById("weekly-summary-close").addEventListener("click", closeWeeklySummaryModal);
-        document.getElementById("weekly-summary-calendar").addEventListener("click", () => {
-            closeWeeklySummaryModal();
-            switchScreen("calendar");
-        });
-        document.getElementById("weekly-summary-notifications").addEventListener("click", () => {
-            closeWeeklySummaryModal();
-            switchScreen("notifications");
-        });
+        const close = () => {
+            root.innerHTML = "";
+            renderDashboard();
+        };
+        document.getElementById("weekly-summary-close")?.addEventListener("click", close);
+        document.getElementById("weekly-summary-continue")?.addEventListener("click", close);
     }
 
     function renderWeeklySummaryBlock(title, lines) {
