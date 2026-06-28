@@ -14,6 +14,7 @@ const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 const fmtMoney = Game.GameUtil.fmtMoney;
 const POS_COLORS = Game.GameUtil.POSITION_COLORS;
+let booted = false;
 
 function crestSVG(color = "#D4A63A", text = "11", size = "lg") {
   return `<svg class="eg-crest eg-crest--${size}" viewBox="0 0 40 48">
@@ -402,6 +403,7 @@ function showMatchModal(r) {
 // =========================================================
 function showSplash(label = "Carregando…") {
   const s = $("#splash");
+  if (!s) return;
   $("#splashLabel").textContent = label;
   s.style.display = "flex";
   s.style.opacity = "1";
@@ -409,6 +411,7 @@ function showSplash(label = "Carregando…") {
 function updateSplash(label) { $("#splashLabel").textContent = label; }
 function hideSplash() {
   const s = $("#splash");
+  if (!s) return;
   s.style.transition = "opacity 400ms ease";
   s.style.opacity = "0";
   setTimeout(() => (s.style.display = "none"), 400);
@@ -453,12 +456,29 @@ function bindEvents() {
 }
 
 function boot() {
-  bindEvents();
-  setTimeout(() => {
-    $("#app").style.display = "";
+  if (booted) return;
+  booted = true;
+
+  try {
+    if (!Game) throw new Error("Game engine indisponível.");
+    bindEvents();
+    setTimeout(() => {
+      $("#app").style.display = "";
+      hideSplash();
+      navigate("club");
+    }, 300);
+  } catch (error) {
+    console.error(error);
+    const label = $("#splashLabel");
+    if (label) label.textContent = "Não foi possível carregar. Recarregue o jogo.";
+    const app = $("#app");
+    if (app) app.style.display = "";
     hideSplash();
-    navigate("club");
-  }, 600);
+  }
 }
 
-document.addEventListener("DOMContentLoaded", boot);
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", boot, { once: true });
+} else {
+  boot();
+}

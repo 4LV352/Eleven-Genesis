@@ -36,6 +36,12 @@ const POSITION_COLORS = {
 const rnd = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+const makeId = () => {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return `eg-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+};
 const fmtMoney = (m) => {
   const abs = Math.abs(m);
   const prefix = m < 0 ? "-" : "";
@@ -59,7 +65,7 @@ function genPlayer(tier = 70) {
   const wage = Math.max(0.05, (overall / 100) * 0.5 + rnd(0, 20) / 100);
   const value = Math.max(0.5, (overall / 100) ** 2 * 40);
   return {
-    id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2),
+    id: makeId(),
     name, pos, age, overall, pace, shot, pass, def,
     wage: +wage.toFixed(2),
     value: +value.toFixed(1),
