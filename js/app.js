@@ -4093,174 +4093,95 @@
         const opponent = getClubById(GameState.nextOpponentId) || pickNextOpponent();
         const position = currentPosition();
         const leagueRow = getClubLeagueRow(GameState.club.id);
-        const lastResult = getLastResultDetails();
         const objective = getObjectiveSummary();
         const finances = getFinanceSummary();
         const morale = getSquadMoraleSummary();
         const fanMood = getFanMood();
         const nextMatchDate = getNextMatchDate();
-        const opponentPosition = getOpponentPosition(opponent.id);
-        ensureScoutState();
-        ensureAcademyState();
-        ensureMarketingState();
-        ensureSeasonFlowState();
-        const scoutAssignments = Object.values(GameState.scout.assignments);
-        const latestScoutReport = getLatestScoutReport();
-        const latestAcademyEvent = GameState.academy.events[0];
-        const mainSponsor = GameState.marketing.sponsors.master?.name || t("marketing.none");
-        const unreadNotifications = GameState.seasonFlow.notifications.filter((item) => !item.read).length;
-        const latestObserved = latestScoutReport?.playerName || scoutAssignments
-            .map((assignment) => GameState.market.find((player) => player.id === assignment.playerId)?.name)
-            .filter(Boolean)[0] || t("scout.noObserved");
-        const latestNews = getLatestNews(3);
-        const ranking = getClubRanking();
-        const recentTransfers = getRecentTransfers(4);
-        const calendarItems = getDashboardCalendar(4);
-        ensureBoardState();
-        const financeAlerts = updateFinanceAlerts(finances);
-        const structureAverage = getStructureAverageLevel();
         const matchLocation = GameState.round % 2 === 1 ? t("home.home") : t("home.away");
-        const coachSummary = GameState.boardConfidence < 45 || morale.average < 52
-            ? t("home.coachSummary.warning")
-            : GameState.boardConfidence > 72 && fanMood.score > 65
-                ? t("home.coachSummary.good")
-                : t("home.coachSummary.neutral");
-        const headlineTitle = financeAlerts.some((alert) => alert.level === "danger" || alert.level === "warning")
-            ? t("home.headline.finance")
-            : GameState.transferLog.length
-                ? t("home.headline.market")
-                : morale.average > 68
-                    ? t("home.headline.win")
-                    : t("home.headline.default");
-        const pressComment = GameState.round % 2 === 1 ? t("home.press.home") : t("home.press.away");
-        const topNews = latestNews[0] || {
-            title: "Semana de trabalho iniciada",
-            category: "Clube",
-            text: `${GameState.club.name} prepara os próximos compromissos.`
-        };
+        const latestNews = getLatestNews(3);
+        const financeAlerts = updateFinanceAlerts(finances);
+        const alerts = [
+            ...financeAlerts.slice(0, 1).map((alert) => ({ icon: "⚠", text: alert.text, action: "finances" })),
+            morale.average < 55 ? { icon: "🧠", text: "O vestiário pede uma resposta antes da próxima partida.", action: "dressing" } : null,
+            fanMood.score < 48 ? { icon: "📣", text: "A torcida está impaciente. O próximo jogo ganhou peso.", action: "fans" } : null
+        ].filter(Boolean).slice(0, 3);
+        const news = latestNews.length ? latestNews : [{ title: "Semana de trabalho", category: "Clube", text: "O clube prepara o próximo compromisso." }];
+
         document.getElementById("screen-root").innerHTML = `
-            <section class="screen director-central coach-home">
-                <div class="coach-hero">
-                    <div class="coach-stadium" aria-hidden="true"></div>
-                    <div class="coach-hero-content">
-                        <div class="coach-club-main">
-                            ${renderClubCrest(GameState.club, "large")}
-                            <div>
-                                <span class="menu-kicker">${escapeHtml(t("home.coachRoom"))}</span>
-                                <h1>${escapeHtml(GameState.club.name)}</h1>
-                                <p>${escapeHtml(coachSummary)}</p>
+            <section class="screen eg3-dashboard" aria-label="Sala do treinador">
+                <section class="eg3-next-match" data-director-action="match" role="button" tabindex="0">
+                    <div class="eg3-section-kicker">${escapeHtml(t("home.nextMatch"))}</div>
+                    <div class="eg3-match-row">
+                        <div class="eg3-match-team">
+                            ${renderClubCrest(GameState.club)}
+                            <strong>${escapeHtml(GameState.club.name)}</strong>
+                        </div>
+                        <div class="eg3-match-center">
+                            <b>VS</b>
+                            <span>${escapeHtml(nextMatchDate)}</span>
+                            <small>${escapeHtml(GameState.league.name)}</small>
+                        </div>
+                        <div class="eg3-match-team">
+                            ${renderClubCrest(opponent)}
+                            <strong>${escapeHtml(opponent.name)}</strong>
+                        </div>
+                    </div>
+                    <div class="eg3-match-footer">
+                        <span>${escapeHtml(matchLocation)} · ${position}º colocado · ${leagueRow.points} pts</span>
+                        <button class="btn btn-primary" type="button" data-director-action="match">${escapeHtml(t("home.prepareMatch"))} →</button>
+                    </div>
+                </section>
+
+                <div class="eg3-dashboard-main">
+                    <section class="eg3-dashboard-primary">
+                        ${alerts.length ? `<div class="eg3-alerts">${alerts.map((alert) => `
+                            <button class="eg3-alert" type="button" data-director-action="${escapeHtml(alert.action)}"><span>${escapeHtml(alert.icon)}</span><strong>${escapeHtml(alert.text)}</strong><em>→</em></button>
+                        `).join("")}</div>` : ""}
+
+                        <section class="eg3-panel eg3-news-panel">
+                            <div class="eg3-panel-head"><span>Últimos acontecimentos</span><strong>${news.length}</strong></div>
+                            <div class="eg3-news-list">
+                                ${news.slice(0, 3).map((item) => `
+                                    <button class="eg3-news-item" type="button" data-director-action="news">
+                                        <span>${escapeHtml(item.category || "Clube")}</span>
+                                        <strong>${escapeHtml(item.title || item.text)}</strong>
+                                        <small>${escapeHtml(item.text || "Acompanhe os bastidores do clube.")}</small>
+                                    </button>
+                                `).join("")}
                             </div>
-                        </div>
-                        <div class="coach-avatar">
-                            <span>${escapeHtml(t("home.coach"))}</span>
-                            <strong>EG</strong>
-                        </div>
-                    </div>
-                    <div class="coach-hero-meta">
-                        <span>${escapeHtml(t("home.season"))} <strong>${GameState.season}</strong></span>
-                        <span>${escapeHtml(t("home.division"))} <strong>${escapeHtml(GameState.league.name)}</strong></span>
-                        <span>${escapeHtml(t("home.position"))} <strong>${position}º</strong></span>
-                        <span>${escapeHtml(t("home.week"))} <strong>${GameState.round}</strong></span>
-                    </div>
+                        </section>
+                    </section>
+
+                    <aside class="eg3-dashboard-side">
+                        <details class="eg3-accordion" open>
+                            <summary><span>Objetivo da diretoria</span><strong>${objective.progressValue}%</strong></summary>
+                            <div class="eg3-accordion-body">
+                                <h3>${escapeHtml(objective.main)}</h3>
+                                <p>${escapeHtml(objective.progress)}</p>
+                                <i class="eg3-progress"><b style="width:${clamp(objective.progressValue || 0, 0, 100)}%"></b></i>
+                            </div>
+                        </details>
+                        <details class="eg3-accordion">
+                            <summary><span>Finanças</span><strong>${money(GameState.budget)}</strong></summary>
+                            <div class="eg3-accordion-body eg3-finance-lines">
+                                <p><span>Receita semanal</span><strong>${money(finances.weekIncome)}</strong></p>
+                                <p><span>Despesa semanal</span><strong>${money(finances.weekExpenses)}</strong></p>
+                                <p><span>Saldo projetado</span><strong>${money(GameState.budget + finances.weekIncome - finances.weekExpenses)}</strong></p>
+                            </div>
+                        </details>
+                        <details class="eg3-accordion">
+                            <summary><span>Clima do clube</span><strong>${escapeHtml(fanMood.label)}</strong></summary>
+                            <div class="eg3-accordion-body eg3-finance-lines">
+                                <p><span>Moral média</span><strong>${morale.average}/99</strong></p>
+                                <p><span>Energia</span><strong>${morale.energy}/99</strong></p>
+                                <p><span>Torcida</span><strong>${escapeHtml(fanMood.description)}</strong></p>
+                            </div>
+                        </details>
+                    </aside>
                 </div>
 
-                <button class="coach-match-card" type="button" data-director-action="match">
-                    <span class="coach-card-label">${escapeHtml(t("home.nextMatch"))}</span>
-                    <div class="coach-versus">
-                        <div>${renderClubCrest(GameState.club)}<strong>${escapeHtml(GameState.club.name)}</strong></div>
-                        <b>x</b>
-                        <div>${renderClubCrest(opponent)}<strong>${escapeHtml(opponent.name)}</strong></div>
-                    </div>
-                    <div class="coach-match-meta">
-                        <span>${escapeHtml(t("home.competition"))}: ${escapeHtml(GameState.league.name)}</span>
-                        <span>${escapeHtml(t("home.date"))}: ${escapeHtml(nextMatchDate)}</span>
-                        <span>${escapeHtml(t("home.location"))}: ${escapeHtml(matchLocation)}</span>
-                    </div>
-                    <p>${escapeHtml(pressComment)} ${escapeHtml(opponent.name)} chega em ${opponentPosition}º.</p>
-                    <em>${escapeHtml(t("home.prepareMatch"))}</em>
-                </button>
-
-                <button class="coach-headline-card" type="button" data-director-action="news">
-                    <span>${escapeHtml(t("home.headline"))}</span>
-                    <h2>${escapeHtml(headlineTitle)}</h2>
-                    <p>${escapeHtml(topNews.text || topNews.title)}</p>
-                </button>
-
-                <button class="coach-result-card" type="button" data-director-action="lastResult">
-                    <span class="coach-card-label">${escapeHtml(t("home.lastResult"))}</span>
-                    <div class="coach-result-score">
-                        <strong>${escapeHtml(lastResult.score)}</strong>
-                    </div>
-                    <p>${escapeHtml(lastResult.opponent)} · ${escapeHtml(GameState.league.name)}</p>
-                    <div class="coach-result-notes">
-                        <span>${escapeHtml(t("home.goals"))}: ${escapeHtml(lastResult.scorer)}</span>
-                        <span>${escapeHtml(t("home.mvp"))}: ${escapeHtml(lastResult.bestPlayer)}</span>
-                    </div>
-                </button>
-
-                <div class="coach-card-grid">
-                    <button class="coach-mini-card large" type="button" data-director-action="board"><i>◎</i><span>${escapeHtml(t("home.objective"))}</span><strong>${escapeHtml(objective.main)}</strong><small>${escapeHtml(objective.progress)} · ${objective.progressValue}%</small></button>
-                    <button class="coach-mini-card" type="button" data-director-action="dressing"><i>◐</i><span>${escapeHtml(t("home.morale"))}</span><strong>${morale.average}/99</strong><small>${morale.happy} ${escapeHtml(t("home.happy"))} · ${escapeHtml(t("home.energy"))} ${morale.energy}</small></button>
-                    <button class="coach-mini-card mood-${fanMood.key}" type="button" data-director-action="fans"><i>▰</i><span>${escapeHtml(t("home.fans"))}</span><strong>${escapeHtml(fanMood.label)}</strong><small>${escapeHtml(fanMood.description)}</small></button>
-                    <button class="coach-mini-card" type="button" data-director-action="league"><i>★</i><span>${escapeHtml(t("home.board"))}</span><strong>${GameState.boardConfidence}%</strong><small>${leagueRow.points} ${escapeHtml(t("home.points"))} · ${escapeHtml(t("home.goalDifference"))} ${leagueRow.goalDifference}</small></button>
-                    <button class="coach-mini-card" type="button" data-director-action="market"><i>↗</i><span>${escapeHtml(t("home.market"))}</span><strong>${GameState.market.length} ${escapeHtml(t("home.available"))}</strong><small>${escapeHtml(GameState.transferLog[0] || t("home.noRecentSigning"))}</small></button>
-                    <button class="coach-mini-card" type="button" data-director-action="club"><i>⌂</i><span>${escapeHtml(t("home.structure"))}</span><strong>${structureAverage}/10</strong><small>${escapeHtml(t("home.scout"))} ${GameState.club.structure.departments.scout.level} · ${escapeHtml(t("home.academy"))} ${GameState.club.structure.departments.youth.level}</small></button>
-                    <button class="coach-mini-card" type="button" data-director-action="finances"><i>◆</i><span>${escapeHtml(t("home.finances"))}</span><strong>${money(GameState.budget)}</strong><small>${escapeHtml(financeAlerts[0]?.text || `${money(finances.weekIncome)} / ${money(finances.weekExpenses)}`)}</small></button>
-                    <button class="coach-mini-card" type="button" data-director-action="calendar"><i>▣</i><span>${escapeHtml(t("calendar.title"))}</span><strong>${escapeHtml(getCalendarMonth(GameState.round))}</strong><small>${escapeHtml(isTransferWindow(GameState.round) ? t("calendar.transferOpen") : t("calendar.transferClosed"))}</small></button>
-                    <button class="coach-mini-card" type="button" data-director-action="scout"><i>⌖</i><span>${escapeHtml(t("nav.scout"))}</span><strong>${scoutAssignments.length}/${getScoutCapacity()}</strong><small>${escapeHtml(latestScoutReport?.playerName || latestObserved)}</small></button>
-                    <button class="coach-mini-card" type="button" data-director-action="academy"><i>✦</i><span>${escapeHtml(t("nav.academy"))}</span><strong>${GameState.academy.prospects.length}</strong><small>${escapeHtml(latestAcademyEvent?.text || t("academy.noEvents"))}</small></button>
-                    <button class="coach-mini-card" type="button" data-director-action="staff"><i>ST</i><span>Staff</span><strong>${ensureStaffState().members.length}</strong><small>${escapeHtml(getStaffMember("headCoach").specialty)} · nível ${getStaffMember("headCoach").level}</small></button>
-                    <button class="coach-mini-card" type="button" data-director-action="training"><i>TR</i><span>Treinamento</span><strong>${escapeHtml(getTrainingDefinitions()[ensureTrainingState().focus].label)}</strong><small>Intensidade ${GameState.training.weeklyIntensity}%</small></button>
-                </div>
-
-                <div class="manager-dashboard-grid">
-                    <section class="manager-panel">
-                        <div class="manager-panel-head"><span>Diretoria</span><strong>${GameState.boardConfidence}%</strong></div>
-                        ${renderMiniList((GameState.board.objectives || []).slice(0, 3).map((item) => ({
-                            title: item.title,
-                            text: `${item.progress || 0}% · ${item.deadline}`,
-                            meta: item.status || "Ativo"
-                        })), "Sem objetivos ativos.")}
-                    </section>
-                    <section class="manager-panel">
-                        <div class="manager-panel-head"><span>Notícias</span><strong>${latestNews.length}</strong></div>
-                        ${renderMiniList(latestNews.map((item) => ({
-                            title: item.title,
-                            text: item.text,
-                            meta: item.category
-                        })), "Nenhuma notícia recente.")}
-                    </section>
-                    <section class="manager-panel">
-                        <div class="manager-panel-head"><span>Ranking e reputação</span><strong>#${ranking.national}</strong></div>
-                        <div class="stat-grid compact">
-                            <div class="stat"><span>Ranking</span><strong>${ranking.national}º</strong></div>
-                            <div class="stat"><span>Score</span><strong>${ranking.score}</strong></div>
-                            <div class="stat"><span>Reputação</span><strong>${GameState.club.reputation}</strong></div>
-                            <div class="stat"><span>Popularidade</span><strong>${GameState.club.popularity || GameState.club.reputation}</strong></div>
-                        </div>
-                    </section>
-                    <section class="manager-panel">
-                        <div class="manager-panel-head"><span>Transferências</span><strong>${recentTransfers.length}</strong></div>
-                        ${renderMiniList(recentTransfers, "Sem movimentações registradas.")}
-                    </section>
-                    <section class="manager-panel">
-                        <div class="manager-panel-head"><span>Calendário</span><strong>${escapeHtml(getCalendarMonth(GameState.round))}</strong></div>
-                        ${renderMiniList(calendarItems, "Calendário sem eventos.")}
-                    </section>
-                    <section class="manager-panel shortcuts">
-                        <div class="manager-panel-head"><span>Atalhos rápidos</span><strong>${unreadNotifications}</strong></div>
-                        <div class="quick-actions">
-                            <button class="btn" type="button" data-director-action="squad">Elenco</button>
-                            <button class="btn" type="button" data-director-action="finances">Finanças</button>
-                            <button class="btn" type="button" data-director-action="club">Clube</button>
-                            <button class="btn" type="button" data-director-action="notifications">Notificações</button>
-                            <button class="btn" type="button" data-director-action="staff">Staff</button>
-                            <button class="btn" type="button" data-director-action="training">Treino</button>
-                        </div>
-                    </section>
-                </div>
-
-                <div class="director-actions">
+                <div class="director-actions eg3-director-actions">
                     <button class="btn btn-primary advance-week" id="advance-week" type="button">${escapeHtml(t("home.advanceWeek"))}</button>
                     <button class="btn" id="manual-save" type="button">${escapeHtml(t("home.save"))}</button>
                     <button class="btn btn-ghost" id="back-menu" type="button">${escapeHtml(t("home.menu"))}</button>
@@ -4268,14 +4189,17 @@
             </section>
         `;
         document.querySelectorAll("[data-director-action]").forEach((button) => {
-            button.addEventListener("click", () => handleDirectorAction(button.dataset.directorAction));
+            button.addEventListener("click", (event) => {
+                event.stopPropagation();
+                handleDirectorAction(button.dataset.directorAction);
+            });
+            button.addEventListener("keydown", (event) => {
+                if (event.key === "Enter" || event.key === " ") handleDirectorAction(button.dataset.directorAction);
+            });
         });
-        document.getElementById("advance-week").addEventListener("click", advanceWeek);
-        document.getElementById("manual-save").addEventListener("click", () => {
-            saveCareer();
-            showToast("Carreira salva.");
-        });
-        document.getElementById("back-menu").addEventListener("click", renderMenu);
+        document.getElementById("advance-week")?.addEventListener("click", advanceWeek);
+        document.getElementById("manual-save")?.addEventListener("click", () => { saveCareer(); showToast("Carreira salva."); });
+        document.getElementById("back-menu")?.addEventListener("click", renderMenu);
         updateChrome();
     }
 
@@ -5717,85 +5641,47 @@
         const view = GameState.squadView;
         const players = getVisibleSquadPlayers();
         document.getElementById("screen-root").innerHTML = `
-            <section class="screen stack">
-                <div>
-                    <h1>Elenco</h1>
-                    <p>${GameState.squad.length} jogadores no grupo principal. Exibindo ${players.length}.</p>
+            <section class="screen eg3-squad">
+                <header class="eg3-list-topbar">
+                    <div class="eg3-searchbar"><span>🔍</span><input id="squad-search" type="search" value="${escapeHtml(view.search)}" placeholder="Buscar jogador..."></div>
+                </header>
+                <div class="eg3-chip-row">
+                    ${PLAYER_POSITIONS.slice(0, 9).map((position) => `<button class="chip-pos ${view.position === position ? "active" : ""}" type="button" data-squad-pos="${position}">${escapeHtml(translatePosition(position))}</button>`).join("")}
+                    ${view.position !== "ALL" || view.search ? `<button class="chip-pos eg3-clear-chip" id="squad-clear" type="button">Limpar</button>` : ""}
                 </div>
-                <div class="card card-pad stack">
-                    <div class="squad-tools">
-                        <label class="field">
-                            <span>Pesquisar</span>
-                            <input id="squad-search" type="search" value="${escapeHtml(view.search)}" placeholder="Nome do jogador">
-                        </label>
-                        <label class="field">
-                            <span>Posicao</span>
-                            <select id="squad-position">
-                                <option value="ALL">Todas</option>
-                                ${PLAYER_POSITIONS.map((position) => `<option value="${position}" ${view.position === position ? "selected" : ""}>${position}</option>`).join("")}
-                            </select>
-                        </label>
-                        <label class="field">
-                            <span>Ordenar</span>
-                            <select id="squad-sort">
-                                <option value="overall" ${view.sort === "overall" ? "selected" : ""}>Overall</option>
-                                <option value="age" ${view.sort === "age" ? "selected" : ""}>Idade</option>
-                                <option value="name" ${view.sort === "name" ? "selected" : ""}>Nome</option>
-                                <option value="value" ${view.sort === "value" ? "selected" : ""}>Valor</option>
-                                <option value="position" ${view.sort === "position" ? "selected" : ""}>Posicao</option>
-                            </select>
-                        </label>
-                    </div>
-                    <div class="list">
+                <div class="eg3-card-list eg3-squad-list">
                     ${players.map((player) => `
-                        <button class="player-card" type="button" data-player-detail="${player.id}">
-                            <div class="row-main">
-                                <strong>${player.name}</strong>
-                                <span class="overall-badge">${calculateCurrentOverall(player)}</span>
+                        <button class="eg3-person-card eg3-squad-card" type="button" data-player-detail="${player.id}">
+                            <div class="eg3-person-avatar">${escapeHtml(player.primaryPosition)}</div>
+                            <div class="eg3-person-main">
+                                <strong>${escapeHtml(player.name)}</strong>
+                                <span>${escapeHtml(translatePosition(player.primaryPosition))} · ${calculateAge(player, GameState.currentYear)} anos</span>
+                                <p>${escapeHtml(player.status || "Disponível")} · Moral ${player.morale}/99 · Energia ${player.energy}/99</p>
                             </div>
-                            <div class="meta">
-                                <span>${player.primaryPosition}</span>
-                                <span>${calculateAge(player, GameState.currentYear)} anos</span>
-                                <span>${escapeHtml(player.country)}</span>
-                                <span>${escapeHtml(player.status)}</span>
-                                <span>${money(player.marketValue)}</span>
-                            </div>
-                            <div class="player-card-grid">
-                                <span><b>Pot</b>${player.potential}</span>
-                                <span><b>Forma</b>${player.fitness}</span>
-                                <span><b>Pé</b>${escapeHtml(player.dominantFoot)}</span>
-                                <span><b>Alt/Peso</b>${player.height}cm · ${player.weight}kg</span>
-                                <span><b>Salário</b>${money(player.salary)}</span>
-                                <span><b>Contrato</b>${player.contract.yearsRemaining}a</span>
-                                <span><b>Stats</b>${player.statistics.appearances}J · ${player.statistics.goals}G · ${player.statistics.assists}A</span>
-                                <span><b>Cartões</b>${player.cards.yellow}A · ${player.cards.red}V</span>
-                            </div>
-                            <div class="mini-bars">
-                                ${renderMiniMeter("Moral", player.morale, "morale")}
-                                ${renderMiniMeter("Energia", player.energy, "energy")}
-                                ${renderMiniMeter("Forma", player.fitness, "fitness")}
-                            </div>
-                            ${player.injuries.length ? `<span class="player-alert">Lesão: ${escapeHtml(player.injuries[0].type)} · ${player.injuries[0].weeks} semana(s)</span>` : `<span class="player-alert good">${escapeHtml(getPlayerTrend(player))}</span>`}
+                            <div class="eg3-person-side"><small>OVR</small><b>${calculateCurrentOverall(player)}</b><em>${escapeHtml(player.fitness < 55 ? "Cansado" : player.status || "Em forma")}</em></div>
                         </button>
                     `).join("") || `<div class="empty-state">Nenhum jogador encontrado.</div>`}
-                    </div>
                 </div>
             </section>
         `;
-        document.getElementById("squad-search").addEventListener("input", (event) => {
+        document.getElementById("squad-search")?.addEventListener("input", (event) => {
             GameState.squadView.search = event.target.value;
             renderSquad();
         });
-        document.getElementById("squad-position").addEventListener("change", (event) => {
-            GameState.squadView.position = event.target.value;
+        document.querySelectorAll("[data-squad-pos]").forEach((button) => button.addEventListener("click", () => {
+            GameState.squadView.position = GameState.squadView.position === button.dataset.squadPos ? "ALL" : button.dataset.squadPos;
             renderSquad();
-        });
-        document.getElementById("squad-sort").addEventListener("change", (event) => {
-            GameState.squadView.sort = event.target.value;
+        }));
+        document.getElementById("squad-clear")?.addEventListener("click", () => {
+            GameState.squadView.search = "";
+            GameState.squadView.position = "ALL";
             renderSquad();
         });
         document.querySelectorAll("[data-player-detail]").forEach((button) => {
-            button.addEventListener("click", () => openPlayerDetail(button.dataset.playerDetail));
+            button.addEventListener("click", () => {
+                GameState.selectedPlayerId = button.dataset.playerDetail;
+                switchScreen("playerDetail");
+            });
         });
         updateChrome();
     }
@@ -7139,82 +7025,75 @@
         if (detailPlayer) {
             document.getElementById("screen-root").innerHTML = renderMarketPlayerDetail(detailPlayer);
             bindMarketEvents();
-            document.getElementById("market-back").addEventListener("click", () => {
-                GameState.marketView.detailPlayerId = null;
-                saveCareer();
-                renderMarket();
-            });
+            document.getElementById("market-back")?.addEventListener("click", () => { GameState.marketView.detailPlayerId = null; saveCareer(); renderMarket(); });
             updateChrome();
             return;
         }
-        const players = getVisibleMarketPlayers();
-        const favorites = getMarketFavorites()
-            .map((id) => GameState.market.find((player) => player.id === id))
-            .filter(Boolean);
+        const players = getVisibleMarketPlayers().slice(0, 18);
+        const favorites = getMarketFavorites().map((id) => GameState.market.find((player) => player.id === id)).filter(Boolean);
         const filterKeys = ["position", "age", "overall", "potential", "nationality", "value", "salary", "contract", "club", "phase"];
-        const sortLabel = getMarketSortOptions().find((option) => option.value === GameState.marketView.sort)?.label || t("sort.overall");
+        const hasFilters = filterKeys.some((key) => GameState.marketView.filters[key] && GameState.marketView.filters[key] !== "ALL" && GameState.marketView.filters[key] !== "any");
         document.getElementById("screen-root").innerHTML = `
-            <section class="screen stack market-screen internal-screen">
-                ${renderInternalHero(t("market.title"), t("market.subtitle"), "MRK")}
-                <div class="market-header internal-status-strip">
-                    <div>
-                        <span class="menu-kicker">${escapeHtml(t("market.favorites"))}</span>
-                        <p>${favorites.length} · ${players.length}</p>
-                    </div>
-                    <div class="stat market-balance"><span>${escapeHtml(t("market.balance"))}</span><strong>${money(GameState.budget)}</strong></div>
+            <section class="screen eg3-market">
+                <header class="eg3-list-topbar">
+                    <div class="eg3-searchbar"><span>🔍</span><input id="market-search" type="search" value="${escapeHtml(GameState.marketView.search)}" placeholder="${escapeHtml(t("market.searchPlaceholder"))}"></div>
+                    <button class="eg3-filter-trigger ${hasFilters ? "has-filters" : ""}" id="market-filters-open" type="button">Filtros${hasFilters ? " •" : ""}</button>
+                </header>
+                <div class="eg3-chip-row">
+                    ${["ST", "CAM", "CM", "CB", "GK"].map((position) => `<button class="chip-pos ${GameState.marketView.filters.position === position ? "active" : ""}" type="button" data-market-pos="${position}">${escapeHtml(translatePosition(position))}</button>`).join("")}
+                    <button class="chip-pos ${GameState.marketView.sort === "potential" ? "active" : ""}" type="button" data-market-sort-fast="potential">Potencial</button>
+                    <button class="chip-pos ${favorites.length ? "active" : ""}" type="button" data-director-action="scout">Observados ${favorites.length}</button>
+                    ${(hasFilters || GameState.marketView.search) ? `<button class="chip-pos eg3-clear-chip" id="market-clear-filters" type="button">Limpar</button>` : ""}
                 </div>
-                <div class="card card-pad stack market-tools">
-                    <label class="field">
-                        <span>${escapeHtml(t("market.search"))}</span>
-                        <input id="market-search" type="search" value="${escapeHtml(GameState.marketView.search)}" placeholder="${escapeHtml(t("market.searchPlaceholder"))}">
-                    </label>
-                    <div class="market-filter-grid">
-                        ${filterKeys.map((key) => `
-                            <button class="market-filter-button" type="button" data-market-filter="${key}">
-                                <span>${escapeHtml(t(`filter.${key}`))}</span>
-                                <strong>${escapeHtml(getFilterLabel(key))}</strong>
-                            </button>
-                        `).join("")}
-                    </div>
-                    <div class="button-row market-sort-row">
-                        <button class="btn" type="button" id="market-sort">${escapeHtml(t("market.sort"))}: ${escapeHtml(sortLabel)}</button>
-                        <button class="btn btn-ghost" type="button" id="market-clear-filters">${escapeHtml(t("market.clearFilters"))}</button>
-                    </div>
+                <div class="eg3-market-meta"><span>Saldo disponível</span><strong>${money(GameState.budget)}</strong></div>
+                <div class="eg3-card-list eg3-market-list">
+                    ${players.map((player) => {
+                        const overall = calculateCurrentOverall(player);
+                        const observed = GameState.transferMarket.observedPlayerIds.includes(player.id);
+                        return `
+                            <article class="eg3-person-card eg3-market-card">
+                                <div class="eg3-person-avatar">${escapeHtml(player.primaryPosition)}</div>
+                                <div class="eg3-person-main">
+                                    <strong>${escapeHtml(player.name)}</strong>
+                                    <span>${escapeHtml(translatePosition(player.primaryPosition))} · ${calculateAge(player, GameState.currentYear)} anos · ${escapeHtml(getPlayerCurrentClub(player))}</span>
+                                    <p>OVR ${overall} · POT ${player.potential} · ${money(player.marketValue)}</p>
+                                </div>
+                                <div class="eg3-person-side market-actions">
+                                    <button type="button" data-observe-player="${player.id}">${observed ? "Observado" : "Observar"}</button>
+                                    <button type="button" data-offer-player="${player.id}">Negociar</button>
+                                    <button type="button" data-market-detail="${player.id}">Perfil</button>
+                                </div>
+                            </article>
+                        `;
+                    }).join("") || `<div class="empty-state">${escapeHtml(t("market.noPlayers"))}</div>`}
                 </div>
-                ${favorites.length ? `
-                    <div class="card card-pad stack">
-                        <h2>${escapeHtml(t("market.favorites"))}</h2>
-                        <div class="market-favorites">
-                            ${favorites.map((player) => `
-                                <button class="pill market-favorite-pill" type="button" data-market-detail="${player.id}">
-                                    ${escapeHtml(player.name)} · ${escapeHtml(t("market.quickOpen"))}
-                                </button>
+                <div class="eg3-filter-sheet hidden" id="market-filter-sheet" aria-hidden="true">
+                    <div class="eg3-filter-backdrop" data-close-market-filters></div>
+                    <section class="eg3-filter-panel">
+                        <div class="eg3-filter-head"><strong>Filtros do mercado</strong><button class="icon-action" type="button" data-close-market-filters>×</button></div>
+                        <div class="market-filter-grid">
+                            ${filterKeys.map((key) => `
+                                <label class="field"><span>${escapeHtml(t(`filter.${key}`))}</span><select data-market-filter-select="${key}">
+                                    ${getMarketFilterOptions(key).map((option) => `<option value="${escapeHtml(option.value)}" ${GameState.marketView.filters[key] === option.value ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}
+                                </select></label>
                             `).join("")}
+                            <label class="field"><span>${escapeHtml(t("market.sort"))}</span><select id="market-sort-select">${getMarketSortOptions().map((option) => `<option value="${escapeHtml(option.value)}" ${GameState.marketView.sort === option.value ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}</select></label>
                         </div>
-                    </div>
-                ` : ""}
-                <div class="market-player-list">
-                    ${players.map(renderMarketPlayerCard).join("") || `<div class="empty-state">${escapeHtml(t("market.noPlayers"))}</div>`}
-                </div>
-                <div class="card card-pad stack">
-                    <h2>${escapeHtml(t("market.futureReady"))}</h2>
-                    <p>${escapeHtml(t("market.futureReadyText"))}</p>
+                        <div class="button-row"><button class="btn" type="button" id="market-apply-filters">Aplicar</button></div>
+                    </section>
                 </div>
             </section>
         `;
-        document.getElementById("market-search").addEventListener("input", (event) => {
-            GameState.marketView.search = event.target.value;
-            clearTimeout(marketSearchTimer);
-            marketSearchTimer = setTimeout(() => {
-                saveCareer();
-                renderMarket();
-            }, 220);
-        });
-        document.querySelectorAll("[data-market-filter]").forEach((button) => {
-            button.addEventListener("click", () => openMarketFilter(button.dataset.marketFilter));
-        });
-        document.getElementById("market-sort").addEventListener("click", openMarketSort);
-        document.getElementById("market-clear-filters").addEventListener("click", clearMarketFilters);
+        document.getElementById("market-search")?.addEventListener("input", (event) => { GameState.marketView.search = event.target.value; renderMarket(); });
+        document.querySelectorAll("[data-market-pos]").forEach((button) => button.addEventListener("click", () => { GameState.marketView.filters.position = GameState.marketView.filters.position === button.dataset.marketPos ? "ALL" : button.dataset.marketPos; saveCareer(); renderMarket(); }));
+        document.querySelectorAll("[data-market-sort-fast]").forEach((button) => button.addEventListener("click", () => { GameState.marketView.sort = button.dataset.marketSortFast; saveCareer(); renderMarket(); }));
+        document.getElementById("market-clear-filters")?.addEventListener("click", clearMarketFilters);
+        document.getElementById("market-filters-open")?.addEventListener("click", () => document.getElementById("market-filter-sheet")?.classList.remove("hidden"));
+        document.querySelectorAll("[data-close-market-filters]").forEach((el) => el.addEventListener("click", () => document.getElementById("market-filter-sheet")?.classList.add("hidden")));
+        document.querySelectorAll("[data-market-filter-select]").forEach((select) => select.addEventListener("change", () => { GameState.marketView.filters[select.dataset.marketFilterSelect] = select.value; }));
+        document.getElementById("market-sort-select")?.addEventListener("change", (event) => { GameState.marketView.sort = event.target.value; });
+        document.getElementById("market-apply-filters")?.addEventListener("click", () => { saveCareer(); renderMarket(); });
+        document.querySelectorAll("[data-director-action]").forEach((button) => button.addEventListener("click", () => handleDirectorAction(button.dataset.directorAction)));
         bindMarketEvents();
         updateChrome();
     }
@@ -7324,100 +7203,123 @@
     function renderScout() {
         refreshAllPlayers();
         ensureScoutState();
+        const search = GameState.scout.search || createDefaultScoutState().search;
+        const keyword = search.keyword || "";
         const assignments = Object.values(GameState.scout.assignments)
             .map((assignment) => ({ assignment, player: GameState.market.find((item) => item.id === assignment.playerId) }))
             .filter((item) => item.player);
         const latestReport = getLatestScoutReport();
-        const search = GameState.scout.search || createDefaultScoutState().search;
         const nationalities = [...new Set(GameState.market.map((player) => player.country))].sort();
-        const results = getScoutSearchResults();
+        let results = getScoutSearchResults().filter((player) => !keyword || player.name.toLocaleLowerCase().includes(keyword.toLocaleLowerCase())).slice(0, 12);
+        const filterKeys = ["age", "position", "overall", "potential", "nationality", "value"];
+        const hasAdvancedFilters = filterKeys.some((key) => search[key] && search[key] !== "ALL" && search[key] !== "any");
+
         document.getElementById("screen-root").innerHTML = `
-            <section class="screen stack scout-screen">
-                <div class="market-header">
-                    <div>
-                        <h1>${escapeHtml(t("scout.title"))}</h1>
-                        <p>${escapeHtml(t("scout.subtitle"))}</p>
+            <section class="screen eg3-scout" aria-label="Scout">
+                <header class="eg3-list-topbar">
+                    <div class="eg3-searchbar"><span>🔍</span><input id="scout-search-name" type="search" value="${escapeHtml(keyword)}" placeholder="Buscar jogador..."></div>
+                    <button class="eg3-filter-trigger ${hasAdvancedFilters ? "has-filters" : ""}" type="button" id="scout-filter-toggle">Filtros${hasAdvancedFilters ? " •" : ""}</button>
+                </header>
+                <div class="eg3-chip-row" aria-label="Filtros rápidos">
+                    ${["ST", "CF", "CAM", "CM", "CB", "GK"].map((pos) => `<button class="chip-pos ${search.position === pos ? "active" : ""}" type="button" data-scout-chip="${pos}">${escapeHtml(translatePosition(pos))}</button>`).join("")}
+                    <button class="chip-pos ${search.potential === "o88" ? "active" : ""}" type="button" data-scout-potential="o88">★★★★★</button>
+                    <button class="chip-pos ${search.age === "u21" ? "active" : ""}" type="button" data-scout-age="u21">Jovem</button>
+                    ${(hasAdvancedFilters || keyword) ? `<button class="chip-pos eg3-clear-chip" type="button" id="scout-clear-filters">Limpar</button>` : ""}
+                </div>
+                <div class="eg3-scout-summary">
+                    <strong>${results.length}</strong><span>nomes recomendados</span>
+                    <em>${latestReport ? `${escapeHtml(latestReport.playerName)} foi o último relatório` : escapeHtml(t("scout.noReport"))}</em>
+                </div>
+                <div class="eg3-card-list eg3-scout-list">
+                    ${results.map((player) => `
+                        <article class="eg3-person-card eg3-scout-card" data-drawer-player="${player.id}">
+                            <div class="eg3-person-avatar">⚽</div>
+                            <div class="eg3-person-main">
+                                <strong>${escapeHtml(player.name)}</strong>
+                                <span>${escapeHtml(translatePosition(player.primaryPosition))} · ${calculateAge(player, GameState.currentYear)} anos · ${escapeHtml(translateCountry(player.country))}</span>
+                                <p>${escapeHtml(buildScoutCardNote(player))}</p>
+                            </div>
+                            <div class="eg3-person-side">
+                                <small>POT</small>
+                                <b>${player.potential}</b>
+                                <em>${money(player.marketValue)}</em>
+                                <button type="button" data-scout-add-result="${player.id}">${GameState.scout.assignments[player.id] ? "Em obs." : "Observar"}</button>
+                            </div>
+                        </article>
+                    `).join("") || `<div class="empty-state">Nenhum jogador encontrado.</div>`}
+                </div>
+                <details class="eg3-accordion eg3-observed-panel">
+                    <summary><span>Relatórios em andamento</span><strong>${assignments.length}/${getScoutCapacity()}</strong></summary>
+                    <div class="eg3-observed-list">
+                        ${assignments.length ? assignments.map(({ player, assignment }) => renderScoutAssignment(player, assignment)).join("") : `<div class="empty-state">${escapeHtml(t("scout.noObserved"))}</div>`}
                     </div>
-                    <button class="btn btn-primary" type="button" id="scout-open-market">${escapeHtml(t("scout.goMarket"))}</button>
-                </div>
-                <div class="stat-grid">
-                    <div class="stat"><span>${escapeHtml(t("scout.level"))}</span><strong>${getScoutLevel()}/10</strong></div>
-                    <div class="stat"><span>${escapeHtml(t("scout.accuracy"))}</span><strong>${getScoutAccuracy()}%</strong></div>
-                    <div class="stat"><span>${escapeHtml(t("scout.capacity"))}</span><strong>${assignments.length}/${getScoutCapacity()}</strong></div>
-                    <div class="stat"><span>${escapeHtml(t("scout.averageTime"))}</span><strong>${getScoutRequiredWeeks()} ${escapeHtml(t("scout.weeks"))}</strong></div>
-                </div>
-                <div class="card card-pad stack">
-                    <h2>${escapeHtml(t("scout.regions"))}</h2>
-                    <div class="scout-region-grid">
-                        ${SCOUT_REGIONS.map((region) => `<span class="pill">${escapeHtml(t(`region.${region}`))}</span>`).join("")}
-                    </div>
-                </div>
-                <div class="card card-pad stack">
-                    <h2>${escapeHtml(t("scout.lastReport"))}</h2>
-                    <p>${escapeHtml(latestReport ? `${latestReport.playerName}: ${latestReport.text}` : t("scout.noReport"))}</p>
-                </div>
-                <div class="card card-pad stack scout-search-panel">
-                    <h2>Busca de Scout</h2>
-                    <div class="market-filter-grid scout-filter-grid">
-                        <label class="field"><span>Idade</span><select data-scout-search="age">
-                            ${getMarketFilterOptions("age").map((option) => `<option value="${option.value}" ${search.age === option.value ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}
-                        </select></label>
-                        <label class="field"><span>Posição</span><select data-scout-search="position"><option value="ALL">Todas</option>${PLAYER_POSITIONS.map((position) => `<option value="${position}" ${search.position === position ? "selected" : ""}>${position}</option>`).join("")}</select></label>
-                        <label class="field"><span>Overall</span><select data-scout-search="overall">${getMarketFilterOptions("overall").map((option) => `<option value="${option.value}" ${search.overall === option.value ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}</select></label>
-                        <label class="field"><span>Potencial</span><select data-scout-search="potential">${getMarketFilterOptions("potential").map((option) => `<option value="${option.value}" ${search.potential === option.value ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}</select></label>
-                        <label class="field"><span>Nacionalidade</span><select data-scout-search="nationality"><option value="ALL">Todas</option>${nationalities.map((country) => `<option value="${country}" ${search.nationality === country ? "selected" : ""}>${escapeHtml(country)}</option>`).join("")}</select></label>
-                        <label class="field"><span>Valor</span><select data-scout-search="value">${getMarketFilterOptions("value").map((option) => `<option value="${option.value}" ${search.value === option.value ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}</select></label>
-                    </div>
-                    <div class="market-player-list">
-                        ${results.map((player) => `
-                            <article class="market-player-card card card-pad stack">
-                                <div class="row-main"><strong>${escapeHtml(player.name)}</strong><span class="overall-badge">${calculateCurrentOverall(player)}</span></div>
-                                <div class="meta"><span>${player.primaryPosition}</span><span>${calculateAge(player, GameState.currentYear)} anos</span><span>${escapeHtml(player.country)}</span><span>${money(player.marketValue)}</span></div>
-                                <p class="scout-card-note">${escapeHtml(buildScoutCardNote(player))}</p>
-                                <div class="button-row">
-                                    <button class="btn btn-ghost" type="button" data-drawer-player="${player.id}">Perfil</button>
-                                    <button class="btn" type="button" data-scout-add-result="${player.id}">${GameState.scout.assignments[player.id] ? "Em observação" : "Observar"}</button>
-                                </div>
-                            </article>
-                        `).join("") || `<div class="empty-state">Nenhum jogador encontrado pelos filtros.</div>`}
-                    </div>
-                </div>
-                <div class="scout-list">
-                    ${assignments.length ? assignments.map(({ player, assignment }) => renderScoutAssignment(player, assignment)).join("") : `
-                        <div class="empty-state">${escapeHtml(t("scout.noObserved"))}</div>
-                    `}
+                </details>
+                <div class="eg3-filter-sheet hidden" id="scout-filter-sheet" aria-hidden="true">
+                    <div class="eg3-filter-backdrop" data-close-scout-filters></div>
+                    <section class="eg3-filter-panel">
+                        <div class="eg3-filter-head"><strong>Filtros avançados</strong><button class="icon-action" type="button" data-close-scout-filters>×</button></div>
+                        <div class="market-filter-grid scout-filter-grid">
+                            <label class="field"><span>Idade</span><select data-scout-search="age">${getMarketFilterOptions("age").map((option) => `<option value="${option.value}" ${search.age === option.value ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}</select></label>
+                            <label class="field"><span>Posição</span><select data-scout-search="position"><option value="ALL">Todas</option>${PLAYER_POSITIONS.map((position) => `<option value="${position}" ${search.position === position ? "selected" : ""}>${escapeHtml(translatePosition(position))}</option>`).join("")}</select></label>
+                            <label class="field"><span>Overall</span><select data-scout-search="overall">${getMarketFilterOptions("overall").map((option) => `<option value="${option.value}" ${search.overall === option.value ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}</select></label>
+                            <label class="field"><span>Potencial</span><select data-scout-search="potential">${getMarketFilterOptions("potential").map((option) => `<option value="${option.value}" ${search.potential === option.value ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}</select></label>
+                            <label class="field"><span>Nacionalidade</span><select data-scout-search="nationality"><option value="ALL">Todas</option>${nationalities.map((country) => `<option value="${country}" ${search.nationality === country ? "selected" : ""}>${escapeHtml(translateCountry(country))}</option>`).join("")}</select></label>
+                            <label class="field"><span>Valor</span><select data-scout-search="value">${getMarketFilterOptions("value").map((option) => `<option value="${option.value}" ${search.value === option.value ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}</select></label>
+                        </div>
+                        <div class="button-row"><button class="btn" type="button" id="scout-apply-filters">Aplicar</button></div>
+                    </section>
                 </div>
             </section>
         `;
-        document.getElementById("scout-open-market").addEventListener("click", () => switchScreen("market"));
-        document.querySelectorAll("[data-scout-remove]").forEach((button) => {
-            button.addEventListener("click", () => removeScoutObservation(button.dataset.scoutRemove));
+        document.getElementById("scout-search-name")?.addEventListener("input", (event) => {
+            GameState.scout.search.keyword = event.target.value;
+            renderScout();
         });
+        document.querySelectorAll("[data-scout-chip]").forEach((button) => button.addEventListener("click", () => {
+            GameState.scout.search.position = GameState.scout.search.position === button.dataset.scoutChip ? "ALL" : button.dataset.scoutChip;
+            saveCareer();
+            renderScout();
+        }));
+        document.querySelectorAll("[data-scout-potential]").forEach((button) => button.addEventListener("click", () => {
+            GameState.scout.search.potential = GameState.scout.search.potential === button.dataset.scoutPotential ? "any" : button.dataset.scoutPotential;
+            saveCareer();
+            renderScout();
+        }));
+        document.querySelectorAll("[data-scout-age]").forEach((button) => button.addEventListener("click", () => {
+            GameState.scout.search.age = GameState.scout.search.age === button.dataset.scoutAge ? "any" : button.dataset.scoutAge;
+            saveCareer();
+            renderScout();
+        }));
+        document.getElementById("scout-clear-filters")?.addEventListener("click", () => {
+            GameState.scout.search = createDefaultScoutState().search;
+            saveCareer();
+            renderScout();
+        });
+        document.getElementById("scout-filter-toggle")?.addEventListener("click", () => {
+            document.getElementById("scout-filter-sheet")?.classList.remove("hidden");
+        });
+        document.querySelectorAll("[data-close-scout-filters]").forEach((el) => el.addEventListener("click", () => document.getElementById("scout-filter-sheet")?.classList.add("hidden")));
         document.querySelectorAll("[data-scout-search]").forEach((select) => {
-            select.addEventListener("change", () => {
-                GameState.scout.search[select.dataset.scoutSearch] = select.value;
-                saveCareer();
-                renderScout();
-            });
+            select.addEventListener("change", () => { GameState.scout.search[select.dataset.scoutSearch] = select.value; });
         });
-        document.querySelectorAll("[data-drawer-player]").forEach((button) => {
-            button.addEventListener("click", () => {
-                const player = [...GameState.squad, ...GameState.market].find((item) => item.id === button.dataset.drawerPlayer);
-                openUIDrawer(renderPlayerDrawerContent(player), player?.name || "Perfil");
+        document.getElementById("scout-apply-filters")?.addEventListener("click", () => { saveCareer(); renderScout(); });
+        document.querySelectorAll("[data-drawer-player]").forEach((card) => {
+            card.addEventListener("click", (event) => {
+                if (event.target.closest("button")) return;
+                const player = [...GameState.squad, ...GameState.market].find((item) => item.id === card.dataset.drawerPlayer);
+                openUIDrawer(renderPlayerDrawerContent(player), player?.name || "Relatório");
             });
         });
         document.querySelectorAll("[data-scout-add-result]").forEach((button) => {
-            button.addEventListener("click", () => {
+            button.addEventListener("click", (event) => {
+                event.stopPropagation();
                 button.classList.add("is-loading");
                 button.textContent = "Observando...";
                 const ok = startScoutObservation(button.dataset.scoutAddResult);
-                if (ok !== false) {
-                    setTimeout(() => renderScout(), 350);
-                } else {
-                    button.classList.remove("is-loading");
-                }
+                if (ok !== false) setTimeout(() => renderScout(), 350); else button.classList.remove("is-loading");
             });
         });
+        document.querySelectorAll("[data-scout-remove]").forEach((button) => button.addEventListener("click", () => removeScoutObservation(button.dataset.scoutRemove)));
         updateChrome();
     }
 
@@ -7538,33 +7440,33 @@
 
     function renderAcademyProspectCard(player) {
         const kept = GameState.academy.keptPlayerIds.includes(player.id);
+        const overall = calculateCurrentOverall(player);
+        const potential = player.potential || overall;
+        const progress = clamp(Math.round((overall / Math.max(potential, 1)) * 100), 0, 100);
         return `
-            <article class="academy-card card card-pad stack">
-                <div class="row-main">
+            <article class="eg3-academy-card">
+                <div class="eg3-academy-top">
                     <div>
-                        <span class="menu-kicker">${escapeHtml(player.academy?.category || "Sub-20")}</span>
-                        <h2>${escapeHtml(player.name)}</h2>
+                        <span>${escapeHtml(player.academy?.category || "Sub-20")}</span>
+                        <strong>${escapeHtml(player.name)}</strong>
+                        <small>${escapeHtml(translatePosition(player.primaryPosition))} · ${calculateAge(player, GameState.currentYear)} anos · ${escapeHtml(translateCountry(player.country))}</small>
                     </div>
-                    <span class="overall-badge">${calculateCurrentOverall(player)}</span>
+                    <div class="eg3-pot-hero"><small>POT</small><b>${potential}</b></div>
                 </div>
-                <div class="meta">
-                    <span>${escapeHtml(translateCountry(player.country))}</span>
-                    <span>${calculateAge(player, GameState.currentYear)} ${escapeHtml(t("market.years"))}</span>
-                    <span>${escapeHtml(translatePosition(player.primaryPosition))}</span>
-                    <span>${escapeHtml(player.personality)}</span>
-                </div>
-                <div class="stat-grid academy-prospect-grid">
-                    <div class="stat"><span>${escapeHtml(t("academy.height"))}</span><strong>${player.height} cm</strong></div>
-                    <div class="stat"><span>${escapeHtml(t("academy.weight"))}</span><strong>${player.weight} kg</strong></div>
-                    <div class="stat"><span>${escapeHtml(t("academy.foot"))}</span><strong>${escapeHtml(player.dominantFoot)}</strong></div>
-                    <div class="stat"><span>${escapeHtml(t("market.secondaryPositions"))}</span><strong>${escapeHtml(player.secondaryPositions?.length ? player.secondaryPositions.map(translatePosition).join(", ") : t("market.none"))}</strong></div>
-                    <div class="stat"><span>${escapeHtml(t("market.overall"))}</span><strong>${calculateCurrentOverall(player)}</strong></div>
-                    <div class="stat"><span>${escapeHtml(t("market.potential"))}</span><strong>${player.potential}</strong></div>
-                </div>
+                <div class="eg3-personality">💡 ${escapeHtml(player.personality || "Promissor")}</div>
+                <div class="eg3-growth"><span>Atual ${overall}</span><i><b style="width:${progress}%"></b></i><span>${potential}</span></div>
                 <div class="button-row academy-actions">
                     <button class="btn btn-primary" type="button" data-academy-promote="${player.id}">${escapeHtml(t("academy.promote"))}</button>
                     <button class="btn" type="button" data-academy-keep="${player.id}">${escapeHtml(t("academy.keep"))}${kept ? " ✓" : ""}</button>
                 </div>
+                <details class="eg3-player-details"><summary>Ver atributos</summary>
+                    <div class="stat-grid academy-prospect-grid">
+                        <div class="stat"><span>${escapeHtml(t("academy.height"))}</span><strong>${player.height} cm</strong></div>
+                        <div class="stat"><span>${escapeHtml(t("academy.weight"))}</span><strong>${player.weight} kg</strong></div>
+                        <div class="stat"><span>${escapeHtml(t("academy.foot"))}</span><strong>${escapeHtml(player.dominantFoot)}</strong></div>
+                        <div class="stat"><span>${escapeHtml(t("market.overall"))}</span><strong>${overall}</strong></div>
+                    </div>
+                </details>
             </article>
         `;
     }
@@ -7573,52 +7475,29 @@
         refreshAllPlayers();
         ensureAcademyState();
         const level = getAcademyLevel();
+        const prospects = [...GameState.academy.prospects].sort((a, b) => (b.potential || 0) - (a.potential || 0));
         document.getElementById("screen-root").innerHTML = `
-            <section class="screen stack academy-screen">
-                <div>
+            <section class="screen eg3-academy">
+                <header class="eg3-section-header">
+                    <span>Centro de formação</span>
                     <h1>${escapeHtml(t("academy.title"))}</h1>
-                    <p>${escapeHtml(t("academy.subtitle"))}</p>
+                    <p>${prospects.length} jovens disponíveis para avaliação · Nível ${level}/10</p>
+                </header>
+                <div class="eg3-academy-list">
+                    ${prospects.length ? prospects.map(renderAcademyProspectCard).join("") : `<div class="empty-state">${escapeHtml(t("academy.noPlayers"))}</div>`}
                 </div>
-                <div class="stat-grid">
-                    <div class="stat"><span>${escapeHtml(t("academy.level"))}</span><strong>${level}/10</strong></div>
-                    <div class="stat"><span>${escapeHtml(t("academy.youngsters"))}</span><strong>${GameState.academy.prospects.length}</strong></div>
-                    <div class="stat"><span>${escapeHtml(t("academy.averageQuality"))}</span><strong>${getAcademyAverageQuality()}</strong></div>
-                    <div class="stat"><span>${escapeHtml(t("academy.weeklyInvestment"))}</span><strong>${money(getAcademyWeeklyInvestment())}</strong></div>
-                </div>
-                <div class="card card-pad stack">
-                    <h2>${escapeHtml(t("academy.evolution"))}</h2>
-                    <div class="scout-progress">
-                        <div class="row-main"><span>${escapeHtml(t("academy.level"))}</span><strong>${level}/10</strong></div>
-                        <i><b style="width:${level * 10}%"></b></i>
-                    </div>
-                    <p>${escapeHtml(t("academy.futureArchitectureText"))}</p>
-                </div>
-                <div class="academy-list">
-                    ${GameState.academy.prospects.length ? GameState.academy.prospects.map(renderAcademyProspectCard).join("") : `<div class="empty-state">${escapeHtml(t("academy.noPlayers"))}</div>`}
-                </div>
-                <div class="card card-pad stack">
-                    <h2>${escapeHtml(t("academy.events"))}</h2>
-                    <div class="list">
-                        ${GameState.academy.events.length ? GameState.academy.events.slice(0, 8).map((event) => `
-                            <div class="row-card">
-                                <strong>${escapeHtml(event.text)}</strong>
-                                <span class="muted">${escapeHtml(event.playerName)} · ${escapeHtml(t("scout.week"))} ${event.round}</span>
-                            </div>
+                <details class="eg3-accordion eg3-academy-events">
+                    <summary><span>${escapeHtml(t("academy.events"))}</span><strong>${GameState.academy.events.length}</strong></summary>
+                    <div class="eg3-observed-list">
+                        ${GameState.academy.events.length ? GameState.academy.events.slice(0, 5).map((event) => `
+                            <div class="row-card"><strong>${escapeHtml(event.text)}</strong><span class="muted">${escapeHtml(event.playerName)} · ${escapeHtml(t("scout.week"))} ${event.round}</span></div>
                         `).join("") : `<div class="empty-state">${escapeHtml(t("academy.noEvents"))}</div>`}
                     </div>
-                </div>
-                <div class="card card-pad stack">
-                    <h2>${escapeHtml(t("academy.futureArchitecture"))}</h2>
-                    <p>${escapeHtml(t("academy.futureArchitectureText"))}</p>
-                </div>
+                </details>
             </section>
         `;
-        document.querySelectorAll("[data-academy-promote]").forEach((button) => {
-            button.addEventListener("click", () => promoteAcademyProspect(button.dataset.academyPromote));
-        });
-        document.querySelectorAll("[data-academy-keep]").forEach((button) => {
-            button.addEventListener("click", () => keepAcademyProspect(button.dataset.academyKeep));
-        });
+        document.querySelectorAll("[data-academy-promote]").forEach((button) => button.addEventListener("click", () => promoteAcademyProspect(button.dataset.academyPromote)));
+        document.querySelectorAll("[data-academy-keep]").forEach((button) => button.addEventListener("click", () => keepAcademyProspect(button.dataset.academyKeep)));
         updateChrome();
     }
 
@@ -8313,12 +8192,36 @@
     }
 
     function bindGlobalEvents() {
+        const closeMobileMenu = () => {
+            const menu = document.getElementById("eg3-mobile-menu");
+            if (menu) {
+                menu.classList.add("hidden");
+                menu.setAttribute("aria-hidden", "true");
+            }
+        };
+        const openMobileMenu = () => {
+            const menu = document.getElementById("eg3-mobile-menu");
+            if (menu) {
+                menu.classList.remove("hidden");
+                menu.setAttribute("aria-hidden", "false");
+            }
+        };
         const handleNavigationClick = (event) => {
+            const actionButton = event.target.closest("[data-action]");
+            if (actionButton) {
+                const action = actionButton.dataset.action;
+                if (action === "advance-week") advanceWeek();
+                if (action === "menu-more") openMobileMenu();
+                if (action === "close-menu-more") closeMobileMenu();
+                return;
+            }
             const button = event.target.closest("[data-screen]");
             if (!button) return;
+            closeMobileMenu();
             switchScreen(button.dataset.screen);
         };
         document.getElementById("bottom-nav")?.addEventListener("click", handleNavigationClick);
+        document.getElementById("eg3-mobile-menu")?.addEventListener("click", handleNavigationClick);
         document.getElementById("desktop-sidebar")?.addEventListener("click", (event) => {
             const advanceButton = event.target.closest("[data-action='advance-week']");
             if (advanceButton) {

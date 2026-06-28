@@ -42,17 +42,33 @@
 
         <main id="screen-root" aria-live="polite"></main>
 
-        <nav class="bottom-nav" id="bottom-nav" aria-label="Navegacao principal">
-            <button type="button" class="nav-button" data-screen="home" data-i18n="nav.home"></button>
-            <button type="button" class="nav-button" data-screen="squad" data-i18n="nav.squad"></button>
-            <button type="button" class="nav-button" data-screen="tactics" data-i18n="nav.tactics"></button>
-            <button type="button" class="nav-button" data-screen="market" data-i18n="nav.market"></button>
-            <button type="button" class="nav-button" data-screen="scout" data-i18n="nav.scout"></button>
-            <button type="button" class="nav-button" data-screen="academy" data-i18n="nav.academy"></button>
-            <button type="button" class="nav-button" data-screen="marketing" data-i18n="nav.marketing"></button>
-            <button type="button" class="nav-button" data-screen="league" data-i18n="nav.league"></button>
-            <button type="button" class="nav-button" data-screen="club" data-i18n="nav.club"></button>
+        <nav class="bottom-nav eg3-bottom-nav" id="bottom-nav" aria-label="Navegacao principal">
+            <button type="button" class="nav-button" data-screen="home" data-short-label="Início" data-i18n="nav.home"></button>
+            <button type="button" class="nav-button" data-screen="squad" data-short-label="Elenco" data-i18n="nav.squad"></button>
+            <button type="button" class="nav-button eg3-nav-action" data-action="advance-week" data-short-label="Jogar">▶</button>
+            <button type="button" class="nav-button" data-screen="scout" data-short-label="Scout" data-i18n="nav.scout"></button>
+            <button type="button" class="nav-button" data-action="menu-more" data-short-label="Menu">☰</button>
         </nav>
+
+        <div class="eg3-mobile-menu hidden" id="eg3-mobile-menu" aria-hidden="true">
+            <div class="eg3-mobile-menu-backdrop" data-action="close-menu-more"></div>
+            <section class="eg3-mobile-menu-panel" aria-label="Mais opções">
+                <div class="eg3-mobile-menu-head">
+                    <strong>Menu do Clube</strong>
+                    <button type="button" class="icon-action" data-action="close-menu-more" aria-label="Fechar menu">×</button>
+                </div>
+                <div class="eg3-mobile-menu-grid">
+                    <button type="button" data-screen="tactics">⚽ <span>Tática</span></button>
+                    <button type="button" data-screen="market">💼 <span>Mercado</span></button>
+                    <button type="button" data-screen="academy">🌱 <span>Base</span></button>
+                    <button type="button" data-screen="league">🏆 <span>Liga</span></button>
+                    <button type="button" data-screen="club">🏟 <span>Clube</span></button>
+                    <button type="button" data-screen="marketing">📢 <span>Marketing</span></button>
+                    <button type="button" data-screen="calendar">📅 <span>Calendário</span></button>
+                    <button type="button" data-screen="settings">⚙ <span>Config.</span></button>
+                </div>
+            </section>
+        </div>
 
         <div class="toast" id="toast" role="status" aria-live="polite"></div>
         <div class="modal-root" id="modal-root" aria-live="polite"></div>
