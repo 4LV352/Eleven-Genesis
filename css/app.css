@@ -3986,3 +3986,367 @@ input,select{border-radius:14px!important;background:rgba(7,26,18,.78)!important
   .button-row{display:grid!important;grid-template-columns:1fr;gap:10px;}
   .nav-button{min-width:56px;font-size:.62rem;padding-left:6px!important;padding-right:6px!important;}
 }
+
+/* Fase 2A: camada UI responsiva, sidebar desktop, drawer e Scout */
+:root{
+  --eg-bg-deep:#090a0f;
+  --eg-bg-main:#12141c;
+  --eg-bg-card:#1a1d28;
+  --eg-bg-input:#0f1118;
+  --eg-text-main:#a0a5b5;
+  --eg-text-bright:#e2e8f0;
+  --eg-reward:#2e7d32;
+  --eg-warning-ui:#ef6c00;
+  --eg-border-ui:rgba(226,232,240,.1);
+  --eg-data-font:"Roboto Mono","Courier New",ui-monospace,monospace;
+  --sidebar-width:248px;
+}
+
+body[data-theme="dark"]{
+  background:radial-gradient(circle at 50% -14%,rgba(46,125,50,.18),transparent 30rem),linear-gradient(180deg,var(--eg-bg-deep) 0%,var(--eg-bg-main) 58%,#0b0d13 100%);
+}
+
+.desktop-sidebar{display:none;}
+
+.splash-card,
+.splash-message,
+.splash-progress{
+  opacity:1;
+  transform:none;
+}
+
+.eg-drawer-overlay{
+  position:fixed;
+  inset:0;
+  z-index:75;
+  display:flex;
+  justify-content:flex-end;
+  background:rgba(0,0,0,.68);
+  backdrop-filter:blur(8px);
+}
+
+.eg-drawer-overlay.hidden{display:none;}
+
+.eg-drawer-panel{
+  position:relative;
+  width:min(100%,440px);
+  height:100%;
+  overflow-y:auto;
+  padding:22px;
+  border-left:1px solid var(--eg-border-ui);
+  background:linear-gradient(180deg,rgba(226,232,240,.06),rgba(226,232,240,.018)),var(--eg-bg-card);
+  color:var(--eg-text-bright);
+  box-shadow:-26px 0 52px rgba(0,0,0,.42);
+  animation:drawerRightIn .24s var(--eg-ease) both;
+}
+
+.eg-drawer-close{
+  position:sticky;
+  top:0;
+  float:right;
+  width:44px;
+  height:44px;
+  border:1px solid var(--eg-border-ui);
+  border-radius:12px;
+  background:rgba(15,17,24,.86);
+  color:var(--eg-text-bright);
+  cursor:pointer;
+  font-size:1rem;
+  font-weight:900;
+}
+
+.eg-drawer-content{
+  clear:both;
+  display:grid;
+  gap:14px;
+  padding-top:8px;
+}
+
+@keyframes drawerRightIn{
+  from{transform:translateX(100%);opacity:.76;}
+  to{transform:translateX(0);opacity:1;}
+}
+
+@keyframes drawerUpIn{
+  from{transform:translateY(100%);opacity:.76;}
+  to{transform:translateY(0);opacity:1;}
+}
+
+.scout-screen .market-header{
+  padding:16px;
+  border:1px solid rgba(226,232,240,.11);
+  border-radius:18px;
+  background:linear-gradient(135deg,rgba(46,125,50,.16),transparent 48%),rgba(26,29,40,.72);
+}
+
+.scout-search-panel{
+  position:sticky;
+  top:calc(var(--topbar) + 1px);
+  z-index:18;
+  margin-inline:-2px;
+  border-color:rgba(46,125,50,.26)!important;
+  background:rgba(18,20,28,.94)!important;
+  backdrop-filter:blur(18px);
+}
+
+.scout-screen .market-filter-grid,
+.scout-filter-grid{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  padding-bottom:4px;
+  scrollbar-width:thin;
+}
+
+.scout-screen .field{min-width:152px;}
+
+.scout-screen select,
+.scout-screen .filter-select,
+.market-screen select{
+  font-family:var(--eg-data-font);
+}
+
+.scout-card,
+.scout-screen .market-player-card{
+  position:relative;
+  overflow:hidden;
+}
+
+.scout-card::before,
+.scout-screen .market-player-card::before{
+  content:"RELATORIO DO OLHEIRO";
+  position:absolute;
+  top:10px;
+  right:12px;
+  color:rgba(226,232,240,.18);
+  font-family:var(--eg-data-font);
+  font-size:.66rem;
+  font-weight:900;
+  letter-spacing:.12em;
+}
+
+.scout-card-note{
+  margin:0;
+  padding:10px 12px;
+  border-left:3px solid rgba(239,108,0,.72);
+  border-radius:12px;
+  background:linear-gradient(90deg,rgba(239,108,0,.13),rgba(239,108,0,.04));
+  color:var(--eg-text-bright);
+  font-size:.84rem;
+  line-height:1.45;
+}
+
+.scout-hidden strong{
+  filter:blur(2px);
+  user-select:none;
+}
+
+.scout-report{
+  border-left:3px solid rgba(239,108,0,.72)!important;
+  background:linear-gradient(90deg,rgba(239,108,0,.13),rgba(239,108,0,.04))!important;
+}
+
+.scout-progress b{background:linear-gradient(90deg,var(--eg-warning-ui),var(--eg-reward));}
+
+.overall-badge,
+.stat strong,
+.market-balance,
+.finance-money,
+.coach-result-score strong{
+  font-family:var(--eg-data-font);
+}
+
+@media (min-width:1024px){
+  #app{
+    display:grid;
+    grid-template-columns:var(--sidebar-width) minmax(0,1fr);
+    min-height:100vh;
+  }
+
+  .topbar{
+    grid-column:2;
+    left:var(--sidebar-width);
+    width:min(1080px,calc(100% - 32px - var(--sidebar-width)));
+  }
+
+  .desktop-sidebar.visible{display:flex;}
+
+  .desktop-sidebar{
+    grid-column:1;
+    grid-row:1 / 3;
+    position:sticky;
+    top:0;
+    z-index:32;
+    height:100vh;
+    flex-direction:column;
+    gap:18px;
+    padding:20px 16px;
+    border-right:1px solid var(--eg-border-ui);
+    background:linear-gradient(180deg,rgba(226,232,240,.04),transparent),rgba(9,10,15,.98);
+    box-shadow:16px 0 38px rgba(0,0,0,.24);
+  }
+
+  .desktop-sidebar-brand{
+    display:grid;
+    gap:4px;
+    padding:6px 8px 18px;
+    border-bottom:1px solid var(--eg-border-ui);
+  }
+
+  .desktop-sidebar-brand strong{
+    color:var(--eg-text-bright);
+    font-family:var(--eg-data-font);
+    letter-spacing:.14em;
+  }
+
+  .desktop-sidebar-brand span{
+    color:var(--muted);
+    font-size:.75rem;
+    text-transform:uppercase;
+  }
+
+  .desktop-sidebar-nav{
+    display:grid;
+    gap:8px;
+    align-content:start;
+    flex:1;
+  }
+
+  .desktop-nav-button{
+    min-height:44px;
+    padding:10px 12px;
+    border:1px solid transparent;
+    border-radius:12px;
+    background:transparent;
+    color:var(--eg-text-main);
+    text-align:left;
+    font-weight:850;
+    cursor:pointer;
+  }
+
+  .desktop-nav-button:hover,
+  .desktop-nav-button.active{
+    border-color:rgba(46,125,50,.28);
+    background:rgba(46,125,50,.12);
+    color:var(--eg-text-bright);
+  }
+
+  .desktop-advance-button{
+    width:100%;
+    min-height:50px;
+    border:0;
+    border-radius:14px;
+    background:linear-gradient(135deg,#2e7d32,#5f8f3a);
+    color:#f7fff7;
+    font-family:var(--eg-data-font);
+    font-weight:950;
+    letter-spacing:.04em;
+    cursor:pointer;
+  }
+
+  .bottom-nav{display:none!important;}
+
+  #screen-root{
+    grid-column:2;
+    grid-row:2;
+    padding:28px 30px 34px;
+  }
+
+  .screen{width:min(1180px,100%);}
+
+  .coach-card-grid,
+  .stat-grid,
+  .market-filter-grid,
+  .market-player-list,
+  .scout-known-grid{gap:14px;}
+
+  .scout-screen .market-filter-grid,
+  .scout-filter-grid{
+    display:grid;
+    grid-template-columns:repeat(6,minmax(120px,1fr));
+    overflow:visible;
+  }
+
+  .scout-screen .field{min-width:0;}
+}
+
+@media (max-width:1023px){
+  .desktop-sidebar.visible,
+  .desktop-sidebar{display:none!important;}
+}
+
+@media (max-width:1024px){
+  .splash-card,
+  .splash-message,
+  .splash-progress{
+    opacity:1!important;
+    transform:none!important;
+    animation-delay:0s!important;
+  }
+}
+
+@media (max-width:767px){
+  .eg-drawer-overlay{align-items:flex-end;}
+
+  .eg-drawer-panel{
+    width:100%;
+    max-width:none;
+    height:min(86vh,720px);
+    border-left:0;
+    border-top:1px solid var(--eg-border-ui);
+    border-radius:22px 22px 0 0;
+    animation:drawerUpIn .24s var(--eg-ease) both;
+  }
+
+  #toast-container,
+  .toast{max-width:calc(100vw - 24px);}
+
+  .scout-search-panel{
+    top:0;
+    margin-inline:-10px;
+    border-radius:0 0 18px 18px!important;
+  }
+}
+
+@media (max-width:480px){
+  .splash-screen{
+    place-items:center;
+    width:100vw;
+    max-width:100vw;
+    padding:18px 12px;
+  }
+
+  .splash-card{
+    width:min(330px,100%);
+    padding:22px 12px 20px;
+    opacity:1!important;
+    transform:none!important;
+  }
+
+  .splash-logo-wrap{
+    width:108px;
+    height:108px;
+    margin-bottom:14px;
+  }
+
+  .splash-logo{
+    width:82px;
+    height:82px;
+    border-radius:24px;
+  }
+
+  .splash-card h1{
+    font-size:clamp(1.85rem,12vw,2.45rem);
+  }
+
+  .splash-message,
+  .splash-progress{
+    width:min(260px,82vw);
+    opacity:1!important;
+    transform:none!important;
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .eg-drawer-panel{animation:none!important;}
+}

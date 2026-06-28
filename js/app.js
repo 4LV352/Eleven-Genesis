@@ -1019,6 +1019,9 @@
 
     let GameState = null;
     let toastTimer = null;
+    const UIState = {
+        currentDrawer: null
+    };
     let marketSearchTimer = null;
 
     window.ElevenGenesisAudio = window.ElevenGenesisAudio || {
@@ -2720,6 +2723,61 @@
         toastTimer = setTimeout(() => toast.classList.remove("visible"), 2600);
     }
 
+    function openUIDrawer(htmlContent, title = "Painel") {
+        const overlay = document.getElementById("eg-drawer-overlay");
+        const content = document.getElementById("eg-drawer-content");
+        if (!overlay || !content) return;
+        UIState.currentDrawer = title;
+        content.innerHTML = htmlContent;
+        overlay.dataset.drawer = title;
+        overlay.classList.remove("hidden");
+        overlay.setAttribute("aria-hidden", "false");
+    }
+
+    function closeUIDrawer() {
+        const overlay = document.getElementById("eg-drawer-overlay");
+        if (!overlay) return;
+        UIState.currentDrawer = null;
+        delete overlay.dataset.drawer;
+        overlay.classList.add("hidden");
+        overlay.setAttribute("aria-hidden", "true");
+    }
+
+    function renderPlayerDrawerContent(player) {
+        if (!player) return `<div class="empty-state" id="eg-drawer-title">Jogador não encontrado.</div>`;
+        const overall = calculateCurrentOverall(player);
+        const age = calculateAge(player, GameState.currentYear);
+        const position = translatePosition(player.primaryPosition || player.position || "-");
+        const potential = player.potential || overall;
+        return `
+            <article class="stack player-drawer-profile">
+                <span class="menu-kicker" id="eg-drawer-title">Perfil do jogador</span>
+                <h2>${escapeHtml(player.name || player.fullName || "Jogador")}</h2>
+                <div class="stat-grid compact">
+                    <div class="stat"><span>OVR</span><strong>${overall}</strong></div>
+                    <div class="stat"><span>POT</span><strong>${potential}</strong></div>
+                    <div class="stat"><span>Posição</span><strong>${escapeHtml(position)}</strong></div>
+                    <div class="stat"><span>Idade</span><strong>${age}</strong></div>
+                    <div class="stat"><span>Moral</span><strong>${player.morale ?? "-"}</strong></div>
+                    <div class="stat"><span>Condição</span><strong>${player.fitness ?? player.energy ?? "-"}</strong></div>
+                </div>
+                <div class="scout-report">
+                    <span>Leitura do treinador</span>
+                    <p>${escapeHtml(buildPlayerAtmosphereText(player, overall, potential))}</p>
+                </div>
+            </article>
+        `;
+    }
+
+    function buildPlayerAtmosphereText(player, overall, potential) {
+        const gap = potential - overall;
+        if (gap >= 10) return "Ainda e bruto, mas existe potencial para virar assunto de arquibancada.";
+        if ((player.morale || 0) >= 78) return "Chega confiante, treinando forte e pedindo passagem dentro do grupo.";
+        if ((player.morale || 0) <= 45) return "O talento existe, mas a cabeca pesa. Precisa de gestao antes de cobranca publica.";
+        if (overall >= 82) return "Jogador pronto para assumir responsabilidade. Nao e apenas atributo: e presenca.";
+        return "Perfil util para compor elenco, mas exige contexto certo para render no nivel esperado.";
+    }
+
     function saveCareer() {
         if (!GameState) return false;
         refreshAllPlayers();
@@ -3501,12 +3559,17 @@
 
         document.body.dataset.theme = GameState?.settings?.darkMode === false ? "light" : "dark";
         document.body.dataset.animationSpeed = GameState?.settings?.animationSpeed || "normal";
-        topbar.style.display = inCareer ? "flex" : "none";
-        nav.classList.toggle("visible", inCareer);
-        headerClub.textContent = inCareer ? GameState.club.name : t("brand.name");
-        headerSeason.textContent = inCareer ? `${GameState.season} - Rodada ${GameState.round}` : "1970 - Rodada 1";
+        if (topbar) topbar.style.display = inCareer ? "flex" : "none";
+        if (nav) nav.classList.toggle("visible", inCareer);
+        const desktopSidebar = document.getElementById("desktop-sidebar");
+        if (desktopSidebar) desktopSidebar.classList.toggle("visible", inCareer);
+        if (headerClub) headerClub.textContent = inCareer ? GameState.club.name : t("brand.name");
+        if (headerSeason) headerSeason.textContent = inCareer ? `${GameState.season} - Rodada ${GameState.round}` : "1970 - Rodada 1";
 
         if (window.EGNavigation) window.EGNavigation.setActiveNav(GameState.currentScreen);
+        document.querySelectorAll(".desktop-nav-button").forEach((button) => {
+            button.classList.toggle("active", button.dataset.screen === GameState.currentScreen);
+        });
         applyStaticI18n();
     }
 
@@ -7248,6 +7311,16 @@
         }).sort((a, b) => (b.potential + calculateCurrentOverall(b)) - (a.potential + calculateCurrentOverall(a))).slice(0, 8);
     }
 
+    function buildScoutCardNote(player) {
+        const overall = calculateCurrentOverall(player);
+        const potentialGap = (player.potential || overall) - overall;
+        if (potentialGap >= 10) return "Promessa crua: o teto chama atencao, mas ainda precisa de acompanhamento.";
+        if ((player.attributes?.physical || 0) >= 78) return "Fisicamente pronto para competir; pode ganhar espaco rapido.";
+        if ((player.morale || 0) <= 45) return "Talento sob pressao: observar mentalidade antes de abrir negociacao.";
+        if (overall >= 80) return "Jogador de impacto imediato; relatorio deve focar custo e encaixe.";
+        return "Perfil de rotacao: util se o preco encaixar no planejamento.";
+    }
+
     function renderScout() {
         refreshAllPlayers();
         ensureScoutState();
@@ -7283,9 +7356,9 @@
                     <h2>${escapeHtml(t("scout.lastReport"))}</h2>
                     <p>${escapeHtml(latestReport ? `${latestReport.playerName}: ${latestReport.text}` : t("scout.noReport"))}</p>
                 </div>
-                <div class="card card-pad stack">
+                <div class="card card-pad stack scout-search-panel">
                     <h2>Busca de Scout</h2>
-                    <div class="market-filter-grid">
+                    <div class="market-filter-grid scout-filter-grid">
                         <label class="field"><span>Idade</span><select data-scout-search="age">
                             ${getMarketFilterOptions("age").map((option) => `<option value="${option.value}" ${search.age === option.value ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}
                         </select></label>
@@ -7300,7 +7373,11 @@
                             <article class="market-player-card card card-pad stack">
                                 <div class="row-main"><strong>${escapeHtml(player.name)}</strong><span class="overall-badge">${calculateCurrentOverall(player)}</span></div>
                                 <div class="meta"><span>${player.primaryPosition}</span><span>${calculateAge(player, GameState.currentYear)} anos</span><span>${escapeHtml(player.country)}</span><span>${money(player.marketValue)}</span></div>
-                                <button class="btn" type="button" data-scout-add-result="${player.id}">${GameState.scout.assignments[player.id] ? "Em observação" : "Observar"}</button>
+                                <p class="scout-card-note">${escapeHtml(buildScoutCardNote(player))}</p>
+                                <div class="button-row">
+                                    <button class="btn btn-ghost" type="button" data-drawer-player="${player.id}">Perfil</button>
+                                    <button class="btn" type="button" data-scout-add-result="${player.id}">${GameState.scout.assignments[player.id] ? "Em observação" : "Observar"}</button>
+                                </div>
                             </article>
                         `).join("") || `<div class="empty-state">Nenhum jogador encontrado pelos filtros.</div>`}
                     </div>
@@ -7323,8 +7400,23 @@
                 renderScout();
             });
         });
+        document.querySelectorAll("[data-drawer-player]").forEach((button) => {
+            button.addEventListener("click", () => {
+                const player = [...GameState.squad, ...GameState.market].find((item) => item.id === button.dataset.drawerPlayer);
+                openUIDrawer(renderPlayerDrawerContent(player), player?.name || "Perfil");
+            });
+        });
         document.querySelectorAll("[data-scout-add-result]").forEach((button) => {
-            button.addEventListener("click", () => startScoutObservation(button.dataset.scoutAddResult));
+            button.addEventListener("click", () => {
+                button.classList.add("is-loading");
+                button.textContent = "Observando...";
+                const ok = startScoutObservation(button.dataset.scoutAddResult);
+                if (ok !== false) {
+                    setTimeout(() => renderScout(), 350);
+                } else {
+                    button.classList.remove("is-loading");
+                }
+            });
         });
         updateChrome();
     }
@@ -8221,12 +8313,28 @@
     }
 
     function bindGlobalEvents() {
-        document.getElementById("bottom-nav").addEventListener("click", (event) => {
+        const handleNavigationClick = (event) => {
             const button = event.target.closest("[data-screen]");
             if (!button) return;
             switchScreen(button.dataset.screen);
+        };
+        document.getElementById("bottom-nav")?.addEventListener("click", handleNavigationClick);
+        document.getElementById("desktop-sidebar")?.addEventListener("click", (event) => {
+            const advanceButton = event.target.closest("[data-action='advance-week']");
+            if (advanceButton) {
+                advanceWeek();
+                return;
+            }
+            handleNavigationClick(event);
         });
-        document.getElementById("settings-button").addEventListener("click", () => switchScreen("settings"));
+        document.getElementById("eg-drawer-overlay")?.addEventListener("click", (event) => {
+            if (event.target.id === "eg-drawer-overlay") closeUIDrawer();
+        });
+        document.getElementById("eg-drawer-close")?.addEventListener("click", closeUIDrawer);
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape" && UIState.currentDrawer) closeUIDrawer();
+        });
+        document.getElementById("settings-button")?.addEventListener("click", () => switchScreen("settings"));
         if (window.EGUI) window.EGUI.bindPressFeedback(() => triggerGameFeedback("tap"));
     }
 
@@ -8271,6 +8379,9 @@
     window.advanceWeek = advanceWeek;
     window.addNews = addNews;
     window.openNewsDetail = openNewsDetail;
+    window.openUIDrawer = openUIDrawer;
+    window.closeUIDrawer = closeUIDrawer;
+    window.renderPlayerDrawerContent = renderPlayerDrawerContent;
     window.maybeCreateQuestionEvent = maybeCreateQuestionEvent;
     window.answerQuestion = answerQuestion;
     window.startStadiumUpgrade = startStadiumUpgrade;

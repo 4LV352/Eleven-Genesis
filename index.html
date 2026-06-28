@@ -19,6 +19,27 @@
             <button class="icon-action" id="settings-button" type="button" aria-label="Configurações" data-i18n-aria-label="nav.settings">CFG</button>
         </header>
 
+        <aside class="desktop-sidebar" id="desktop-sidebar" aria-label="Navegação principal desktop">
+            <div class="desktop-sidebar-brand">
+                <strong>XI GENESIS</strong>
+                <span>Manager Room</span>
+            </div>
+            <nav class="desktop-sidebar-nav">
+                <button type="button" class="desktop-nav-button" data-screen="home" data-i18n="nav.home"></button>
+                <button type="button" class="desktop-nav-button" data-screen="squad" data-i18n="nav.squad"></button>
+                <button type="button" class="desktop-nav-button" data-screen="tactics" data-i18n="nav.tactics"></button>
+                <button type="button" class="desktop-nav-button" data-screen="market" data-i18n="nav.market"></button>
+                <button type="button" class="desktop-nav-button" data-screen="scout" data-i18n="nav.scout"></button>
+                <button type="button" class="desktop-nav-button" data-screen="academy" data-i18n="nav.academy"></button>
+                <button type="button" class="desktop-nav-button" data-screen="marketing" data-i18n="nav.marketing"></button>
+                <button type="button" class="desktop-nav-button" data-screen="league" data-i18n="nav.league"></button>
+                <button type="button" class="desktop-nav-button" data-screen="club" data-i18n="nav.club"></button>
+            </nav>
+            <div class="desktop-sidebar-footer">
+                <button type="button" class="desktop-advance-button" data-action="advance-week">PRÓXIMO JOGO</button>
+            </div>
+        </aside>
+
         <main id="screen-root" aria-live="polite"></main>
 
         <nav class="bottom-nav" id="bottom-nav" aria-label="Navegacao principal">
@@ -35,6 +56,13 @@
 
         <div class="toast" id="toast" role="status" aria-live="polite"></div>
         <div class="modal-root" id="modal-root" aria-live="polite"></div>
+    </div>
+
+    <div id="eg-drawer-overlay" class="eg-drawer-overlay hidden" aria-hidden="true">
+        <aside id="eg-drawer-panel" class="eg-drawer-panel" role="dialog" aria-modal="true" aria-labelledby="eg-drawer-title">
+            <button id="eg-drawer-close" class="eg-drawer-close" type="button" aria-label="Fechar painel">x</button>
+            <div id="eg-drawer-content" class="eg-drawer-content"></div>
+        </aside>
     </div>
 
     <div id="tension-overlay" class="tension-overlay hidden" aria-live="assertive" aria-modal="true" role="dialog">
