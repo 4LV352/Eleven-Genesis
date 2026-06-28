@@ -316,3 +316,32 @@ body[data-animation-speed="fast"] {
         grid-template-columns: 1fr;
     }
 }
+
+/* EG5: mobile sem scroll desnecessário */
+@media (max-width: 760px) {
+    .screen.eg4-market,
+    .screen.eg4-scout,
+    .screen.eg5-tactics,
+    .screen.eg3-academy,
+    .screen.eg3-squad {
+        padding-top: 14px;
+        padding-bottom: 88px;
+    }
+    .eg4-market-hero,
+    .eg4-scout-brief,
+    .eg5-section-hero {
+        margin-bottom: 12px;
+    }
+    .eg4-transfer-info small,
+    .eg4-report-info small,
+    .eg5-human-line {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .eg3-filter-panel {
+        max-height: 86dvh;
+        overflow: auto;
+    }
+}

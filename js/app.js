@@ -47,7 +47,13 @@
         "4-3-3": [[50, 91], [17, 73], [39, 75], [61, 75], [83, 73], [34, 53], [50, 48], [66, 53], [20, 23], [50, 17], [80, 23]],
         "4-2-3-1": [[50, 91], [17, 73], [39, 75], [61, 75], [83, 73], [41, 58], [59, 58], [22, 36], [50, 32], [78, 36], [50, 16]],
         "3-5-2": [[50, 91], [30, 75], [50, 78], [70, 75], [13, 48], [35, 54], [50, 47], [65, 54], [87, 48], [42, 20], [58, 20]],
-        "5-3-2": [[50, 91], [12, 68], [30, 75], [50, 78], [70, 75], [88, 68], [35, 51], [50, 48], [65, 51], [42, 21], [58, 21]]
+        "5-3-2": [[50, 91], [12, 68], [30, 75], [50, 78], [70, 75], [88, 68], [35, 51], [50, 48], [65, 51], [42, 21], [58, 21]],
+        "4-1-4-1": [[50, 91], [17, 73], [39, 75], [61, 75], [83, 73], [50, 61], [18, 43], [40, 47], [60, 47], [82, 43], [50, 16]],
+        "4-3-1-2": [[50, 91], [17, 73], [39, 75], [61, 75], [83, 73], [34, 52], [50, 56], [66, 52], [50, 34], [42, 18], [58, 18]],
+        "4-5-1": [[50, 91], [17, 73], [39, 75], [61, 75], [83, 73], [18, 47], [36, 52], [50, 55], [64, 52], [82, 47], [50, 16]],
+        "3-4-3": [[50, 91], [30, 75], [50, 78], [70, 75], [18, 51], [40, 54], [60, 54], [82, 51], [20, 21], [50, 15], [80, 21]],
+        "4-2-2-2": [[50, 91], [17, 73], [39, 75], [61, 75], [83, 73], [41, 58], [59, 58], [28, 34], [72, 34], [42, 18], [58, 18]],
+        "3-4-1-2": [[50, 91], [30, 75], [50, 78], [70, 75], [18, 51], [40, 54], [60, 54], [82, 51], [50, 33], [42, 18], [58, 18]]
     };
     const MENTALITIES = ["Muito defensiva", "Defensiva", "Equilibrada", "Ofensiva", "Muito ofensiva"];
     const PLAY_STYLES = ["Posse", "Contra-ataque", "Bola longa", "Pressão alta", "Defesa baixa", "Tiki-taka", "Vertical"];
@@ -876,14 +882,7 @@
         "contract.long": "Contrato largo"
     };
     const TACTICAL_PROFILE_OVERRIDES = {
-        "cristiano-r": { naturalAreas: ["LW", "ST", "RW", "CF", "LM", "RM"], versatility: 65, preferredRoles: ["ST", "LW", "RW"], preferredSide: "Esquerda" },
-        "lionel-m": { naturalAreas: ["RW", "CAM", "CF", "ST"], versatility: 60, preferredRoles: ["RW", "CAM", "CF"], preferredSide: "Direita" },
-        "ronaldinho-g": { naturalAreas: ["LW", "CAM", "LM", "CF"], versatility: 78, preferredRoles: ["LW", "CAM"], preferredSide: "Esquerda" },
-        "maldini-p": { naturalAreas: ["CB", "LB", "LWB"], versatility: 93, preferredRoles: ["CB", "LB"], preferredSide: "Esquerda" },
         "beckenbauer-f": { naturalAreas: ["CB", "CDM", "CM"], versatility: 92, preferredRoles: ["CB", "CDM"], preferredSide: "Centro" },
-        "xavi-h": { naturalAreas: ["CM", "CDM", "CAM"], versatility: 84, preferredRoles: ["CM"], preferredSide: "Centro" },
-        "iniesta-a": { naturalAreas: ["CM", "CAM", "LM"], versatility: 86, preferredRoles: ["CM", "CAM"], preferredSide: "Centro" },
-        "buffon-g": { naturalAreas: ["GK"], versatility: 5, preferredRoles: ["GK"], preferredSide: "Centro" }
     };
 
     const clubCatalog = [
@@ -977,24 +976,36 @@
     ];
 
     const historicalPlayerProfiles = [
-        ["pele", "Pele", "Pele", "Brasil", 1940, "CF", 99, 99, 99, "lendario"],
-        ["lionel-m", "Lionel M.", "Lionel", "Argentina", 1953, "RW", 99, 99, 98, "lendario"],
-        ["cristiano-r", "Cristiano R.", "Cristiano", "Portugal", 1952, "ST", 99, 99, 98, "lendario"],
-        ["maradona-d", "Maradona D.", "Diego", "Argentina", 1951, "CAM", 98, 98, 98, "lendario"],
-        ["ronaldo-f", "Ronaldo F.", "Ronaldo", "Brasil", 1954, "ST", 98, 98, 97, "lendario"],
-        ["ronaldinho-g", "Ronaldinho G.", "R10", "Brasil", 1953, "LW", 97, 97, 96, "lendario"],
-        ["cruyff-j", "Cruyff J.", "Johan", "Holanda", 1947, "CF", 97, 97, 96, "lendario"],
-        ["zidane-z", "Zidane Z.", "Zizou", "Franca", 1950, "CAM", 96, 96, 95, "lendario"],
-        ["beckenbauer-f", "Beckenbauer F.", "Kaiser", "Alemanha", 1945, "CB", 96, 96, 95, "lendario"],
-        ["xavi-h", "Xavi H.", "Xavi", "Espanha", 1951, "CM", 95, 95, 94, "elite"],
-        ["iniesta-a", "Iniesta A.", "Andres", "Espanha", 1952, "CM", 95, 95, 94, "elite"],
-        ["rivaldo", "Rivaldo", "Riva", "Brasil", 1953, "CAM", 95, 95, 93, "elite"],
-        ["kaka-r", "Kaka R.", "Kaka", "Brasil", 1954, "CAM", 94, 94, 92, "elite"],
-        ["maldini-p", "Maldini P.", "Paolo", "Italia", 1950, "CB", 94, 94, 92, "elite"],
-        ["buffon-g", "Buffon G.", "Gigi", "Italia", 1948, "GK", 94, 94, 92, "elite"],
-        ["henry-t", "Henry T.", "Titi", "Franca", 1953, "ST", 93, 93, 91, "elite"],
-        ["neymar-j", "Neymar J.", "Ney", "Brasil", 1955, "LW", 93, 94, 90, "elite"],
-        ["modric-l", "Modric L.", "Luka", "Croacia", 1951, "CM", 92, 92, 90, "estrela"],
+        ["pele", "Pelé", "Pelé", "Brasil", 1940, "CF", 99, 99, 99, "lendario"],
+        ["jairzinho", "Jairzinho", "Furacão", "Brasil", 1944, "RW", 93, 93, 92, "lendario"],
+        ["tostao", "Tostão", "Tostão", "Brasil", 1947, "CF", 91, 92, 88, "estrela"],
+        ["rivelino", "Rivelino", "Patada", "Brasil", 1946, "CAM", 92, 93, 90, "estrela"],
+        ["gerson", "Gérson", "Canhotinha", "Brasil", 1941, "CM", 91, 91, 89, "estrela"],
+        ["cruyff-j", "Johan Cruyff", "Cruyff", "Holanda", 1947, "CF", 97, 98, 96, "lendario"],
+        ["neeskens-j", "Johan Neeskens", "Neeskens", "Holanda", 1951, "CM", 91, 92, 89, "estrela"],
+        ["beckenbauer-f", "Franz Beckenbauer", "Kaiser", "Alemanha", 1945, "CB", 96, 96, 95, "lendario"],
+        ["muller-g", "Gerd Müller", "Bomber", "Alemanha", 1945, "ST", 95, 95, 94, "lendario"],
+        ["banks-g", "Gordon Banks", "Banks", "Inglaterra", 1937, "GK", 93, 93, 91, "estrela"],
+        ["moore-b", "Bobby Moore", "Moore", "Inglaterra", 1941, "CB", 94, 94, 92, "estrela"],
+        ["facchetti-g", "Giacinto Facchetti", "Facchetti", "Italia", 1942, "LB", 91, 91, 89, "estrela"],
+        ["mazzola-s", "Sandro Mazzola", "Mazzola", "Italia", 1942, "CAM", 90, 90, 88, "estrela"],
+        ["mazurkiewicz-l", "Ladislao Mazurkiewicz", "Mazurkiewicz", "Uruguai", 1945, "GK", 88, 89, 84, "estrela"],
+        ["cubillas-t", "Teófilo Cubillas", "Cubillas", "Peru", 1949, "CAM", 89, 92, 86, "estrela"],
+        ["perfumo-r", "Roberto Perfumo", "Mariscal", "Argentina", 1942, "CB", 88, 88, 86, "estrela"],
+        ["pastoriza-j", "José Pastoriza", "Pato", "Argentina", 1942, "CM", 84, 84, 80, "comum"],
+        ["sotil-h", "Hugo Sotil", "Cholo", "Peru", 1949, "CF", 86, 88, 83, "estrela"],
+        ["netzer-g", "Günter Netzer", "Netzer", "Alemanha", 1944, "CM", 90, 90, 88, "estrela"],
+        ["keegan-k", "Kevin Keegan", "Keegan", "Inglaterra", 1951, "CF", 86, 91, 81, "promessa"],
+        ["zoff-d", "Dino Zoff", "Zoff", "Italia", 1942, "GK", 91, 91, 89, "estrela"],
+        ["krol-r", "Ruud Krol", "Krol", "Holanda", 1949, "LB", 87, 91, 82, "promessa"],
+        ["dalgish-k", "Kenny Dalglish", "Dalglish", "Escocia", 1951, "CF", 84, 92, 78, "promessa"],
+        ["rossi-p", "Paolo Rossi", "Rossi", "Italia", 1956, "ST", 72, 92, 55, "promessa"],
+        ["zico", "Zico", "Galinho", "Brasil", 1953, "CAM", 80, 96, 70, "promessa"],
+        ["socrates", "Sócrates", "Doutor", "Brasil", 1954, "CM", 76, 94, 58, "promessa"],
+        ["platini-m", "Michel Platini", "Platini", "Franca", 1955, "CAM", 74, 95, 54, "promessa"],
+        ["falcao-p", "Paulo Roberto Falcão", "Falcão", "Brasil", 1953, "CM", 78, 93, 61, "promessa"],
+        ["passarella-d", "Daniel Passarella", "Passarella", "Argentina", 1953, "CB", 79, 92, 63, "promessa"],
+        ["fillol-u", "Ubaldo Fillol", "Pato", "Argentina", 1950, "GK", 82, 91, 69, "promessa"],
         ["adrian-keller", "Adrian Keller", "Keller", "Alemanha", 1946, "GK", 82, 84, 70, "comum"],
         ["breno-duarte", "Breno Duarte", "Breno", "Brasil", 1952, "CB", 78, 86, 48, "comum"],
         ["claudio-rios", "Claudio Rios", "Rios", "Argentina", 1951, "LB", 77, 84, 54, "comum"],
@@ -1004,19 +1015,8 @@
         ["gustavo-lima", "Gustavo Lima", "Guga", "Brasil", 1955, "CM", 78, 92, 36, "promessa"],
         ["hector-molina", "Hector Molina", "Molina", "Espanha", 1948, "CAM", 83, 86, 73, "estrela"],
         ["ivan-petrov", "Ivan Petrov", "Petrov", "Uniao Sovietica", 1953, "RW", 79, 90, 43, "promessa"],
-        ["jamal-reed", "Jamal Reed", "Reed", "Inglaterra", 1951, "LW", 80, 87, 57, "comum"],
-        ["kevin-moretti", "Kevin Moretti", "Moretti", "Italia", 1945, "ST", 84, 81, 77, "estrela"],
-        ["leon-ortiz", "Leon Ortiz", "Leon", "Argentina", 1954, "ST", 82, 92, 39, "promessa"],
-        ["mario-novak", "Mario Novak", "Novak", "Iugoslavia", 1950, "GK", 77, 84, 55, "comum"],
-        ["noel-duarte", "Noel Duarte", "Noel", "Portugal", 1953, "CB", 76, 88, 41, "promessa"],
-        ["otto-schneider", "Otto Schneider", "Otto", "Alemanha", 1948, "RWB", 80, 82, 68, "comum"],
-        ["pablo-sosa", "Pablo Sosa", "Sosa", "Uruguai", 1944, "CDM", 82, 78, 76, "estrela"],
-        ["quentin-hall", "Quentin Hall", "Hall", "Inglaterra", 1952, "CM", 79, 87, 50, "comum"],
-        ["rafael-vega", "Rafael Vega", "Vega", "Espanha", 1955, "CAM", 80, 94, 34, "promessa"],
-        ["silvio-costa", "Silvio Costa", "Silvio", "Brasil", 1949, "LM", 80, 84, 65, "comum"],
-        ["theo-martin", "Theo Martin", "Theo", "Franca", 1953, "CF", 81, 91, 46, "promessa"]
+        ["jamal-reed", "Jamal Reed", "Reed", "Inglaterra", 1951, "LW", 80, 87, 57, "comum"]
     ];
-
     let GameState = null;
     let toastTimer = null;
     const UIState = {
@@ -1806,6 +1806,72 @@
         return String(value || "").split("").reduce((hash, char) => ((hash << 5) - hash + char.charCodeAt(0)) | 0, 0);
     }
 
+
+    function eg5Pick(list, seed) {
+        if (!list || !list.length) return "";
+        return list[Math.abs(hashText(seed)) % list.length];
+    }
+
+    function eg5NormalizeCountry(country) {
+        const value = String(country || "Brasil").toLowerCase();
+        if (value.includes("espan")) return "Espanha";
+        if (value.includes("argentin")) return "Argentina";
+        if (value.includes("ital")) return "Italia";
+        if (value.includes("mexic") || value.includes("méxic")) return "Mexico";
+        if (value.includes("portug")) return "Portugal";
+        if (value.includes("inglat") || value.includes("engl")) return "Inglaterra";
+        if (value.includes("alem")) return "Alemanha";
+        if (value.includes("holand")) return "Holanda";
+        if (value.includes("fran")) return "Franca";
+        if (value.includes("urugu")) return "Uruguai";
+        if (value.includes("brasil")) return "Brasil";
+        return country || "Brasil";
+    }
+
+    function eg5CountryNamePool(country) {
+        const pools = {
+            Brasil: { first: ["João", "Carlos", "Paulo", "Roberto", "Luiz", "Rafael", "Bruno", "Marcos", "Eduardo", "Caio", "André", "Márcio"], last: ["Silva", "Santos", "Oliveira", "Souza", "Pereira", "Costa", "Ferreira", "Lima", "Rocha", "Almeida", "Nunes", "Barbosa"] },
+            Portugal: { first: ["João", "António", "Manuel", "Rui", "Nuno", "Miguel", "Pedro", "Tiago", "Ricardo", "Hugo"], last: ["Silva", "Costa", "Pereira", "Ferreira", "Santos", "Oliveira", "Sousa", "Rodrigues", "Gomes", "Mendes"] },
+            Espanha: { first: ["Carlos", "Javier", "Miguel", "Sergio", "Raúl", "Álvaro", "Iker", "Andrés", "Fernando", "Héctor"], last: ["García", "López", "Martínez", "Sánchez", "Rodríguez", "Fernández", "Torres", "Ramos", "Moreno", "Vidal"] },
+            Argentina: { first: ["Diego", "Jorge", "Claudio", "Héctor", "Pablo", "Sergio", "Nicolás", "Enzo", "Matías", "Ariel"], last: ["González", "Rodríguez", "Fernández", "López", "Martínez", "Sosa", "Ríos", "Molina", "Vega", "Acuña"] },
+            Italia: { first: ["Marco", "Paolo", "Giuseppe", "Roberto", "Alessandro", "Franco", "Dino", "Carlo", "Luca", "Sandro"], last: ["Rossi", "Bianchi", "Conti", "Ferrari", "Moretti", "Ricci", "Romano", "Gallo", "Marino", "De Luca"] },
+            Mexico: { first: ["Juan", "Carlos", "Miguel", "Héctor", "Javier", "Luis", "Rafael", "Gerardo", "Ricardo", "Ángel"], last: ["Hernández", "García", "Martínez", "López", "González", "Ramírez", "Sánchez", "Flores", "Cruz", "Morales"] },
+            Inglaterra: { first: ["George", "Bobby", "Kevin", "Alan", "Peter", "Steve", "David", "Michael", "Tom", "Gary"], last: ["Smith", "Taylor", "Brown", "Wilson", "Moore", "Hall", "Walker", "Turner", "Cooper", "Reed"] },
+            Alemanha: { first: ["Franz", "Gerd", "Karl", "Uwe", "Hans", "Dieter", "Rainer", "Klaus", "Otto", "Jürgen"], last: ["Müller", "Schneider", "Schmidt", "Fischer", "Weber", "Wagner", "Becker", "Hoffmann", "Keller", "Bauer"] },
+            Holanda: { first: ["Johan", "Ruud", "Willem", "Piet", "Arie", "Dirk", "Jan", "Marco", "Kees", "Frank"], last: ["de Jong", "van Dijk", "Krol", "Jansen", "Bakker", "de Vries", "van der Meer", "Visser", "Smit", "Bos"] },
+            Franca: { first: ["Michel", "Jean", "Thierry", "Alain", "Patrick", "Didier", "Bernard", "Laurent", "Éric", "Claude"], last: ["Martin", "Bernard", "Dubois", "Moreau", "Laurent", "Lefèvre", "Girard", "Roux", "Petit", "Blanc"] },
+            Uruguai: { first: ["Hugo", "Pablo", "Enzo", "Luis", "Oscar", "Jorge", "Ruben", "Daniel", "Álvaro", "Sergio"], last: ["Pérez", "Rodríguez", "Silva", "Sosa", "Varela", "Méndez", "Suárez", "Castro", "López", "Ríos"] }
+        };
+        return pools[eg5NormalizeCountry(country)] || pools.Brasil;
+    }
+
+    function eg5BuildLocalName(country, seed) {
+        const pool = eg5CountryNamePool(country);
+        return `${eg5Pick(pool.first, `${seed}-first`)} ${eg5Pick(pool.last, `${seed}-last`)}`;
+    }
+
+    function eg5PlayerHumanDescription(player) {
+        const position = player.primaryPosition || player.position || "CM";
+        const country = eg5NormalizeCountry(player.country);
+        const potential = player.potential || calculateCurrentOverall(player);
+        const personality = player.personality || "Profissional";
+        const archetype = ["CAM", "CM", "CF"].includes(position) ? "lê o jogo antes dos outros" :
+            ["ST", "LW", "RW"].includes(position) ? "vive para atacar espaço e decidir jogos" :
+            ["CB", "CDM", "GK"].includes(position) ? "dá estabilidade quando a pressão cresce" :
+            "cumpre função importante no equilíbrio do time";
+        const countryLine = country === "Brasil" ? "tem improviso natural" : country === "Argentina" ? "tem personalidade forte" : country === "Italia" ? "entende o valor da disciplina" : country === "Espanha" ? "gosta de controlar o ritmo" : country === "Inglaterra" ? "compete em cada duelo" : "carrega uma escola própria";
+        const ceiling = potential >= 90 ? "pode marcar uma geração" : potential >= 82 ? "pode virar peça importante por muitos anos" : "precisa de contexto certo para crescer";
+        return `${translatePosition(position)} ${personality.toLowerCase()}, ${countryLine} e ${archetype}. O relatório indica que ${ceiling}.`;
+    }
+
+    function eg5GetEraLabel(year = GameState.currentYear) {
+        if (year < 1978) return "Futebol dos Países";
+        if (year < 1986) return "Profissionalização";
+        if (year < 1992) return "Globalização inicial";
+        if (year < 1998) return "Explosão comercial";
+        return "Futebol moderno";
+    }
+
     function deterministicNumber(seed, min, max) {
         const range = max - min + 1;
         return min + (Math.abs(hashText(seed)) % range);
@@ -1916,7 +1982,7 @@
         if (!normalized.history.length) {
             normalized.history = [
                 { season: currentYear, club: GameState?.club?.name || "Clube atual", event: "Integrado ao elenco principal", value: normalized.marketValue },
-                { season: currentYear - 1, club: "Formação", event: `Evoluiu como ${normalized.primaryPosition}`, value: Math.round(normalized.marketValue * 0.72) }
+                { season: currentYear - 1, club: "Formação", event: `Evoluiu como ${translatePosition(normalized.primaryPosition)}`, value: Math.round(normalized.marketValue * 0.72) }
             ];
         }
         if (!normalized.seasons.length) {
@@ -3555,10 +3621,20 @@
         const nav = document.getElementById("bottom-nav");
         const headerClub = document.getElementById("header-club");
         const headerSeason = document.getElementById("header-season");
+        const root = document.getElementById("screen-root");
         const inCareer = window.EGNavigation ? window.EGNavigation.isCareerScreen(GameState) : Boolean(GameState && GameState.club);
+        const app = document.getElementById("app");
+        const isMenuArea = ["menu", "menuSettings", "menuCredits", "clubSelect"].includes(GameState?.currentScreen);
 
         document.body.dataset.theme = GameState?.settings?.darkMode === false ? "light" : "dark";
         document.body.dataset.animationSpeed = GameState?.settings?.animationSpeed || "normal";
+        if (app) {
+            app.classList.toggle("menu-active", isMenuArea);
+            app.style.paddingLeft = isMenuArea ? "0px" : "";
+            app.style.display = isMenuArea ? "block" : "";
+            app.style.gridTemplateColumns = isMenuArea ? "none" : "";
+        }
+        if (root) root.style.padding = isMenuArea ? "0px" : "";
         if (topbar) topbar.style.display = inCareer ? "flex" : "none";
         if (nav) nav.classList.toggle("visible", inCareer);
         const desktopSidebar = document.getElementById("desktop-sidebar");
@@ -3607,38 +3683,49 @@
         updateQuestionModal();
         const saveInfo = getSaveInfo();
         const root = document.getElementById("screen-root");
+        const hasSave = saveInfo.exists;
         root.innerHTML = `
-            <section class="main-menu screen">
-                <div class="menu-stadium" aria-hidden="true">
+            <section class="main-menu screen eg5-menu" aria-label="Eleven Genesis">
+                <div class="menu-stadium eg5-menu-stadium" aria-hidden="true">
                     <span class="menu-stadium-light left"></span>
                     <span class="menu-stadium-light right"></span>
                     <span class="menu-stadium-pitch"></span>
                 </div>
-                <div class="menu-shell">
-                    <div class="menu-brand">
-                        <div class="menu-emblem">
+                <div class="eg5-menu-stage">
+                    <aside class="eg5-menu-story">
+                        <span class="eg5-eyebrow">Desde ${START_YEAR}</span>
+                        <h2>O mundo não espera pelo treinador.</h2>
+                        <p>Clubes crescem, gerações passam e cada temporada deixa uma cicatriz. Entre no vestiário e escreva uma carreira que o futebol vai lembrar.</p>
+                        <div class="eg5-era-chip"><span>Era atual</span><strong>${escapeHtml(eg5GetEraLabel(saveInfo.season || START_YEAR))}</strong></div>
+                    </aside>
+
+                    <main class="eg5-menu-center">
+                        <div class="menu-emblem eg5-menu-emblem">
                             <img src="assets/eleven-genesis-reference.jpeg" alt="${escapeHtml(t("brand.name"))}">
                         </div>
                         <span class="menu-kicker">${escapeHtml(t("brand.tagline"))}</span>
                         <h1>${escapeHtml(t("brand.name"))}</h1>
-                        <p>${escapeHtml(t("brand.version", { version: GAME_VERSION }))}</p>
-                    </div>
-                    <div class="menu-actions">
-                        <button class="btn btn-primary menu-button" id="new-career" type="button">${escapeHtml(t("menu.newCareer"))}</button>
-                        <button class="btn menu-button" id="load-career" type="button" ${saveInfo.exists ? "" : "disabled"}>${escapeHtml(t("menu.continueCareer"))}</button>
-                        ${saveInfo.exists ? "" : `<div class="menu-alert">${escapeHtml(t("menu.noCareer"))}</div>`}
-                        <button class="btn btn-ghost menu-button" id="menu-settings" type="button">${escapeHtml(t("menu.settings"))}</button>
-                        <button class="btn btn-ghost menu-button" id="menu-credits" type="button">${escapeHtml(t("menu.credits"))}</button>
-                    </div>
-                    <div class="menu-info-grid" aria-label="${escapeHtml(t("menu.alpha"))}">
-                        <div class="menu-info-item"><span>${escapeHtml(t("menu.alpha"))}</span><strong>${escapeHtml(GAME_VERSION)}</strong></div>
-                        <div class="menu-info-item"><span>${escapeHtml(t("menu.lastSave"))}</span><strong>${escapeHtml(saveInfo.lastSavedAt)}</strong></div>
-                        <div class="menu-info-item"><span>${escapeHtml(t("menu.season"))}</span><strong>${escapeHtml(String(saveInfo.season))}</strong></div>
-                        <div class="menu-info-item"><span>${escapeHtml(t("menu.currentClub"))}</span><strong>${escapeHtml(saveInfo.clubName)}</strong></div>
-                    </div>
-                    <div class="menu-audio-architecture" aria-hidden="true">
-                        <div data-audio-hook="menu-select"></div>
-                    </div>
+                        <p>${hasSave ? "Sua sala ainda está do jeito que você deixou." : "Comece em 1970. O resto vira história."}</p>
+                        <div class="menu-actions eg5-menu-actions">
+                            <button class="btn btn-primary menu-button" id="new-career" type="button">${escapeHtml(t("menu.newCareer"))}</button>
+                            <button class="btn menu-button" id="load-career" type="button" ${hasSave ? "" : "disabled"}>${escapeHtml(t("menu.continueCareer"))}</button>
+                            ${hasSave ? "" : `<div class="menu-alert">${escapeHtml(t("menu.noCareer"))}</div>`}
+                            <button class="btn btn-ghost menu-button" id="menu-settings" type="button">${escapeHtml(t("menu.settings"))}</button>
+                            <button class="btn btn-ghost menu-button" id="menu-credits" type="button">${escapeHtml(t("menu.credits"))}</button>
+                        </div>
+                    </main>
+
+                    <aside class="eg5-save-card">
+                        <span class="eg5-eyebrow">Última carreira</span>
+                        <strong>${escapeHtml(saveInfo.clubName)}</strong>
+                        <p>${hasSave ? "O clube continua girando. A próxima semana já tem cobranças." : "Nenhum clube assumido ainda."}</p>
+                        <div class="eg5-save-meta">
+                            <div><span>Temporada</span><b>${escapeHtml(String(saveInfo.season))}</b></div>
+                            <div><span>Último save</span><b>${escapeHtml(saveInfo.lastSavedAt)}</b></div>
+                            <div><span>Versão</span><b>${escapeHtml(GAME_VERSION)}</b></div>
+                        </div>
+                        ${hasSave ? `<button class="btn btn-primary menu-button" id="menu-resume-side" type="button">Entrar no clube →</button>` : `<button class="btn btn-ghost menu-button" id="menu-resume-side" type="button">Criar primeira história</button>`}
+                    </aside>
                 </div>
             </section>
         `;
@@ -3656,6 +3743,10 @@
             if (event.detail === 0) triggerMenuFeedback();
             loadCareer();
         });
+        document.getElementById("menu-resume-side")?.addEventListener("click", (event) => {
+            if (event.detail === 0) triggerMenuFeedback();
+            hasSave ? loadCareer() : startNewCareer();
+        });
         document.getElementById("menu-settings").addEventListener("click", (event) => {
             if (event.detail === 0) triggerMenuFeedback();
             renderMenuSettings();
@@ -3672,6 +3763,10 @@
         const app = document.getElementById("app");
         const root = document.getElementById("screen-root");
         if (!root) {
+            renderMenu();
+            return;
+        }
+        if (window.matchMedia && window.matchMedia("(min-width: 901px)").matches) {
             renderMenu();
             return;
         }
@@ -5027,7 +5122,37 @@
         }
     }
 
+
+    function maybeAddHistoricalWorldNews() {
+        if (!GameState) return;
+        GameState.worldMemory = GameState.worldMemory || { historicalNews: {} };
+        const year = GameState.currentYear || START_YEAR;
+        const key = `${year}-${GameState.round}`;
+        if (GameState.worldMemory.historicalNews[key] || GameState.round % 4 !== 1) return;
+        const timeline = {
+            1973: ["Olheiros argentinos falam de um menino de Buenos Aires que já treina com adultos. O nome ainda circula baixo: Diego Armando Maradona."],
+            1974: ["A seleção holandesa apresenta ao mundo um futebol de movimentos constantes. Técnicos começam a falar em jogo total."],
+            1976: ["Maradona estreia profissionalmente aos 16 anos. A imprensa argentina trata o garoto como algo raro demais para ignorar."],
+            1979: ["A Argentina Sub-20 encanta o mundo. Maradona domina o torneio e deixa de ser promessa local."],
+            1981: ["Boca Juniors anuncia Maradona. Buenos Aires trata a transferência como acontecimento nacional."],
+            1982: ["A Copa na Espanha mostra um futebol mais físico, mais tático e mais televisionado. O mercado europeu fica atento."],
+            1984: ["Napoli apresenta Maradona. Uma cidade inteira para nas ruas. O futebol começa a parecer maior que o campo."],
+            1986: ["Argentina campeã do mundo. Maradona fez algo que o futebol vai levar décadas para explicar."],
+            1992: ["Contratos de televisão começam a separar clubes ricos e pobres. O futebol entra numa era comercial sem volta."],
+            1995: ["Uma decisão jurídica na Europa muda o poder dos contratos. Jogadores e empresários ganham nova força nas negociações."],
+            1998: ["Jovens de 17 anos agora já são observados por clubes de vários países. A informação ficou rápida demais para ser local."],
+            2000: ["Clubes começam a falar em análise de desempenho. Alguns treinadores ainda desconfiam; outros enxergam o futuro."],
+            2005: ["O futebol moderno consolidou velocidade, marca global e mercado agressivo. A era romântica já virou memória." ]
+        };
+        const entries = timeline[year];
+        if (!entries || !entries.length) return;
+        const text = eg5Pick(entries, key);
+        addNews("Mundo", `O futebol em ${year}`, text, `Notícia de contexto histórico: ${eg5GetEraLabel(year)}.`);
+        GameState.worldMemory.historicalNews[key] = true;
+    }
+
     function generateWeeklyNews(finances) {
+        maybeAddHistoricalWorldNews();
         addNews(
             "Financeiro",
             "Relatório financeiro semanal fechado",
@@ -5281,7 +5406,7 @@
             newPlayer.id = `market-generated-${Date.now()}`;
             newPlayer.marketValue = calculateMarketValue(newPlayer, GameState.currentYear);
             GameState.market.push(normalizePlayer(newPlayer));
-            addNews("Mercado", "Novo jogador entra no mercado", `${newPlayer.name} passou a ser monitorado por clubes.`, `Posição ${newPlayer.primaryPosition}, potencial ${newPlayer.potential}.`);
+            addNews("Mercado", "Novo jogador entra no mercado", `${newPlayer.name} passou a ser monitorado por clubes.`, `Posição ${translatePosition(newPlayer.primaryPosition)}, potencial ${newPlayer.potential}.`);
         }
     }
 
@@ -5671,7 +5796,7 @@
                         </div>
                         <div class="fan-list">
                             <h2>Jogadores influentes</h2>
-                            ${influential.map((player) => `<div class="row-card"><strong>${escapeHtml(player.name)}</strong><span class="muted">${player.primaryPosition} · Overall ${calculateCurrentOverall(player)} · Moral ${player.morale}</span></div>`).join("")}
+                            ${influential.map((player) => `<div class="row-card"><strong>${escapeHtml(player.name)}</strong><span class="muted">${escapeHtml(translatePosition(player.primaryPosition))} · Overall ${calculateCurrentOverall(player)} · Moral ${player.morale}</span></div>`).join("")}
                         </div>
                     </div>
                     <div class="fan-columns">
@@ -5747,7 +5872,7 @@
                     </div>
                     <div class="fan-list">
                         <h2>Jogadores queridos</h2>
-                        ${lovedPlayers.length ? lovedPlayers.map((player) => `<div class="row-card"><strong>${escapeHtml(player.name)}</strong><span class="muted">${player.primaryPosition} · Overall ${calculateCurrentOverall(player)} · Reputação ${player.reputation}</span></div>`).join("") : `<div class="row-card">A torcida ainda não escolheu seus grandes favoritos do elenco.</div>`}
+                        ${lovedPlayers.length ? lovedPlayers.map((player) => `<div class="row-card"><strong>${escapeHtml(player.name)}</strong><span class="muted">${escapeHtml(translatePosition(player.primaryPosition))} · Overall ${calculateCurrentOverall(player)} · Reputação ${player.reputation}</span></div>`).join("") : `<div class="row-card">A torcida ainda não escolheu seus grandes favoritos do elenco.</div>`}
                     </div>
                     <div class="fan-list">
                         <h2>Comentários recentes</h2>
@@ -5786,7 +5911,7 @@
                 <div class="eg3-card-list eg3-squad-list">
                     ${players.map((player) => `
                         <button class="eg3-person-card eg3-squad-card" type="button" data-player-detail="${player.id}">
-                            <div class="eg3-person-avatar">${escapeHtml(player.primaryPosition)}</div>
+                            <div class="eg3-person-avatar" title="${escapeHtml(translatePosition(player.primaryPosition))}">${escapeHtml(translatePosition(player.primaryPosition).slice(0, 3))}</div>
                             <div class="eg3-person-main">
                                 <strong>${escapeHtml(player.name)}</strong>
                                 <span>${escapeHtml(translatePosition(player.primaryPosition))} · ${calculateAge(player, GameState.currentYear)} anos</span>
@@ -5894,7 +6019,7 @@
                         </div>
                         <div class="stat-grid">
                             <div class="stat"><span>Idade</span><strong>${age}</strong></div>
-                            <div class="stat"><span>Posicao</span><strong>${player.primaryPosition}</strong></div>
+                            <div class="stat"><span>Posição</span><strong>${escapeHtml(translatePosition(player.primaryPosition))}</strong></div>
                             <div class="stat"><span>Overall</span><strong>${overall}</strong></div>
                             <div class="stat"><span>Potencial</span><strong>${player.potential}</strong></div>
                             <div class="stat"><span>Tendência</span><strong>${escapeHtml(trend)}</strong></div>
@@ -5911,16 +6036,16 @@
                             <div class="stat"><span>Peso</span><strong>${player.weight} kg</strong></div>
                             <div class="stat"><span>Pe dominante</span><strong>${player.dominantFoot}</strong></div>
                             <div class="stat"><span>Nascimento</span><strong>${player.birthYear}</strong></div>
-                            <div class="stat"><span>Secundarias</span><strong>${player.secondaryPositions.join(", ") || "Nenhuma"}</strong></div>
+                            <div class="stat"><span>Secundárias</span><strong>${player.secondaryPositions.map(translatePosition).join(", ") || "Nenhuma"}</strong></div>
                             <div class="stat"><span>Personalidade</span><strong>${player.personality}</strong></div>
                             <div class="stat"><span>Reputacao</span><strong>${player.reputation}</strong></div>
                             <div class="stat"><span>Fase</span><strong>${phase}</strong></div>
                             <div class="stat"><span>Status</span><strong>${escapeHtml(player.status)}</strong></div>
                             <div class="stat"><span>Clubes interessados</span><strong>${escapeHtml(interestedClubs.join(", "))}</strong></div>
                             <div class="stat"><span>Cartões</span><strong>${player.cards.yellow}A · ${player.cards.red}V</strong></div>
-                            <div class="stat"><span>Áreas naturais</span><strong>${player.tacticalProfile.naturalAreas.join(", ")}</strong></div>
+                            <div class="stat"><span>Áreas naturais</span><strong>${player.tacticalProfile.naturalAreas.map(translatePosition).join(", ")}</strong></div>
                             <div class="stat"><span>Versatilidade</span><strong>${player.tacticalProfile.versatility}</strong></div>
-                            <div class="stat"><span>Funções preferidas</span><strong>${player.tacticalProfile.preferredRoles.join(", ")}</strong></div>
+                            <div class="stat"><span>Funções preferidas</span><strong>${player.tacticalProfile.preferredRoles.map(translatePosition).join(", ")}</strong></div>
                             <div class="stat"><span>Lado preferido</span><strong>${player.tacticalProfile.preferredSide}</strong></div>
                         </div>
                     </div>
@@ -6020,16 +6145,17 @@
         const starters = GameState.tactics.starters.map((slot) => ({ slot, player: getPlayerById(slot.playerId) })).filter((item) => item.player);
         const bench = GameState.tactics.bench.map((id) => getPlayerById(id)).filter(Boolean);
         document.getElementById("screen-root").innerHTML = `
-            <section class="screen stack">
-                <div>
-                    <h1>Editor tático</h1>
-                    <p>Arraste jogadores no campo ou toque em dois atletas para trocar. Formações são apenas pontos de partida.</p>
-                </div>
-                <div class="grid tactics-layout">
+            <section class="screen stack eg5-tactics">
+                <header class="eg5-section-hero compact">
+                    <span class="eg5-eyebrow">Sala tática</span>
+                    <h1>Quem joga amanhã?</h1>
+                    <p>Formações são modelos fechados. O treinador escolhe a ideia e os jogadores; o desenho em campo respeita o sistema.</p>
+                </header>
+                <div class="grid tactics-layout eg5-tactics-layout">
                     <div class="card card-pad stack">
-                        <div class="squad-tools">
+                        <div class="squad-tools eg5-tactic-controls">
                             <label class="field">
-                                <span>Modelo inicial</span>
+                                <span>Formação</span>
                                 <select id="formation-select">
                                     ${Object.keys(BASE_FORMATIONS).map((name) => `<option value="${name}" ${GameState.tactics.baseFormation === name ? "selected" : ""}>${name}</option>`).join("")}
                                 </select>
@@ -6047,7 +6173,7 @@
                                 </select>
                             </label>
                         </div>
-                        <div class="pitch" id="tactic-pitch">
+                        <div class="pitch eg5-fixed-pitch" id="tactic-pitch" aria-label="Campo tático com formação fixa">
                             <div class="pitch-zone zone-red top"></div>
                             <div class="pitch-zone zone-yellow top"></div>
                             <div class="pitch-zone zone-green"></div>
@@ -6056,25 +6182,27 @@
                             <div class="pitch-box box-bottom"></div>
                             ${starters.map(({ slot, player }) => renderTacticPlayer(player, slot)).join("")}
                         </div>
-                        <div class="meta"><span>Verde: área natural</span><span>Amarelo: adaptação</span><span>Vermelho: perda alta</span><span>Média tática ${getTeamTacticalAverage()}</span></div>
+                        <div class="meta"><span>Formação travada: ${escapeHtml(GameState.tactics.baseFormation)}</span><span>Média tática ${getTeamTacticalAverage()}</span><span>Toque em dois nomes para trocar.</span></div>
                     </div>
-                    <div class="card card-pad stack">
+                    <aside class="card card-pad stack eg5-bench-panel">
                         <h2>Banco</h2>
                         <div class="bench-list" id="bench-list">
                             ${bench.map((player) => renderBenchPlayer(player)).join("") || `<div class="empty-state">Sem reservas disponíveis.</div>`}
                         </div>
-                        <h2>Bolas paradas</h2>
-                        <div class="stack">
-                            ${SET_PIECES.map((key) => `
-                                <label class="field">
-                                    <span>${SET_PIECE_LABELS[key]}</span>
-                                    <select data-set-piece="${key}">
-                                        ${GameState.squad.map((player) => `<option value="${player.id}" ${GameState.tactics.setPieces[key] === player.id ? "selected" : ""}>${player.name}</option>`).join("")}
-                                    </select>
-                                </label>
-                            `).join("")}
-                        </div>
-                    </div>
+                        <details class="eg3-accordion">
+                            <summary><span>Bolas paradas</span><strong>${GameState.tactics.mentality}</strong></summary>
+                            <div class="stack">
+                                ${SET_PIECES.map((key) => `
+                                    <label class="field">
+                                        <span>${SET_PIECE_LABELS[key]}</span>
+                                        <select data-set-piece="${key}">
+                                            ${GameState.squad.map((player) => `<option value="${player.id}" ${GameState.tactics.setPieces[key] === player.id ? "selected" : ""}>${player.name}</option>`).join("")}
+                                        </select>
+                                    </label>
+                                `).join("")}
+                            </div>
+                        </details>
+                    </aside>
                 </div>
             </section>
         `;
@@ -6087,9 +6215,9 @@
         const tacticalOverall = calculateTacticalOverall(player, slot);
         const zone = getTacticalZone(player, slot);
         return `
-            <button class="tactic-player zone-${zone}" type="button" draggable="true" data-tactic-player="${player.id}" style="left:${slot.x}%;top:${slot.y}%">
-                <strong>${player.nickname}</strong>
-                <span>${role} ${tacticalOverall}</span>
+            <button class="tactic-player zone-${zone}" type="button" data-tactic-player="${player.id}" style="left:${slot.x}%;top:${slot.y}%">
+                <strong>${escapeHtml(player.nickname)}</strong>
+                <span>${escapeHtml(translatePosition(role))} ${tacticalOverall}</span>
             </button>
         `;
     }
@@ -6097,22 +6225,22 @@
     function renderBenchPlayer(player) {
         const slot = { x: getRoleCoordinate(player.primaryPosition)[0], y: getRoleCoordinate(player.primaryPosition)[1] };
         return `
-            <button class="bench-player" type="button" draggable="true" data-bench-player="${player.id}">
-                <strong>${player.name}</strong>
-                <span>${player.primaryPosition} ${calculateTacticalOverall(player, slot)}</span>
+            <button class="bench-player" type="button" data-bench-player="${player.id}">
+                <strong>${escapeHtml(player.name)}</strong>
+                <span>${escapeHtml(translatePosition(player.primaryPosition))} ${calculateTacticalOverall(player, slot)}</span>
                 <small>Moral ${player.morale} · Energia ${player.energy} · Cond. ${player.fitness}</small>
             </button>
         `;
     }
 
     function bindTacticsEvents() {
-        document.getElementById("formation-select").addEventListener("change", (event) => applyBaseFormation(event.target.value));
-        document.getElementById("mentality-select").addEventListener("change", (event) => {
+        document.getElementById("formation-select")?.addEventListener("change", (event) => applyBaseFormation(event.target.value));
+        document.getElementById("mentality-select")?.addEventListener("change", (event) => {
             GameState.tactics.mentality = event.target.value;
             saveCareer();
             showToast(`Mentalidade: ${event.target.value}.`);
         });
-        document.getElementById("style-select").addEventListener("change", (event) => {
+        document.getElementById("style-select")?.addEventListener("change", (event) => {
             GameState.tactics.playStyle = event.target.value;
             saveCareer();
             showToast(`Estilo: ${event.target.value}.`);
@@ -6125,48 +6253,16 @@
             });
         });
         document.querySelectorAll("[data-tactic-player]").forEach((button) => {
-            button.addEventListener("dragstart", (event) => {
-                event.dataTransfer.setData("text/plain", `starter:${button.dataset.tacticPlayer}`);
-            });
             button.addEventListener("click", (event) => {
                 event.stopPropagation();
                 handleTacticClick(button.dataset.tacticPlayer, "starter");
             });
         });
         document.querySelectorAll("[data-bench-player]").forEach((button) => {
-            button.addEventListener("dragstart", (event) => {
-                event.dataTransfer.setData("text/plain", `bench:${button.dataset.benchPlayer}`);
-            });
             button.addEventListener("click", (event) => {
                 event.stopPropagation();
                 handleTacticClick(button.dataset.benchPlayer, "bench");
             });
-        });
-        const pitch = document.getElementById("tactic-pitch");
-        pitch.addEventListener("click", (event) => {
-            if (!GameState.tactics.selectedPlayerId) return;
-            const [source, playerId] = GameState.tactics.selectedPlayerId.split(":");
-            const rect = pitch.getBoundingClientRect();
-            const x = clamp(((event.clientX - rect.left) / rect.width) * 100, 6, 94);
-            const y = clamp(((event.clientY - rect.top) / rect.height) * 100, 6, 94);
-            GameState.tactics.selectedPlayerId = null;
-            movePlayerToPitch(playerId, source, x, y);
-        });
-        pitch.addEventListener("dragover", (event) => event.preventDefault());
-        pitch.addEventListener("drop", (event) => {
-            event.preventDefault();
-            const [source, playerId] = event.dataTransfer.getData("text/plain").split(":");
-            const rect = pitch.getBoundingClientRect();
-            const x = clamp(((event.clientX - rect.left) / rect.width) * 100, 6, 94);
-            const y = clamp(((event.clientY - rect.top) / rect.height) * 100, 6, 94);
-            movePlayerToPitch(playerId, source, x, y);
-        });
-        const bench = document.getElementById("bench-list");
-        bench.addEventListener("dragover", (event) => event.preventDefault());
-        bench.addEventListener("drop", (event) => {
-            event.preventDefault();
-            const [source, playerId] = event.dataTransfer.getData("text/plain").split(":");
-            if (source === "starter") movePlayerToBench(playerId);
         });
     }
 
@@ -6499,16 +6595,17 @@
 
     function createAcademyProspect(index = 0) {
         const level = getAcademyLevel();
-        const countries = [GameState.club?.country || "Brasil", "Brasil", "Argentina", "Portugal", "Espanha", "Uruguai"];
-        const firstNames = ["Lucas", "Mateus", "Rafael", "Tiago", "Bruno", "Diego", "Enzo", "Nico", "Andre", "Caio", "Hugo", "Leo"];
-        const lastNames = ["Silva", "Costa", "Almeida", "Ferreira", "Ramos", "Torres", "Pereira", "Mendes", "Lima", "Santos", "Vidal", "Rocha"];
+        const clubCountry = eg5NormalizeCountry(GameState.club?.country || "Brasil");
+        const countries = [clubCountry, clubCountry, clubCountry, clubCountry, "Brasil", "Argentina", "Uruguai", "Portugal", "Espanha", "Italia", "Mexico"];
         const positions = ["GK", "RB", "CB", "LB", "CDM", "CM", "CAM", "RW", "LW", "ST"];
         const primaryPosition = positions[Math.floor(Math.random() * positions.length)];
         const secondaryPositions = inferNaturalAreas(primaryPosition, []).filter((position) => position !== primaryPosition).slice(0, primaryPosition === "GK" ? 0 : 2);
         const age = 15 + Math.floor(Math.random() * 4);
         const baseOverall = clamp(42 + level * 3 + Math.round(Math.random() * 14), 38, 78);
         const potential = clamp(baseOverall + 10 + level * 2 + Math.round(Math.random() * 14), 55, 99);
-        const name = `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`;
+        const country = countries[Math.floor(Math.random() * countries.length)];
+        const seed = `${GameState.club?.name || "academy"}-${GameState.currentYear}-${index}-${Math.random()}`;
+        const name = eg5BuildLocalName(country, seed);
         const prospect = {
             id: `academy-${Date.now()}-${index}-${Math.random().toString(36).slice(2, 7)}`,
             databaseId: `academy-${index}`,
@@ -6516,7 +6613,7 @@
             fullName: name,
             shortName: name,
             nickname: name.split(" ")[0],
-            country: countries[Math.floor(Math.random() * countries.length)],
+            country,
             birthYear: GameState.currentYear - age,
             primaryPosition,
             secondaryPositions,
@@ -7048,9 +7145,10 @@
         const overall = calculateCurrentOverall(player);
         const observed = GameState.transferMarket.observedPlayerIds.includes(player.id);
         const favorite = isMarketFavorite(player.id);
-        const contractStatus = getContractStatus(player);
+        const negotiation = GameState.transferMarket.negotiations[player.id];
+        const statusText = negotiation ? (negotiation.status === "counter" ? "Clube pediu resposta" : negotiation.status === "rejected" ? "Oferta recusada" : negotiation.status === "accepted" ? "Aceito" : "Em conversa") : "Sem negociação";
         return `
-            <article class="market-player-card">
+            <article class="market-player-card eg5-market-card">
                 <button class="market-card-main" type="button" data-market-detail="${player.id}">
                     <div class="market-avatar" aria-hidden="true"><i></i><b></b></div>
                     <div class="market-player-summary">
@@ -7059,31 +7157,23 @@
                             <span class="overall-badge">${overall}</span>
                         </div>
                         <div class="meta">
-                            <span>${escapeHtml(getPlayerCurrentClub(player))}</span>
-                            <span>${escapeHtml(translateCountry(player.country))}</span>
-                            <span>${age} ${escapeHtml(t("market.years"))}</span>
                             <span>${escapeHtml(translatePosition(player.primaryPosition))}</span>
+                            <span>${age} ${escapeHtml(t("market.years"))}</span>
+                            <span>${escapeHtml(translateCountry(player.country))}</span>
                         </div>
+                        <p class="eg5-human-line">${escapeHtml(eg5PlayerHumanDescription(player))}</p>
                     </div>
                 </button>
-                <div class="market-facts">
-                    <div class="stat"><span>${escapeHtml(t("market.potential"))}</span><strong>${player.potential}</strong></div>
-                    <div class="stat"><span>${escapeHtml(t("market.value"))}</span><strong>${money(player.marketValue)}</strong></div>
-                    <div class="stat"><span>${escapeHtml(t("market.salary"))}</span><strong>${money(player.salary)}</strong></div>
-                    <div class="stat"><span>${escapeHtml(t("market.contractTime"))}</span><strong>${player.contract?.yearsRemaining || 0}</strong></div>
-                    <div class="stat"><span>${escapeHtml(t("market.contractStatus"))}</span><strong>${escapeHtml(t(`contract.${contractStatus}`))}</strong></div>
-                    <div class="stat"><span>${escapeHtml(t("market.careerPhase"))}</span><strong>${escapeHtml(translateCareerPhase(player.careerPhase))}</strong></div>
-                    <div class="stat"><span>${escapeHtml(t("market.morale"))}</span><strong>${player.morale}</strong></div>
-                    <div class="stat"><span>${escapeHtml(t("market.fitness"))}</span><strong>${player.fitness}</strong></div>
+                <div class="eg5-market-strip">
+                    <div><span>POT</span><strong>${player.potential}</strong></div>
+                    <div><span>Valor</span><strong>${money(player.marketValue)}</strong></div>
+                    <div><span>Clube</span><strong>${escapeHtml(getPlayerCurrentClub(player))}</strong></div>
+                    <div><span>Status</span><strong>${escapeHtml(statusText)}</strong></div>
                 </div>
-                ${renderMarketNegotiation(player)}
-                <div class="market-actions">
+                <div class="market-actions eg5-market-actions">
                     <button class="btn" type="button" data-observe-player="${player.id}">${escapeHtml(t(observed ? "market.watched" : "market.watch"))}</button>
                     <button class="btn btn-primary" type="button" data-offer-player="${player.id}">${escapeHtml(t("market.makeOffer"))}</button>
-                    <button class="btn" type="button" data-salary-player="${player.id}">${escapeHtml(t("market.negotiateSalary"))}</button>
-                    <button class="btn" type="button" data-contract-player="${player.id}">${escapeHtml(t("market.negotiateContract"))}</button>
-                    <button class="btn" type="button" data-favorite-player="${player.id}">${escapeHtml(t(favorite ? "market.removeFavorite" : "market.addFavorite"))}</button>
-                    <button class="btn btn-ghost" type="button" data-cancel-negotiation="${player.id}">${escapeHtml(t("market.cancelNegotiation"))}</button>
+                    <button class="btn btn-ghost" type="button" data-favorite-player="${player.id}">${escapeHtml(t(favorite ? "market.removeFavorite" : "market.addFavorite"))}</button>
                 </div>
             </article>
         `;
@@ -7163,66 +7253,43 @@
             updateChrome();
             return;
         }
-        const players = getVisibleMarketPlayers().slice(0, 14);
+        const players = getVisibleMarketPlayers().slice(0, 10);
         const favorites = getMarketFavorites().map((id) => GameState.market.find((player) => player.id === id)).filter(Boolean);
         const filterKeys = ["position", "age", "overall", "potential", "nationality", "value", "salary", "contract", "club", "phase"];
         const hasFilters = filterKeys.some((key) => GameState.marketView.filters[key] && GameState.marketView.filters[key] !== "ALL" && GameState.marketView.filters[key] !== "any");
         const spotlight = players[0];
         document.getElementById("screen-root").innerHTML = `
-            <section class="screen eg4-market" aria-label="Mercado">
-                <header class="eg4-market-hero">
+            <section class="screen eg4-market eg5-market" aria-label="Mercado">
+                <header class="eg5-section-hero eg5-market-room">
                     <div>
-                        <span class="eg4-eyebrow">Janela de oportunidades</span>
-                        <h1>Quem muda o seu elenco?</h1>
-                        <p>${spotlight ? escapeHtml(eg4MarketOpportunityLine(spotlight)) : "O mercado ainda não trouxe um nome que mereça manchete."}</p>
+                        <span class="eg5-eyebrow">Sala de negociações</span>
+                        <h1>Quem vale abrir conversa?</h1>
+                        <p>${spotlight ? escapeHtml(eg5PlayerHumanDescription(spotlight)) : "Nenhum empresário trouxe um nome forte esta semana."}</p>
                     </div>
                     <aside>
-                        <span>Saldo disponível</span>
+                        <span>Saldo</span>
                         <strong>${money(GameState.budget)}</strong>
+                        <small>${favorites.length} observados</small>
                     </aside>
                 </header>
-                <div class="eg4-list-controls">
-                    <div class="eg3-searchbar"><span>🔍</span><input id="market-search" type="search" value="${escapeHtml(GameState.marketView.search)}" placeholder="${escapeHtml(t("market.searchPlaceholder"))}"></div>
+                <div class="eg5-toolbar">
+                    <div class="eg3-searchbar"><span>🔍</span><input id="market-search" type="search" value="${escapeHtml(GameState.marketView.search)}" placeholder="Buscar jogador ou clube..."></div>
                     <button class="eg3-filter-trigger ${hasFilters ? "has-filters" : ""}" id="market-filters-open" type="button">Filtros${hasFilters ? " •" : ""}</button>
                 </div>
-                <div class="eg3-chip-row eg4-chip-row">
+                <div class="eg3-chip-row eg4-chip-row eg5-chips">
                     ${["ST", "CAM", "CM", "CB", "GK"].map((position) => `<button class="chip-pos ${GameState.marketView.filters.position === position ? "active" : ""}" type="button" data-market-pos="${position}">${escapeHtml(translatePosition(position))}</button>`).join("")}
                     <button class="chip-pos ${GameState.marketView.sort === "potential" ? "active" : ""}" type="button" data-market-sort-fast="potential">Potencial</button>
-                    <button class="chip-pos ${favorites.length ? "active" : ""}" type="button" data-director-action="scout">Observados ${favorites.length}</button>
+                    <button class="chip-pos ${GameState.marketView.sort === "value" ? "active" : ""}" type="button" data-market-sort-fast="value">Valor</button>
                     ${(hasFilters || GameState.marketView.search) ? `<button class="chip-pos eg3-clear-chip" id="market-clear-filters" type="button">Limpar</button>` : ""}
                 </div>
-                <div class="eg4-market-list">
-                    ${players.map((player) => {
-                        const overall = calculateCurrentOverall(player);
-                        const observed = GameState.transferMarket.observedPlayerIds.includes(player.id);
-                        return `
-                            <article class="eg4-transfer-card">
-                                <button type="button" class="eg4-transfer-main" data-market-detail="${player.id}">
-                                    <span class="eg4-avatar">${escapeHtml(player.primaryPosition)}</span>
-                                    <span class="eg4-transfer-info">
-                                        <strong>${escapeHtml(player.name)}</strong>
-                                        <em>${escapeHtml(translatePosition(player.primaryPosition))} · ${calculateAge(player, GameState.currentYear)} anos · ${escapeHtml(getPlayerCurrentClub(player))}</em>
-                                        <small>${escapeHtml(eg4MarketOpportunityLine(player))}</small>
-                                    </span>
-                                    <span class="eg4-transfer-values">
-                                        <b>OVR ${overall}</b>
-                                        <b>POT ${player.potential}</b>
-                                        <em>${money(player.marketValue)}</em>
-                                    </span>
-                                </button>
-                                <div class="eg4-transfer-actions">
-                                    <button type="button" data-observe-player="${player.id}">${observed ? "Observado" : "Observar"}</button>
-                                    <button type="button" data-offer-player="${player.id}">Negociar</button>
-                                </div>
-                            </article>
-                        `;
-                    }).join("") || `<div class="empty-state">${escapeHtml(t("market.noPlayers"))}</div>`}
+                <div class="eg4-market-list eg5-market-list">
+                    ${players.map(renderMarketPlayerCard).join("") || `<div class="empty-state">Nenhuma oportunidade encontrada.</div>`}
                 </div>
                 <div class="eg3-filter-sheet hidden" id="market-filter-sheet" aria-hidden="true">
                     <div class="eg3-filter-backdrop" data-close-market-filters></div>
-                    <section class="eg3-filter-panel">
-                        <div class="eg3-filter-head"><strong>Filtros do mercado</strong><button class="icon-action" type="button" data-close-market-filters>×</button></div>
-                        <div class="market-filter-grid">
+                    <section class="eg3-filter-panel" aria-label="Filtros do mercado">
+                        <div class="row-main"><h2>Filtros avançados</h2><button class="icon-action" type="button" data-close-market-filters>×</button></div>
+                        <div class="eg3-filter-grid">
                             ${filterKeys.map((key) => `
                                 <label class="field"><span>${escapeHtml(t(`filter.${key}`))}</span><select data-market-filter-select="${key}">
                                     ${getMarketFilterOptions(key).map((option) => `<option value="${escapeHtml(option.value)}" ${GameState.marketView.filters[key] === option.value ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}
@@ -7244,7 +7311,6 @@
         document.querySelectorAll("[data-market-filter-select]").forEach((select) => select.addEventListener("change", () => { GameState.marketView.filters[select.dataset.marketFilterSelect] = select.value; }));
         document.getElementById("market-sort-select")?.addEventListener("change", (event) => { GameState.marketView.sort = event.target.value; });
         document.getElementById("market-apply-filters")?.addEventListener("click", () => { saveCareer(); renderMarket(); });
-        document.querySelectorAll("[data-director-action]").forEach((button) => button.addEventListener("click", () => handleDirectorAction(button.dataset.directorAction)));
         bindMarketEvents();
         updateChrome();
     }
@@ -7359,42 +7425,40 @@
         const assignments = Object.values(GameState.scout.assignments)
             .map((assignment) => ({ assignment, player: GameState.market.find((item) => item.id === assignment.playerId) }))
             .filter((item) => item.player);
-        const latestReport = getLatestScoutReport();
         const nationalities = [...new Set(GameState.market.map((player) => player.country))].sort();
-        let results = getScoutSearchResults().filter((player) => !keyword || player.name.toLocaleLowerCase().includes(keyword.toLocaleLowerCase())).slice(0, 12);
+        let results = getScoutSearchResults().filter((player) => !keyword || player.name.toLocaleLowerCase().includes(keyword.toLocaleLowerCase())).slice(0, 10);
         const filterKeys = ["age", "position", "overall", "potential", "nationality", "value"];
         const hasAdvancedFilters = filterKeys.some((key) => search[key] && search[key] !== "ALL" && search[key] !== "any");
         const lead = results[0];
-
         document.getElementById("screen-root").innerHTML = `
-            <section class="screen eg4-scout" aria-label="Scout">
-                <header class="eg4-scout-brief">
+            <section class="screen eg4-scout eg5-scout" aria-label="Scout">
+                <header class="eg5-section-hero eg5-scout-room">
                     <div>
-                        <span class="eg4-eyebrow">Sala dos olheiros</span>
-                        <h1>Quem vale observar?</h1>
-                        <p>${lead ? escapeHtml(eg4PlayerPersonalityLine(lead)) : "Nenhum relatório forte chegou à mesa do treinador."}</p>
+                        <span class="eg5-eyebrow">Mesa dos olheiros</span>
+                        <h1>Quem merece uma viagem?</h1>
+                        <p>${lead ? escapeHtml(eg5PlayerHumanDescription(lead)) : "Nenhum relatório forte chegou à mesa do treinador."}</p>
                     </div>
-                    <aside><strong>${results.length}</strong><span>nomes na mesa</span></aside>
+                    <aside><strong>${results.length}</strong><span>nomes na mesa</span><small>${assignments.length}/${getScoutCapacity()} observações</small></aside>
                 </header>
-                <div class="eg4-list-controls">
+                <div class="eg5-toolbar">
                     <div class="eg3-searchbar"><span>🔍</span><input id="scout-search-name" type="search" value="${escapeHtml(keyword)}" placeholder="Buscar jogador..."></div>
                     <button class="eg3-filter-trigger ${hasAdvancedFilters ? "has-filters" : ""}" type="button" id="scout-filter-toggle">Filtros${hasAdvancedFilters ? " •" : ""}</button>
                 </div>
-                <div class="eg3-chip-row eg4-chip-row" aria-label="Filtros rápidos">
+                <div class="eg3-chip-row eg4-chip-row eg5-chips" aria-label="Filtros rápidos">
                     ${["ST", "CF", "CAM", "CM", "CB", "GK"].map((pos) => `<button class="chip-pos ${search.position === pos ? "active" : ""}" type="button" data-scout-chip="${pos}">${escapeHtml(translatePosition(pos))}</button>`).join("")}
                     <button class="chip-pos ${search.potential === "o88" ? "active" : ""}" type="button" data-scout-potential="o88">★★★★★</button>
                     <button class="chip-pos ${search.age === "u21" ? "active" : ""}" type="button" data-scout-age="u21">Jovem</button>
                     ${(hasAdvancedFilters || keyword) ? `<button class="chip-pos eg3-clear-chip" type="button" id="scout-clear-filters">Limpar</button>` : ""}
                 </div>
-                <div class="eg4-scout-list">
+                <div class="eg4-scout-list eg5-scout-list">
                     ${results.map((player) => `
-                        <article class="eg4-report-card" data-drawer-player="${player.id}">
+                        <article class="eg4-report-card eg5-scout-card" data-drawer-player="${player.id}">
                             <button type="button" class="eg4-report-main">
-                                <span class="eg4-avatar">⚽</span>
+                                <span class="eg4-avatar" title="${escapeHtml(translatePosition(player.primaryPosition))}">${escapeHtml(translatePosition(player.primaryPosition).slice(0, 3))}</span>
                                 <span class="eg4-report-info">
                                     <strong>${escapeHtml(player.name)}</strong>
                                     <em>${escapeHtml(translatePosition(player.primaryPosition))} · ${calculateAge(player, GameState.currentYear)} anos · ${escapeHtml(translateCountry(player.country))}</em>
-                                    <small>${escapeHtml(eg4PlayerPersonalityLine(player))}</small>
+                                    <small>${escapeHtml(eg5PlayerHumanDescription(player))}</small>
                                 </span>
                                 <span class="eg4-report-pot"><small>POT</small><b>${player.potential}</b><em>${money(player.marketValue)}</em></span>
                             </button>
@@ -7404,7 +7468,7 @@
                         </article>
                     `).join("") || `<div class="empty-state">Nenhum jogador encontrado.</div>`}
                 </div>
-                <details class="eg4-accordion eg4-observed">
+                <details class="eg4-accordion eg4-observed eg5-compact-details">
                     <summary><span>Relatórios em andamento</span><strong>${assignments.length}/${getScoutCapacity()}</strong></summary>
                     <div class="eg3-observed-list">
                         ${assignments.length ? assignments.map(({ player, assignment }) => renderScoutAssignment(player, assignment)).join("") : `<div class="empty-state">${escapeHtml(t("scout.noObserved"))}</div>`}
@@ -7412,15 +7476,15 @@
                 </details>
                 <div class="eg3-filter-sheet hidden" id="scout-filter-sheet" aria-hidden="true">
                     <div class="eg3-filter-backdrop" data-close-scout-filters></div>
-                    <section class="eg3-filter-panel">
-                        <div class="eg3-filter-head"><strong>Filtros avançados</strong><button class="icon-action" type="button" data-close-scout-filters>×</button></div>
-                        <div class="market-filter-grid scout-filter-grid">
-                            <label class="field"><span>Idade</span><select data-scout-search="age">${getMarketFilterOptions("age").map((option) => `<option value="${option.value}" ${search.age === option.value ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}</select></label>
+                    <section class="eg3-filter-panel" aria-label="Filtros de scout">
+                        <div class="row-main"><h2>Filtros avançados</h2><button class="icon-action" type="button" data-close-scout-filters>×</button></div>
+                        <div class="eg3-filter-grid">
+                            <label class="field"><span>Idade</span><select data-scout-search="age"><option value="any">Todos</option><option value="u21" ${search.age === "u21" ? "selected" : ""}>Até 21</option><option value="u25" ${search.age === "u25" ? "selected" : ""}>Até 25</option></select></label>
                             <label class="field"><span>Posição</span><select data-scout-search="position"><option value="ALL">Todas</option>${PLAYER_POSITIONS.map((position) => `<option value="${position}" ${search.position === position ? "selected" : ""}>${escapeHtml(translatePosition(position))}</option>`).join("")}</select></label>
-                            <label class="field"><span>Overall</span><select data-scout-search="overall">${getMarketFilterOptions("overall").map((option) => `<option value="${option.value}" ${search.overall === option.value ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}</select></label>
-                            <label class="field"><span>Potencial</span><select data-scout-search="potential">${getMarketFilterOptions("potential").map((option) => `<option value="${option.value}" ${search.potential === option.value ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}</select></label>
-                            <label class="field"><span>Nacionalidade</span><select data-scout-search="nationality"><option value="ALL">Todas</option>${nationalities.map((country) => `<option value="${country}" ${search.nationality === country ? "selected" : ""}>${escapeHtml(translateCountry(country))}</option>`).join("")}</select></label>
-                            <label class="field"><span>Valor</span><select data-scout-search="value">${getMarketFilterOptions("value").map((option) => `<option value="${option.value}" ${search.value === option.value ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}</select></label>
+                            <label class="field"><span>Overall</span><select data-scout-search="overall"><option value="any">Todos</option><option value="o70" ${search.overall === "o70" ? "selected" : ""}>70+</option><option value="o80" ${search.overall === "o80" ? "selected" : ""}>80+</option></select></label>
+                            <label class="field"><span>Potencial</span><select data-scout-search="potential"><option value="any">Todos</option><option value="o80" ${search.potential === "o80" ? "selected" : ""}>80+</option><option value="o88" ${search.potential === "o88" ? "selected" : ""}>88+</option></select></label>
+                            <label class="field"><span>Nacionalidade</span><select data-scout-search="nationality"><option value="ALL">Todas</option>${nationalities.map((country) => `<option value="${escapeHtml(country)}" ${search.nationality === country ? "selected" : ""}>${escapeHtml(translateCountry(country))}</option>`).join("")}</select></label>
+                            <label class="field"><span>Valor</span><select data-scout-search="value"><option value="any">Todos</option><option value="cheap" ${search.value === "cheap" ? "selected" : ""}>Acessível</option><option value="premium" ${search.value === "premium" ? "selected" : ""}>Alto valor</option></select></label>
                         </div>
                         <div class="button-row"><button class="btn" type="button" id="scout-apply-filters">Aplicar</button></div>
                     </section>
@@ -7451,17 +7515,13 @@
             saveCareer();
             renderScout();
         });
-        document.getElementById("scout-filter-toggle")?.addEventListener("click", () => {
-            document.getElementById("scout-filter-sheet")?.classList.remove("hidden");
-        });
+        document.getElementById("scout-filter-toggle")?.addEventListener("click", () => document.getElementById("scout-filter-sheet")?.classList.remove("hidden"));
         document.querySelectorAll("[data-close-scout-filters]").forEach((el) => el.addEventListener("click", () => document.getElementById("scout-filter-sheet")?.classList.add("hidden")));
-        document.querySelectorAll("[data-scout-search]").forEach((select) => {
-            select.addEventListener("change", () => { GameState.scout.search[select.dataset.scoutSearch] = select.value; });
-        });
+        document.querySelectorAll("[data-scout-search]").forEach((select) => select.addEventListener("change", () => { GameState.scout.search[select.dataset.scoutSearch] = select.value; }));
         document.getElementById("scout-apply-filters")?.addEventListener("click", () => { saveCareer(); renderScout(); });
         document.querySelectorAll("[data-drawer-player]").forEach((card) => {
             card.addEventListener("click", (event) => {
-                if (event.target.closest("button")) return;
+                if (event.target.closest("[data-scout-add-result]")) return;
                 const player = [...GameState.squad, ...GameState.market].find((item) => item.id === card.dataset.drawerPlayer);
                 openUIDrawer(renderPlayerDrawerContent(player), player?.name || "Relatório");
             });
@@ -7567,7 +7627,7 @@
                     <div class="training-grid">
                         ${topPlayers.map((player) => `
                             <article class="manager-panel">
-                                <div class="manager-panel-head"><span>${escapeHtml(player.primaryPosition)}</span><strong>${calculateCurrentOverall(player)}/${player.potential}</strong></div>
+                                <div class="manager-panel-head"><span>${escapeHtml(translatePosition(player.primaryPosition))}</span><strong>${calculateCurrentOverall(player)}/${player.potential}</strong></div>
                                 <h2>${escapeHtml(player.name)}</h2>
                                 <p class="muted">${escapeHtml(getPlayerTrend(player))} · ${calculateAge(player, GameState.currentYear)} anos</p>
                                 <label class="field"><span>Treino individual</span><select data-individual-training="${player.id}">
@@ -7600,7 +7660,7 @@
         const potential = player.potential || overall;
         const progress = clamp(Math.round((overall / Math.max(potential, 1)) * 100), 0, 100);
         return `
-            <article class="eg3-academy-card">
+            <article class="eg3-academy-card eg5-academy-card">
                 <div class="eg3-academy-top">
                     <div>
                         <span>${escapeHtml(player.academy?.category || "Sub-20")}</span>
@@ -7610,13 +7670,15 @@
                     <div class="eg3-pot-hero"><small>POT</small><b>${potential}</b></div>
                 </div>
                 <div class="eg3-personality">💡 ${escapeHtml(player.personality || "Promissor")}</div>
+                <p class="eg5-human-line">${escapeHtml(eg5PlayerHumanDescription(player))}</p>
                 <div class="eg3-growth"><span>Atual ${overall}</span><i><b style="width:${progress}%"></b></i><span>${potential}</span></div>
-                <div class="button-row academy-actions">
+                <div class="eg3-academy-actions">
                     <button class="btn btn-primary" type="button" data-academy-promote="${player.id}">${escapeHtml(t("academy.promote"))}</button>
-                    <button class="btn" type="button" data-academy-keep="${player.id}">${escapeHtml(t("academy.keep"))}${kept ? " ✓" : ""}</button>
+                    <button class="btn" type="button" data-academy-keep="${player.id}">${escapeHtml(kept ? t("academy.kept") : t("academy.keep"))}</button>
                 </div>
-                <details class="eg3-player-details"><summary>Ver atributos</summary>
-                    <div class="stat-grid academy-prospect-grid">
+                <details class="eg3-accordion eg5-compact-details">
+                    <summary><span>Ver atributos completos</span><strong>${overall} → ${potential}</strong></summary>
+                    <div class="stat-grid">
                         <div class="stat"><span>${escapeHtml(t("academy.height"))}</span><strong>${player.height} cm</strong></div>
                         <div class="stat"><span>${escapeHtml(t("academy.weight"))}</span><strong>${player.weight} kg</strong></div>
                         <div class="stat"><span>${escapeHtml(t("academy.foot"))}</span><strong>${escapeHtml(player.dominantFoot)}</strong></div>

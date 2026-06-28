@@ -5455,3 +5455,363 @@ body[data-club-rhythm="pressure"] {
         padding: 12px 0;
     }
 }
+
+/* === EG5 Alpha Candidate — Direção de Universo e Menos Atrito === */
+.eg5-eyebrow {
+    color: var(--gold);
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+}
+
+.main-menu.eg5-menu {
+    min-height: 100dvh !important;
+    width: 100%;
+    display: grid !important;
+    place-items: stretch !important;
+    overflow: hidden;
+    padding: 0 !important;
+    background:
+        radial-gradient(circle at 18% 12%, rgba(212,166,58,.18), transparent 26rem),
+        radial-gradient(circle at 88% 18%, rgba(39,180,232,.11), transparent 28rem),
+        linear-gradient(135deg, #04110c 0%, #071a12 58%, #0f2419 100%);
+}
+
+.eg5-menu .eg5-menu-stadium {
+    position: absolute;
+    inset: 0;
+    opacity: .85;
+}
+
+.eg5-menu-stage {
+    position: relative;
+    z-index: 2;
+    min-height: 100dvh;
+    width: min(1480px, 100%);
+    box-sizing: border-box;
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: minmax(220px, .9fr) minmax(320px, 460px) minmax(240px, .9fr);
+    gap: clamp(18px, 2.8vw, 46px);
+    align-items: center;
+    padding: clamp(28px, 4.2vw, 64px);
+    overflow: hidden;
+}
+
+.eg5-menu-story,
+.eg5-save-card,
+.eg5-menu-center {
+    display: flex;
+    flex-direction: column;
+}
+
+.eg5-menu-story {
+    align-self: end;
+    padding-bottom: clamp(24px, 8vh, 92px);
+    max-width: 420px;
+}
+
+.eg5-menu-story h2 {
+    font-family: var(--font-title);
+    font-size: clamp(2rem, 3vw, 4rem);
+    line-height: .95;
+    margin: 14px 0 18px;
+    color: #fff;
+    letter-spacing: -.04em;
+}
+
+.eg5-menu-story p,
+.eg5-menu-center p,
+.eg5-save-card p {
+    color: rgba(245,245,239,.68);
+    line-height: 1.65;
+}
+
+.eg5-era-chip {
+    margin-top: 28px;
+    width: fit-content;
+    padding: 12px 16px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.055);
+    border: 1px solid rgba(212,166,58,.22);
+    display: inline-flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.eg5-era-chip span,
+.eg5-save-meta span {
+    color: rgba(245,245,239,.4);
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    font-size: .68rem;
+}
+
+.eg5-era-chip strong { color: var(--gold); }
+
+.eg5-menu-center {
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+}
+
+.eg5-menu-emblem {
+    width: clamp(92px, 9vw, 138px) !important;
+    height: clamp(92px, 9vw, 138px) !important;
+    margin-bottom: 22px;
+    box-shadow: 0 0 70px rgba(212,166,58,.22);
+}
+
+.eg5-menu-center h1 {
+    font-size: clamp(3rem, 7vw, 6.8rem) !important;
+    line-height: .82;
+    letter-spacing: -.06em;
+    margin: 10px 0 18px;
+}
+
+.eg5-menu-actions {
+    width: min(380px, 100%);
+    margin-top: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.eg5-save-card {
+    justify-self: end;
+    width: min(340px, 100%);
+    padding: 28px;
+    border-radius: 24px;
+    background: rgba(5,18,12,.62);
+    border: 1px solid rgba(255,255,255,.08);
+    box-shadow: 0 28px 80px rgba(0,0,0,.42);
+    backdrop-filter: blur(18px);
+}
+
+.eg5-save-card > strong {
+    color: #fff;
+    font-size: clamp(1.8rem, 2.4vw, 3rem);
+    line-height: 1;
+    margin: 12px 0 10px;
+    letter-spacing: -.04em;
+}
+
+.eg5-save-meta {
+    margin: 22px 0;
+    display: grid;
+    gap: 12px;
+}
+
+.eg5-save-meta div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+}
+
+.eg5-save-meta b { color: #fff; font-size: .9rem; text-align: right; }
+
+.eg5-section-hero {
+    border-radius: 24px;
+    background:
+        radial-gradient(circle at 0 0, rgba(212,166,58,.15), transparent 22rem),
+        linear-gradient(135deg, rgba(255,255,255,.055), rgba(255,255,255,.018));
+    border: 1px solid rgba(212,166,58,.16);
+    padding: clamp(22px, 4vw, 38px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 28px;
+    box-shadow: 0 20px 50px rgba(0,0,0,.26);
+}
+
+.eg5-section-hero.compact { padding: 24px 28px; }
+.eg5-section-hero h1 {
+    margin: 8px 0 10px;
+    font-size: clamp(2rem, 4vw, 4.2rem);
+    line-height: .92;
+    letter-spacing: -.055em;
+}
+.eg5-section-hero p { max-width: 780px; color: rgba(245,245,239,.7); line-height: 1.55; }
+.eg5-section-hero aside { min-width: 180px; text-align: right; }
+.eg5-section-hero aside span,
+.eg5-section-hero aside small { display:block; color: rgba(245,245,239,.45); text-transform: uppercase; letter-spacing: .12em; font-size: .68rem; }
+.eg5-section-hero aside strong { display:block; color: var(--gold); font-size: clamp(1.7rem, 3vw, 3.1rem); line-height: 1; margin: 8px 0; }
+
+.eg5-toolbar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin: 16px 0 10px;
+}
+.eg5-toolbar .eg3-searchbar { flex: 1; }
+.eg5-chips { margin-bottom: 16px; }
+
+.eg5-market-list,
+.eg5-scout-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.eg5-market-card,
+.eg5-scout-card,
+.eg5-academy-card {
+    border-radius: 18px !important;
+    background: rgba(255,255,255,.028) !important;
+    border-color: rgba(255,255,255,.055) !important;
+    overflow: hidden;
+}
+
+.eg5-market-card .market-card-main { padding: 16px 16px 10px; }
+.eg5-human-line {
+    margin: 7px 0 0;
+    color: rgba(245,245,239,.62);
+    line-height: 1.45;
+    font-size: .84rem;
+}
+.eg5-market-strip {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1px;
+    margin: 8px 14px 10px;
+    overflow: hidden;
+    border-radius: 12px;
+    background: rgba(255,255,255,.05);
+}
+.eg5-market-strip div { padding: 10px; background: rgba(4,15,10,.45); min-width: 0; }
+.eg5-market-strip span { display:block; color: rgba(245,245,239,.38); font-size: .62rem; letter-spacing:.11em; text-transform: uppercase; }
+.eg5-market-strip strong { display:block; color:#fff; font-size:.82rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-top:3px; }
+.eg5-market-actions { padding: 0 14px 14px !important; grid-template-columns: 1fr 1.2fr .9fr; }
+.eg5-market-actions .btn { min-height: 38px; }
+
+.eg5-scout-card .eg4-report-main { padding: 14px 16px; }
+.eg5-scout-card .eg4-report-actions { padding: 0 16px 14px; }
+.eg5-scout-card .eg4-avatar { width: 42px; height: 42px; }
+.eg5-compact-details { margin-top: 10px; }
+
+.eg5-tactics-layout { align-items: start; }
+.eg5-fixed-pitch .tactic-player { cursor: pointer; }
+.eg5-fixed-pitch .tactic-player:active { transform: translate(-50%, -50%) scale(.98); }
+.eg5-tactic-controls { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.eg5-bench-panel { max-height: calc(100vh - 170px); overflow: auto; }
+.eg5-bench-panel .bench-player span { color: var(--gold); }
+
+@media (min-width: 1000px) {
+    #app.menu-active {
+        padding-left: 0 !important;
+    }
+    #app:has(.eg5-menu),
+    body:has(.eg5-menu) #app {
+        padding-left: 0 !important;
+    }
+    #app.menu-active #screen-root,
+    #app:not(.splash-active) #screen-root:has(.main-menu) {
+        margin-left: 0 !important;
+        width: 100vw !important;
+        min-height: 100dvh !important;
+        padding: 0 !important;
+    }
+    body:has(.main-menu) .topbar,
+    body:has(.main-menu) .desktop-sidebar,
+    body:has(.main-menu) .bottom-nav {
+        display: none !important;
+    }
+    body:has(.main-menu) { overflow: hidden; }
+}
+
+@media (max-width: 900px) {
+    .eg5-menu-stage {
+        min-height: 100dvh;
+        grid-template-columns: 1fr;
+        gap: 18px;
+        padding: 24px;
+        align-content: center;
+    }
+    .eg5-menu-story { display: none; }
+    .eg5-save-card { justify-self: stretch; width: 100%; padding: 16px; }
+    .eg5-save-meta { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; margin: 14px 0 0; }
+    .eg5-save-meta div { display:block; padding: 0; border: 0; }
+    .eg5-save-meta b { display:block; text-align:left; font-size:.78rem; }
+    .eg5-section-hero { display: block; padding: 18px; border-radius: 18px; }
+    .eg5-section-hero h1 { font-size: 2.1rem; }
+    .eg5-section-hero aside { text-align:left; margin-top:14px; }
+    .eg5-toolbar { position: sticky; top: 0; z-index: 5; padding-top: 8px; background: linear-gradient(180deg, var(--bg), rgba(6,21,15,.82)); }
+    .eg5-market-list,
+    .eg5-scout-list { grid-template-columns: 1fr; gap: 8px; }
+    .eg5-market-strip { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .eg5-market-actions { grid-template-columns: 1fr; }
+    .eg5-tactic-controls { grid-template-columns: 1fr; }
+    .eg5-bench-panel { max-height: none; }
+    .eg5-menu-center h1 { font-size: 2.7rem !important; }
+}
+
+@media (min-width: 901px) and (max-width: 1180px) {
+    #app.menu-active {
+        padding-left: 0 !important;
+    }
+    #app:has(.eg5-menu),
+    body:has(.eg5-menu) #app {
+        padding-left: 0 !important;
+    }
+    #app.menu-active #screen-root,
+    #app:not(.splash-active) #screen-root:has(.eg5-menu) {
+        padding: 0 !important;
+        width: 100vw !important;
+        min-height: 100dvh !important;
+    }
+    .eg5-menu-stage {
+        width: min(680px, 100%);
+        grid-template-columns: 1fr;
+        gap: 12px;
+        align-content: center;
+        justify-items: stretch;
+        padding: 22px 30px;
+    }
+    .eg5-menu-story {
+        display: none;
+    }
+    .eg5-menu-center {
+        width: 100%;
+    }
+    .eg5-menu-center h1 {
+        font-size: clamp(2.9rem, 6vw, 4.2rem) !important;
+        line-height: .86;
+        margin-bottom: 10px;
+    }
+    .eg5-menu-emblem {
+        width: 76px !important;
+        height: 76px !important;
+        margin-bottom: 10px;
+    }
+    .eg5-menu-actions {
+        margin-top: 16px;
+        gap: 8px;
+    }
+    .eg5-save-card {
+        justify-self: stretch;
+        width: 100%;
+        padding: 18px;
+    }
+    .eg5-save-card > strong {
+        font-size: 1.8rem;
+        margin: 8px 0 6px;
+    }
+    .eg5-save-meta {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        margin: 12px 0;
+    }
+    .eg5-save-meta div {
+        display: block;
+        padding-bottom: 0;
+        border-bottom: 0;
+    }
+    .eg5-save-meta b {
+        display: block;
+        text-align: left;
+    }
+}
