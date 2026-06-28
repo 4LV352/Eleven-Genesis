@@ -1,0 +1,24 @@
+{
+  "storageKey": "legendsDirectorSave",
+  "version": 4,
+  "savedDomains": [
+    "budget",
+    "squad",
+    "settings",
+    "season",
+    "statistics",
+    "club",
+    "league",
+    "market",
+    "scout",
+    "academy",
+    "marketing",
+    "tactics",
+    "finance",
+    "fans",
+    "dressingRoom",
+    "news",
+    "notifications"
+  ],
+  "notes": "O jogo salva automaticamente o estado completo da carreira em localStorage e migra saves antigos no carregamento."
+}

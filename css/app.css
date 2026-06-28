@@ -3896,15 +3896,13 @@ tr:last-child td {
    cards premium, botões de ação e navegação inferior.
    ========================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&family=Oswald:wght@500;600;700&display=swap');
-
 :root {
   --turf-500:#00A65A; --turf-600:#008C4C; --turf-700:#006E3B;
   --gold-200:#E8C874; --gold-400:#D4A63A; --gold-500:#B88A2A;
   --midnight-500:#071A12; --midnight-300:#0E1913; --midnight-200:#121D16; --midnight-100:#172219; --ivory-200:#F5F5EF;
-  --font-display:'Bebas Neue','Oswald',system-ui,sans-serif;
-  --font-numeric:'Oswald','Bebas Neue',system-ui,sans-serif;
-  --font-body:'Inter',system-ui,-apple-system,sans-serif;
+  --font-display:'Arial Narrow','Segoe UI Condensed',system-ui,sans-serif;
+  --font-numeric:'Arial Narrow','Segoe UI Condensed',system-ui,sans-serif;
+  --font-body:Inter,system-ui,-apple-system,sans-serif;
   --radius-xl:20px; --radius-2xl:28px;
   --shadow-xl:0 24px 48px rgba(0,0,0,.6),0 8px 16px rgba(0,0,0,.5);
   --grad-stadium:linear-gradient(180deg,#050F0A 0%,#071A12 40%,#0A2518 75%,#0E3520 100%);

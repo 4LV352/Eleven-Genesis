@@ -1,0 +1,314 @@
+/* Responsividade de base para a Fase 1. Mantem o jogo confortavel de 320px ao desktop. */
+@media (max-width: 430px) {
+    :root {
+        --topbar: 54px;
+        --nav: 60px;
+    }
+
+    #screen-root {
+        padding: 12px 10px calc(var(--nav) + 22px);
+    }
+
+    .topbar {
+        padding-inline: 10px;
+    }
+
+    .topbar strong {
+        max-width: 62vw;
+        font-size: 0.9rem;
+    }
+
+    .topbar span,
+    .meta,
+    .eg-caption,
+    .eg-mini {
+        overflow-wrap: anywhere;
+    }
+
+    .bottom-nav {
+        gap: 5px;
+        padding-inline: 6px;
+    }
+
+    .nav-button {
+        min-width: 58px;
+        padding-inline: 6px;
+        font-size: 0.64rem;
+    }
+
+    .nav-button::before {
+        width: 24px;
+        height: 24px;
+        font-size: 0.62rem;
+    }
+
+    .card,
+    .eg-card,
+    .internal-panel,
+    .market-tools,
+    .news-panel,
+    .board-room,
+    .finance-room,
+    .dressing-room,
+    .fan-room,
+    .structure-room {
+        padding: 12px;
+    }
+
+    .club-heading,
+    .player-hero,
+    .market-detail-hero,
+    .coach-club-main,
+    .row-main,
+    .market-player-summary {
+        min-width: 0;
+    }
+
+    .button-row,
+    .row-actions,
+    .market-actions,
+    .academy-actions,
+    .marketing-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+        width: 100%;
+    }
+
+    .btn,
+    .eg-button,
+    .eg-button-secondary,
+    .menu-button {
+        min-height: 42px;
+        width: 100%;
+        justify-content: center;
+        white-space: normal;
+    }
+
+    .stat-grid,
+    .market-facts,
+    .attribute-grid,
+    .scout-known-grid,
+    .academy-prospect-grid,
+    .marketing-mini-grid,
+    .weekly-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .market-player-summary,
+    .player-hero,
+    .market-detail-hero {
+        grid-template-columns: 1fr;
+    }
+
+    .table-wrap {
+        margin-inline: -10px;
+        padding-inline: 10px;
+    }
+}
+
+@media (max-width: 360px) {
+    #screen-root {
+        padding-inline: 8px;
+    }
+
+    .nav-button {
+        min-width: 52px;
+        font-size: 0.6rem;
+    }
+
+    .coach-versus {
+        grid-template-columns: 1fr;
+        text-align: left;
+    }
+
+    .coach-versus b {
+        display: none;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    #screen-root {
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+
+    .screen {
+        width: min(960px, 100%);
+    }
+
+    .bottom-nav {
+        width: min(860px, calc(100% - 32px));
+    }
+}
+
+.manager-dashboard-grid,
+.club-identity-grid,
+.kit-grid,
+.player-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+}
+
+.manager-panel {
+    display: grid;
+    gap: 10px;
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid var(--eg-line);
+    border-radius: var(--radius);
+    background: rgba(245, 245, 239, 0.045);
+}
+
+.manager-panel-head,
+.finance-bar-row div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.manager-panel-head span,
+.finance-bar-row span,
+.player-card-grid b {
+    color: var(--muted);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    font-weight: 800;
+}
+
+.manager-panel-head strong {
+    color: var(--gold);
+}
+
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.color-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.color-swatch {
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    border: 1px solid rgba(245, 245, 239, 0.22);
+    background: var(--swatch);
+}
+
+.kit-swatch {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid var(--eg-line);
+    border-radius: var(--radius);
+}
+
+.kit-swatch span {
+    height: 44px;
+    border-radius: 8px;
+    background: linear-gradient(90deg, var(--kit-a) 0 48%, var(--kit-b) 48% 100%);
+}
+
+.player-card-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    margin: 10px 0;
+}
+
+.player-card-grid span,
+.player-alert {
+    display: grid;
+    gap: 2px;
+    padding: 8px;
+    border-radius: 8px;
+    background: rgba(245, 245, 239, 0.045);
+    color: var(--text);
+    font-size: 0.78rem;
+}
+
+.player-alert {
+    margin-top: 8px;
+    color: var(--eg-warning);
+}
+
+.player-alert.good {
+    color: var(--eg-success);
+}
+
+.finance-bar-row {
+    display: grid;
+    gap: 7px;
+    padding: 10px;
+    border-radius: 8px;
+    background: rgba(245, 245, 239, 0.045);
+}
+
+.finance-bar-row i {
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(245, 245, 239, 0.08);
+}
+
+.finance-bar-row b {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--eg-turf), var(--eg-sky));
+}
+
+.finance-bar-row.expense b {
+    background: linear-gradient(90deg, var(--eg-warning), var(--eg-danger));
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+body[data-theme="light"] {
+    --bg: #edf2ee;
+    --panel: #ffffff;
+    --panel-strong: #eef4f0;
+    --panel-soft: #f7faf8;
+    --text: #102018;
+    --muted: #53645c;
+    --line: rgba(16, 32, 24, 0.12);
+    background: linear-gradient(180deg, #f6faf7, #e8f0eb);
+}
+
+body[data-theme="light"] .topbar,
+body[data-theme="light"] .bottom-nav {
+    background: rgba(250, 253, 251, 0.92);
+}
+
+body[data-animation-speed="slow"] {
+    --eg-speed-fast: 0.22s;
+    --eg-speed: 0.34s;
+}
+
+body[data-animation-speed="fast"] {
+    --eg-speed-fast: 0.08s;
+    --eg-speed: 0.13s;
+}
+
+@media (max-width: 430px) {
+    .manager-dashboard-grid,
+    .club-identity-grid,
+    .kit-grid,
+    .player-card-grid,
+    .quick-actions {
+        grid-template-columns: 1fr;
+    }
+}

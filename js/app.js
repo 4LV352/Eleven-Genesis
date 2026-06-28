@@ -1085,6 +1085,8 @@
             settings: {
                 autoSave: true,
                 volume: 70,
+                darkMode: true,
+                animationSpeed: "normal",
                 language: "Português",
                 ...loadMenuPreferences()
             },
@@ -1627,6 +1629,19 @@
                 wageBudget: Math.round(budget * 0.28),
                 transferPower: Math.round(budget * (reputation >= 88 ? 0.78 : reputation >= 80 ? 0.62 : 0.48))
             },
+            founded: 1880 + (Math.abs(id.split("").reduce((sum, char) => sum + char.charCodeAt(0), 0)) % 92),
+            history: `${name} representa ${city} com uma cultura de futebol baseada em ${tradition >= 82 ? "tradição vencedora" : reputation >= 78 ? "ambição competitiva" : "crescimento sustentável"}, torcida ativa e pressão permanente por evolução.`,
+            kits: {
+                home: { name: "Principal", colors: [primary, secondary] },
+                away: { name: "Visitante", colors: [secondary, primary] },
+                third: { name: "Alternativo", colors: ["#f5f5ef", primary] }
+            },
+            sponsorship: {
+                master: reputation >= 88 ? "Genesis Bank" : reputation >= 80 ? "Atlas Energia" : "Nova Arena",
+                value: Math.round(budget * 0.08)
+            },
+            popularity: clamp(Math.round((fans / 100000) + reputation * 0.55 + tradition * 0.2), 1, 99),
+            prestige: clamp(Math.round(reputation * 0.62 + tradition * 0.3 + facilities * 0.08), 1, 99),
             aiSquadSize: 24
         };
     }
@@ -1709,19 +1724,17 @@
     }
 
     function loadMenuPreferences() {
-        try {
-            const raw = localStorage.getItem(MENU_PREFS_KEY);
-            return raw ? JSON.parse(raw) : {};
-        } catch (error) {
-            return {};
-        }
+        return window.EGStorage ? (window.EGStorage.read(MENU_PREFS_KEY) || {}) : {};
     }
 
     function saveMenuPreferences() {
-        localStorage.setItem(MENU_PREFS_KEY, JSON.stringify({
+        const prefs = {
             volume: GameState.settings.volume,
+            darkMode: GameState.settings.darkMode,
+            animationSpeed: GameState.settings.animationSpeed,
             language: GameState.settings.language
-        }));
+        };
+        if (window.EGStorage) window.EGStorage.write(MENU_PREFS_KEY, prefs);
     }
 
     function changeLanguage(language) {
@@ -1734,6 +1747,15 @@
 
     function clamp(value, min, max) {
         return Math.max(min, Math.min(max, value));
+    }
+
+    function hashText(value) {
+        return String(value || "").split("").reduce((hash, char) => ((hash << 5) - hash + char.charCodeAt(0)) | 0, 0);
+    }
+
+    function deterministicNumber(seed, min, max) {
+        const range = max - min + 1;
+        return min + (Math.abs(hashText(seed)) % range);
     }
 
     function createPlayerFromRecord(record, source, index, clubModifier = 0) {
@@ -1813,6 +1835,21 @@
             contract: player.contract && typeof player.contract === "object" ? player.contract : { yearsRemaining: 2, expiresYear: currentYear + 2 },
             salary: player.salary || Math.max(4500, (player.overall || 65) * 150),
             marketValue: player.marketValue || player.value || Math.max(150000, (player.overall || 65) * 16000),
+            status: player.status || "Disponível",
+            injuries: Array.isArray(player.injuries) ? player.injuries : [],
+            cards: {
+                yellow: player.cards?.yellow ?? deterministicNumber(`${player.id}-yellow`, 0, 4),
+                red: player.cards?.red ?? deterministicNumber(`${player.id}-red`, 0, 1)
+            },
+            statistics: {
+                appearances: player.statistics?.appearances ?? deterministicNumber(`${player.id}-apps`, 0, 18),
+                goals: player.statistics?.goals ?? (["ST", "CF", "LW", "RW", "CAM"].includes(primaryPosition) ? deterministicNumber(`${player.id}-goals`, 0, 11) : deterministicNumber(`${player.id}-goals`, 0, 3)),
+                assists: player.statistics?.assists ?? (["CM", "CAM", "LW", "RW", "RM", "LM"].includes(primaryPosition) ? deterministicNumber(`${player.id}-assists`, 0, 9) : deterministicNumber(`${player.id}-assists`, 0, 4)),
+                cleanSheets: player.statistics?.cleanSheets ?? (primaryPosition === "GK" ? deterministicNumber(`${player.id}-cs`, 0, 8) : 0),
+                averageRating: player.statistics?.averageRating ?? (6.2 + deterministicNumber(`${player.id}-rating`, 0, 24) / 10)
+            },
+            history: Array.isArray(player.history) ? player.history : [],
+            seasons: Array.isArray(player.seasons) ? player.seasons : [],
             attributes: normalizeAttributes(player.attributes, player.overall || 65, primaryPosition)
         };
         normalized.contract.yearsRemaining = normalized.contract.yearsRemaining || Math.max(1, (normalized.contract.expiresYear || currentYear + 1) - currentYear);
@@ -1823,6 +1860,26 @@
         normalized.careerPhase = getCareerPhase(normalized, currentYear);
         normalized.marketValue = calculateMarketValue(normalized, currentYear);
         normalized.value = normalized.marketValue;
+        if (!normalized.history.length) {
+            normalized.history = [
+                { season: currentYear, club: GameState?.club?.name || "Clube atual", event: "Integrado ao elenco principal", value: normalized.marketValue },
+                { season: currentYear - 1, club: "Formação", event: `Evoluiu como ${normalized.primaryPosition}`, value: Math.round(normalized.marketValue * 0.72) }
+            ];
+        }
+        if (!normalized.seasons.length) {
+            normalized.seasons = [
+                {
+                    season: currentYear,
+                    club: GameState?.club?.name || "Clube atual",
+                    appearances: normalized.statistics.appearances,
+                    goals: normalized.statistics.goals,
+                    assists: normalized.statistics.assists,
+                    rating: normalized.statistics.averageRating
+                }
+            ];
+        }
+        if (normalized.fitness < 45 && !normalized.injuries.length) normalized.injuries = [{ type: "Desgaste muscular", weeks: 1 }];
+        normalized.status = normalized.injuries.length ? "Lesionado" : normalized.energy < 35 ? "Cansado" : normalized.morale < 35 ? "Insatisfeito" : "Disponível";
         return normalized;
     }
 
@@ -2621,26 +2678,24 @@
             lastSavedAt: new Date().toISOString()
         };
         GameState.saveVersion = SAVE_VERSION;
-        localStorage.setItem(SAVE_KEY, JSON.stringify(GameState));
+        const saved = window.EGStorage.write(SAVE_KEY, GameState);
         updateMenuAvailability();
-        return true;
+        return saved;
     }
 
     function loadCareer() {
-        const raw = localStorage.getItem(SAVE_KEY);
-        if (!raw) {
+        const parsed = window.EGStorage.read(SAVE_KEY);
+        if (!parsed) {
             showToast("Nenhuma carreira salva encontrada.");
             return false;
         }
 
         try {
-            const parsed = JSON.parse(raw);
             GameState = migrateState(parsed);
             switchScreen(GameState.currentScreen || "home", { silent: true });
             showToast("Carreira carregada.");
             return true;
         } catch (error) {
-            console.error("Erro ao carregar save:", error);
             showToast("Save invalido. Inicie uma nova carreira.");
             return false;
         }
@@ -2843,7 +2898,7 @@
     function resetCareer() {
         const confirmed = window.confirm("Resetar carreira e apagar o save atual?");
         if (!confirmed) return;
-        localStorage.removeItem(SAVE_KEY);
+        if (window.EGStorage) window.EGStorage.remove(SAVE_KEY);
         GameState = createBaseState();
         renderMenu();
         showToast("Carreira resetada.");
@@ -3139,11 +3194,7 @@
     function switchScreen(screen, options = {}) {
         if (!GameState) GameState = createBaseState();
         const root = document.getElementById("screen-root");
-        if (root) {
-            root.classList.remove("screen-transition");
-            void root.offsetWidth;
-            root.classList.add("screen-transition");
-        }
+        if (window.EGNavigation) window.EGNavigation.animateScreen(root);
         GameState.currentScreen = screen;
         renderCurrentScreen();
         if (!options.silent && GameState.club && GameState.settings.autoSave) saveCareer();
@@ -3184,7 +3235,18 @@
             playerDetail: renderPlayerDetail
         };
         const renderer = renderers[GameState.currentScreen] || renderDashboard;
-        renderer();
+        try {
+            renderer();
+        } catch (error) {
+            GameState.currentScreen = "home";
+            renderDashboard();
+            showToast("Tela recuperada automaticamente.");
+        }
+        const root = document.getElementById("screen-root");
+        if (root && !root.textContent.trim()) {
+            GameState.currentScreen = "home";
+            renderDashboard();
+        }
         updateQuestionModal();
     }
 
@@ -3193,23 +3255,22 @@
         const nav = document.getElementById("bottom-nav");
         const headerClub = document.getElementById("header-club");
         const headerSeason = document.getElementById("header-season");
-        const menuScreens = ["menu", "menuSettings", "menuCredits", "clubSelect"];
-        const inCareer = Boolean(GameState && GameState.club && !menuScreens.includes(GameState.currentScreen));
+        const inCareer = window.EGNavigation ? window.EGNavigation.isCareerScreen(GameState) : Boolean(GameState && GameState.club);
 
+        document.body.dataset.theme = GameState?.settings?.darkMode === false ? "light" : "dark";
+        document.body.dataset.animationSpeed = GameState?.settings?.animationSpeed || "normal";
         topbar.style.display = inCareer ? "flex" : "none";
         nav.classList.toggle("visible", inCareer);
         headerClub.textContent = inCareer ? GameState.club.name : t("brand.name");
         headerSeason.textContent = inCareer ? `${GameState.season} - Rodada ${GameState.round}` : "1970 - Rodada 1";
 
-        document.querySelectorAll(".nav-button").forEach((button) => {
-            button.classList.toggle("active", button.dataset.screen === GameState.currentScreen);
-        });
+        if (window.EGNavigation) window.EGNavigation.setActiveNav(GameState.currentScreen);
         applyStaticI18n();
     }
 
     function updateMenuAvailability() {
         const loadButton = document.getElementById("load-career");
-        if (loadButton) loadButton.disabled = !localStorage.getItem(SAVE_KEY);
+        if (loadButton) loadButton.disabled = !window.EGStorage.has(SAVE_KEY);
     }
 
     function triggerMenuFeedback() {
@@ -3342,8 +3403,8 @@
     }
 
     function getSaveInfo() {
-        const raw = localStorage.getItem(SAVE_KEY);
-        if (!raw) {
+        const saved = window.EGStorage ? window.EGStorage.read(SAVE_KEY) : null;
+        if (!saved) {
             return {
                 exists: false,
                 clubName: t("menu.noClub"),
@@ -3353,7 +3414,6 @@
             };
         }
         try {
-            const saved = JSON.parse(raw);
             return {
                 exists: true,
                 clubName: saved.club?.name || t("menu.noClub"),
@@ -3446,8 +3506,8 @@
 
     function resetGameFromMenu() {
         if (!window.confirm("Resetar jogo e apagar a carreira salva?")) return;
-        localStorage.removeItem(SAVE_KEY);
-        localStorage.removeItem(MENU_PREFS_KEY);
+        window.EGStorage.remove(SAVE_KEY);
+        window.EGStorage.remove(MENU_PREFS_KEY);
         GameState = createBaseState();
         renderMenu();
         showToast("Jogo resetado.");
@@ -3518,6 +3578,87 @@
         `;
     }
 
+    function getClubRanking() {
+        ensureClubProfile(GameState.club);
+        const row = getClubLeagueRow(GameState.club.id);
+        const score = (GameState.club.reputation * 2) + (GameState.club.prestige || 60) + (row.points * 4) + GameState.boardConfidence;
+        const leagueScores = GameState.league.clubs.map((club) => {
+            const clubRow = getClubLeagueRow(club.id);
+            return {
+                clubId: club.id,
+                score: (club.reputation * 2) + (club.prestige || club.tradition || 60) + (clubRow.points * 4) + (club.id === GameState.club.id ? GameState.boardConfidence : 65)
+            };
+        }).sort((a, b) => b.score - a.score);
+        return {
+            national: leagueScores.findIndex((item) => item.clubId === GameState.club.id) + 1,
+            score: Math.round(score)
+        };
+    }
+
+    function ensureClubProfile(club) {
+        if (!club) return null;
+        const colors = club.colors || [club.color || "#00A65A", "#F5F5EF"];
+        club.founded = club.founded || (1880 + (Math.abs(hashText(club.id || club.name)) % 92));
+        club.history = club.history || `${club.name} nasceu em ${club.city} e construiu sua identidade em torno de torcida, tradição e ambição esportiva.`;
+        club.kits = club.kits || {
+            home: { name: "Principal", colors },
+            away: { name: "Visitante", colors: [colors[1], colors[0]] },
+            third: { name: "Alternativo", colors: ["#f5f5ef", colors[0]] }
+        };
+        club.sponsorship = club.sponsorship || {
+            master: club.reputation >= 88 ? "Genesis Bank" : club.reputation >= 80 ? "Atlas Energia" : "Nova Arena",
+            value: Math.round((club.budget || GameState.budget || 1000000) * 0.08)
+        };
+        club.popularity = club.popularity || clamp(Math.round((club.fans || 100000) / 100000 + (club.reputation || 60) * 0.55 + (club.tradition || 60) * 0.2), 1, 99);
+        club.prestige = club.prestige || clamp(Math.round((club.reputation || 60) * 0.62 + (club.tradition || 60) * 0.3 + (club.facilities || 60) * 0.08), 1, 99);
+        return club;
+    }
+
+    function getRecentTransfers(limit = 4) {
+        const log = (GameState.transferLog || []).slice(0, limit).map((text, index) => ({ text, type: "Contratação", round: Math.max(1, GameState.round - index) }));
+        if (log.length) return log;
+        return GameState.squad
+            .slice(0, limit)
+            .map((player) => ({ text: `${player.name} valorizado para ${money(player.marketValue)}`, type: "Elenco", round: GameState.round }));
+    }
+
+    function getDashboardCalendar(limit = 4) {
+        const opponent = getClubById(GameState.nextOpponentId) || pickNextOpponent();
+        return [
+            { label: "Próximo jogo", value: `${GameState.club.name} x ${opponent.name}`, meta: getNextMatchDate() },
+            { label: "Janela", value: isTransferWindow(GameState.round) ? "Transferências abertas" : "Mercado monitorado", meta: getCalendarMonth(GameState.round) },
+            { label: "Financeiro", value: "Fechamento semanal", meta: `Semana ${GameState.round}` },
+            { label: "Base e Scout", value: "Relatórios internos", meta: `${getScoutCapacity()} vagas de scout` }
+        ].slice(0, limit);
+    }
+
+    function renderMiniList(items, emptyText) {
+        return items.length ? items.map((item) => `
+            <div class="row-card">
+                <div class="row-main"><strong>${escapeHtml(item.title || item.value || item.text)}</strong><span>${escapeHtml(item.meta || item.type || "")}</span></div>
+                ${item.text && item.title ? `<span class="muted">${escapeHtml(item.text)}</span>` : ""}
+            </div>
+        `).join("") : `<div class="empty-state">${escapeHtml(emptyText)}</div>`;
+    }
+
+    function renderKitSwatch(kit) {
+        return `
+            <div class="kit-swatch" style="--kit-a:${kit.colors[0]};--kit-b:${kit.colors[1]}">
+                <span></span>
+                <strong>${escapeHtml(kit.name)}</strong>
+            </div>
+        `;
+    }
+
+    function getPlayerTrend(player) {
+        const overall = calculateCurrentOverall(player);
+        const potentialGap = Math.max(0, player.potential - overall);
+        if (potentialGap >= 8 && calculateAge(player, GameState.currentYear) <= 24) return "Em evolução";
+        if (player.fitness < 50) return "Recuperação";
+        if (player.morale < 45) return "Oscilando";
+        return "Estável";
+    }
+
     function renderDashboard() {
         const opponent = getClubById(GameState.nextOpponentId) || pickNextOpponent();
         const position = currentPosition();
@@ -3542,6 +3683,10 @@
             .map((assignment) => GameState.market.find((player) => player.id === assignment.playerId)?.name)
             .filter(Boolean)[0] || t("scout.noObserved");
         const latestNews = getLatestNews(3);
+        const ranking = getClubRanking();
+        const recentTransfers = getRecentTransfers(4);
+        const calendarItems = getDashboardCalendar(4);
+        ensureBoardState();
         const financeAlerts = updateFinanceAlerts(finances);
         const structureAverage = getStructureAverageLevel();
         const matchLocation = GameState.round % 2 === 1 ? t("home.home") : t("home.away");
@@ -3636,6 +3781,51 @@
                     <button class="coach-mini-card" type="button" data-director-action="academy"><i>✦</i><span>${escapeHtml(t("nav.academy"))}</span><strong>${GameState.academy.prospects.length}</strong><small>${escapeHtml(latestAcademyEvent?.text || t("academy.noEvents"))}</small></button>
                 </div>
 
+                <div class="manager-dashboard-grid">
+                    <section class="manager-panel">
+                        <div class="manager-panel-head"><span>Diretoria</span><strong>${GameState.boardConfidence}%</strong></div>
+                        ${renderMiniList((GameState.board.objectives || []).slice(0, 3).map((item) => ({
+                            title: item.title,
+                            text: `${item.progress || 0}% · ${item.deadline}`,
+                            meta: item.status || "Ativo"
+                        })), "Sem objetivos ativos.")}
+                    </section>
+                    <section class="manager-panel">
+                        <div class="manager-panel-head"><span>Notícias</span><strong>${latestNews.length}</strong></div>
+                        ${renderMiniList(latestNews.map((item) => ({
+                            title: item.title,
+                            text: item.text,
+                            meta: item.category
+                        })), "Nenhuma notícia recente.")}
+                    </section>
+                    <section class="manager-panel">
+                        <div class="manager-panel-head"><span>Ranking e reputação</span><strong>#${ranking.national}</strong></div>
+                        <div class="stat-grid compact">
+                            <div class="stat"><span>Ranking</span><strong>${ranking.national}º</strong></div>
+                            <div class="stat"><span>Score</span><strong>${ranking.score}</strong></div>
+                            <div class="stat"><span>Reputação</span><strong>${GameState.club.reputation}</strong></div>
+                            <div class="stat"><span>Popularidade</span><strong>${GameState.club.popularity || GameState.club.reputation}</strong></div>
+                        </div>
+                    </section>
+                    <section class="manager-panel">
+                        <div class="manager-panel-head"><span>Transferências</span><strong>${recentTransfers.length}</strong></div>
+                        ${renderMiniList(recentTransfers, "Sem movimentações registradas.")}
+                    </section>
+                    <section class="manager-panel">
+                        <div class="manager-panel-head"><span>Calendário</span><strong>${escapeHtml(getCalendarMonth(GameState.round))}</strong></div>
+                        ${renderMiniList(calendarItems, "Calendário sem eventos.")}
+                    </section>
+                    <section class="manager-panel shortcuts">
+                        <div class="manager-panel-head"><span>Atalhos rápidos</span><strong>${unreadNotifications}</strong></div>
+                        <div class="quick-actions">
+                            <button class="btn" type="button" data-director-action="squad">Elenco</button>
+                            <button class="btn" type="button" data-director-action="finances">Finanças</button>
+                            <button class="btn" type="button" data-director-action="club">Clube</button>
+                            <button class="btn" type="button" data-director-action="notifications">Notificações</button>
+                        </div>
+                    </section>
+                </div>
+
                 <div class="director-actions">
                     <button class="btn btn-primary advance-week" id="advance-week" type="button">${escapeHtml(t("home.advanceWeek"))}</button>
                     <button class="btn" id="manual-save" type="button">${escapeHtml(t("home.save"))}</button>
@@ -3661,7 +3851,7 @@
     }
 
     function renderSimpleList(items) {
-        return `<div class="list">${items.slice(0, 6).map((item) => `<div class="row-card">${item}</div>`).join("")}</div>`;
+        return `<div class="list">${items.slice(0, 6).map((item) => `<div class="row-card">${escapeHtml(item)}</div>`).join("")}</div>`;
     }
 
     function handleDirectorAction(action) {
@@ -3677,7 +3867,9 @@
             scout: "scout",
             academy: "academy",
             marketing: "marketing",
-            club: "structure",
+            club: "club",
+            structure: "structure",
+            squad: "squad",
             finances: "finances",
             dressing: "dressingRoom",
             fans: "fanMood"
@@ -3920,13 +4112,15 @@
         const ticketRevenue = Math.round(getAverageMatchRevenue() * (0.18 + (activeCampaign?.attendanceBoost || 0)));
         const stadiumMaintenance = getWeeklyStadiumMaintenance();
         const structureMaintenance = Math.round(((GameState.club.facilities || 50) + (GameState.club.youthQuality || 50) + (GameState.club.scoutQuality || 50)) * 620 * (1 - administrationLevel * 0.018));
+        const staff = Math.round(((GameState.club.facilities || 50) * 420) + ((GameState.club.scoutQuality || 50) * 260) + ((GameState.club.youthQuality || 50) * 310));
+        const transferInstallments = Math.round((GameState.finance.transferSpend || 0) / 52);
         const bonuses = Math.round(Math.max(0, GameState.boardConfidence - 60) * 1800);
         const store = updateStoreProjection();
         const merchandising = Math.round(store.weeklyRevenue * (1 + (activeCampaign?.revenueBoost || 0)));
         const television = 0;
         const continentalRevenue = 0;
         const weekIncome = sponsorship + ticketRevenue + merchandising + television + continentalRevenue;
-        const weekExpenses = weeklyWages + stadiumMaintenance + structureMaintenance + bonuses;
+        const weekExpenses = weeklyWages + stadiumMaintenance + structureMaintenance + staff + transferInstallments + bonuses;
         return {
             wages,
             weeklyWages,
@@ -3934,6 +4128,8 @@
             ticketRevenue,
             stadiumMaintenance,
             structureMaintenance,
+            staff,
+            transferInstallments,
             bonuses,
             merchandising,
             television,
@@ -3989,6 +4185,10 @@
         GameState.finance.stadiumMaintenance += finances.stadiumMaintenance;
         applyFinanceMovement("expense", "Manutenção das estruturas", "Centro de treinamento, scout e base", finances.structureMaintenance);
         GameState.finance.structureMaintenance += finances.structureMaintenance;
+        applyFinanceMovement("expense", "Funcionários", "Comissão técnica, análise, base e scout", finances.staff);
+        GameState.finance.staff = (GameState.finance.staff || 0) + finances.staff;
+        applyFinanceMovement("expense", "Parcelas de transferências", "Amortização semanal de negociações", finances.transferInstallments);
+        GameState.finance.transferInstallments = (GameState.finance.transferInstallments || 0) + finances.transferInstallments;
         applyFinanceMovement("expense", "Bônus", "Bônus de desempenho e metas internas", finances.bonuses);
         GameState.finance.bonuses += finances.bonuses;
         addFinanceSnapshot();
@@ -4372,7 +4572,6 @@
             summary.steps.push({ label, ok: true });
             return result;
         } catch (error) {
-            console.error(`Erro na etapa semanal: ${label}`, error);
             summary.steps.push({ label, ok: false, error: error.message });
             addNotification("Clube", `Etapa com problema: ${label}`, "A rotina semanal continuou normalmente após tratamento interno.");
             return null;
@@ -4824,6 +5023,23 @@
         const alerts = updateFinanceAlerts(finances);
         const chartPoints = getFinanceChartPoints();
         const polyline = chartPoints.map((point) => `${point.x},${point.y}`).join(" ");
+        const incomeRows = [
+            ["Patrocínio", finances.sponsorship],
+            ["Bilheteria", finances.ticketRevenue],
+            ["Venda de jogadores", GameState.finance.transferIncome || 0],
+            ["Premiações", GameState.finance.prizeMoney || 0],
+            ["Loja oficial", finances.merchandising],
+            ["Televisão", finances.television],
+            ["Continental", finances.continentalRevenue]
+        ];
+        const expenseRows = [
+            ["Salários", finances.weeklyWages],
+            ["Manutenção", finances.stadiumMaintenance + finances.structureMaintenance],
+            ["Funcionários", finances.staff],
+            ["Transferências", finances.transferInstallments],
+            ["Bônus", finances.bonuses]
+        ];
+        const maxFinanceBar = Math.max(1, ...incomeRows.map((row) => row[1]), ...expenseRows.map((row) => row[1]));
         document.getElementById("screen-root").innerHTML = `
             <section class="screen stack internal-screen finance-screen">
                 ${renderInternalHero("Finanças", "Fluxo de caixa, custos operacionais e saúde financeira.", "FIN")}
@@ -4833,6 +5049,8 @@
                         <div class="stat"><span>Receitas semanais</span><strong>${money(finances.weekIncome)}</strong></div>
                         <div class="stat"><span>Despesas semanais</span><strong>${money(finances.weekExpenses)}</strong></div>
                         <div class="stat"><span>Folha salarial</span><strong>${money(finances.wages)}</strong></div>
+                        <div class="stat"><span>Funcionários</span><strong>${money(finances.staff)}</strong></div>
+                        <div class="stat"><span>Parcelas de transferências</span><strong>${money(finances.transferInstallments)}</strong></div>
                         <div class="stat"><span>Receitas acumuladas</span><strong>${money(GameState.finance.income)}</strong></div>
                         <div class="stat"><span>Despesas acumuladas</span><strong>${money(GameState.finance.expenses)}</strong></div>
                     </div>
@@ -4847,21 +5065,15 @@
                     <div class="finance-grid">
                         <div class="finance-section">
                             <h2>Receitas</h2>
-                            <div class="row-card"><span>Patrocínio</span><strong>${money(finances.sponsorship)}</strong></div>
-                            <div class="row-card"><span>Bilheteria</span><strong>${money(finances.ticketRevenue)}</strong></div>
-                            <div class="row-card"><span>Bônus e premiações</span><strong>${money(GameState.finance.prizeMoney)}</strong></div>
-                            <div class="row-card"><span>Transferências</span><strong>${money(GameState.finance.transferIncome)}</strong></div>
-                            <div class="row-card"><span>Camisas</span><strong>${money(GameState.finance.merchandising)}</strong></div>
-                            <div class="row-card"><span>Televisão</span><strong>${money(GameState.finance.television)}</strong></div>
-                            <div class="row-card"><span>Continental</span><strong>${money(GameState.finance.continentalRevenue)}</strong></div>
+                            ${incomeRows.map(([label, value]) => `
+                                <div class="finance-bar-row"><div><span>${escapeHtml(label)}</span><strong>${money(value)}</strong></div><i><b style="width:${Math.round((value / maxFinanceBar) * 100)}%"></b></i></div>
+                            `).join("")}
                         </div>
                         <div class="finance-section">
                             <h2>Despesas</h2>
-                            <div class="row-card"><span>Salários semanais</span><strong>${money(finances.weeklyWages)}</strong></div>
-                            <div class="row-card"><span>Manutenção do estádio</span><strong>${money(finances.stadiumMaintenance)}</strong></div>
-                            <div class="row-card"><span>Manutenção das estruturas</span><strong>${money(finances.structureMaintenance)}</strong></div>
-                            <div class="row-card"><span>Bônus</span><strong>${money(finances.bonuses)}</strong></div>
-                            <div class="row-card"><span>Transferências</span><strong>${money(GameState.finance.transferSpend)}</strong></div>
+                            ${expenseRows.map(([label, value]) => `
+                                <div class="finance-bar-row expense"><div><span>${escapeHtml(label)}</span><strong>${money(value)}</strong></div><i><b style="width:${Math.round((value / maxFinanceBar) * 100)}%"></b></i></div>
+                            `).join("")}
                         </div>
                     </div>
                     <div class="finance-section">
@@ -5049,11 +5261,29 @@
                                 <strong>${player.name}</strong>
                                 <span class="overall-badge">${calculateCurrentOverall(player)}</span>
                             </div>
-                            <div class="meta"><span>${player.primaryPosition}</span><span>${calculateAge(player, GameState.currentYear)} anos</span><span>${money(player.marketValue)}</span></div>
+                            <div class="meta">
+                                <span>${player.primaryPosition}</span>
+                                <span>${calculateAge(player, GameState.currentYear)} anos</span>
+                                <span>${escapeHtml(player.country)}</span>
+                                <span>${escapeHtml(player.status)}</span>
+                                <span>${money(player.marketValue)}</span>
+                            </div>
+                            <div class="player-card-grid">
+                                <span><b>Pot</b>${player.potential}</span>
+                                <span><b>Forma</b>${player.fitness}</span>
+                                <span><b>Pé</b>${escapeHtml(player.dominantFoot)}</span>
+                                <span><b>Alt/Peso</b>${player.height}cm · ${player.weight}kg</span>
+                                <span><b>Salário</b>${money(player.salary)}</span>
+                                <span><b>Contrato</b>${player.contract.yearsRemaining}a</span>
+                                <span><b>Stats</b>${player.statistics.appearances}J · ${player.statistics.goals}G · ${player.statistics.assists}A</span>
+                                <span><b>Cartões</b>${player.cards.yellow}A · ${player.cards.red}V</span>
+                            </div>
                             <div class="mini-bars">
                                 ${renderMiniMeter("Moral", player.morale, "morale")}
                                 ${renderMiniMeter("Energia", player.energy, "energy")}
+                                ${renderMiniMeter("Forma", player.fitness, "fitness")}
                             </div>
+                            ${player.injuries.length ? `<span class="player-alert">Lesão: ${escapeHtml(player.injuries[0].type)} · ${player.injuries[0].weeks} semana(s)</span>` : `<span class="player-alert good">${escapeHtml(getPlayerTrend(player))}</span>`}
                         </button>
                     `).join("") || `<div class="empty-state">Nenhum jogador encontrado.</div>`}
                     </div>
@@ -5135,6 +5365,8 @@
         const age = calculateAge(player, GameState.currentYear);
         const overall = calculateCurrentOverall(player);
         const phase = getCareerPhase(player, GameState.currentYear);
+        const trend = getPlayerTrend(player);
+        const valueGrowth = player.history?.[1]?.value ? Math.round(((player.marketValue - player.history[1].value) / Math.max(1, player.history[1].value)) * 100) : 0;
         document.getElementById("screen-root").innerHTML = `
             <section class="screen stack">
                 <div class="player-hero card card-pad">
@@ -5144,13 +5376,15 @@
                     <div class="stack">
                         <div>
                             <h1>${player.name}</h1>
-                            <div class="meta"><span>${player.nickname}</span><span>${player.country}</span><span>${phase}</span></div>
+                            <div class="meta"><span>${player.nickname}</span><span>${player.country}</span><span>${phase}</span><span>${escapeHtml(player.status)}</span></div>
                         </div>
                         <div class="stat-grid">
                             <div class="stat"><span>Idade</span><strong>${age}</strong></div>
                             <div class="stat"><span>Posicao</span><strong>${player.primaryPosition}</strong></div>
                             <div class="stat"><span>Overall</span><strong>${overall}</strong></div>
                             <div class="stat"><span>Potencial</span><strong>${player.potential}</strong></div>
+                            <div class="stat"><span>Tendência</span><strong>${escapeHtml(trend)}</strong></div>
+                            <div class="stat"><span>Valorização</span><strong>${valueGrowth >= 0 ? "+" : ""}${valueGrowth}%</strong></div>
                         </div>
                     </div>
                 </div>
@@ -5167,6 +5401,8 @@
                             <div class="stat"><span>Personalidade</span><strong>${player.personality}</strong></div>
                             <div class="stat"><span>Reputacao</span><strong>${player.reputation}</strong></div>
                             <div class="stat"><span>Fase</span><strong>${phase}</strong></div>
+                            <div class="stat"><span>Status</span><strong>${escapeHtml(player.status)}</strong></div>
+                            <div class="stat"><span>Cartões</span><strong>${player.cards.yellow}A · ${player.cards.red}V</strong></div>
                             <div class="stat"><span>Áreas naturais</span><strong>${player.tacticalProfile.naturalAreas.join(", ")}</strong></div>
                             <div class="stat"><span>Versatilidade</span><strong>${player.tacticalProfile.versatility}</strong></div>
                             <div class="stat"><span>Funções preferidas</span><strong>${player.tacticalProfile.preferredRoles.join(", ")}</strong></div>
@@ -5180,6 +5416,8 @@
                             <div class="stat"><span>Salario</span><strong>${money(player.salary)}</strong></div>
                             <div class="stat"><span>Contrato</span><strong>${player.contract.yearsRemaining} ano(s)</strong></div>
                             <div class="stat"><span>Expira</span><strong>${player.contract.expiresYear}</strong></div>
+                            <div class="stat"><span>Cláusula estimada</span><strong>${money(Math.round(player.marketValue * 1.65))}</strong></div>
+                            <div class="stat"><span>Custo anual</span><strong>${money(player.salary * 52)}</strong></div>
                         </div>
                         <div class="meter-list">
                             ${renderAttributeMeter("Moral", player.morale)}
@@ -5194,6 +5432,51 @@
                     <div class="attribute-grid">
                         ${PLAYER_ATTRIBUTES.map((attribute) => renderAttributeMeter(ATTRIBUTE_LABELS[attribute], player.attributes[attribute])).join("")}
                     </div>
+                </div>
+
+                <div class="grid">
+                    <div class="card card-pad stack">
+                        <h2>Estatísticas da temporada</h2>
+                        <div class="stat-grid">
+                            <div class="stat"><span>Jogos</span><strong>${player.statistics.appearances}</strong></div>
+                            <div class="stat"><span>Gols</span><strong>${player.statistics.goals}</strong></div>
+                            <div class="stat"><span>Assistências</span><strong>${player.statistics.assists}</strong></div>
+                            <div class="stat"><span>Clean sheets</span><strong>${player.statistics.cleanSheets}</strong></div>
+                            <div class="stat"><span>Nota média</span><strong>${player.statistics.averageRating.toFixed(1)}</strong></div>
+                            <div class="stat"><span>Lesões</span><strong>${player.injuries.length ? player.injuries.map((item) => `${item.type} (${item.weeks}s)`).join(", ") : "Nenhuma"}</strong></div>
+                        </div>
+                    </div>
+                    <div class="card card-pad stack">
+                        <h2>Evolução</h2>
+                        <div class="finance-bars">
+                            ${renderAttributeMeter("Overall", overall)}
+                            ${renderAttributeMeter("Potencial", player.potential)}
+                            ${renderAttributeMeter("Moral", player.morale)}
+                            ${renderAttributeMeter("Energia", player.energy)}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid">
+                    <div class="card card-pad stack">
+                        <h2>Histórico</h2>
+                        ${renderMiniList((player.history || []).map((item) => ({
+                            title: `${item.season} · ${item.club}`,
+                            text: `${item.event} · ${money(item.value || player.marketValue)}`,
+                            meta: "Carreira"
+                        })), "Sem histórico registrado.")}
+                    </div>
+                    <div class="card card-pad stack">
+                        <h2>Temporadas</h2>
+                        ${renderMiniList((player.seasons || []).map((item) => ({
+                            title: `${item.season} · ${item.club}`,
+                            text: `${item.appearances} jogos · ${item.goals} gols · ${item.assists} assistências · nota ${Number(item.rating).toFixed(1)}`,
+                            meta: "Estatísticas"
+                        })), "Sem temporadas registradas.")}
+                    </div>
+                </div>
+
+                <div class="card card-pad stack">
                     <button class="btn" id="back-to-squad" type="button">Voltar</button>
                 </div>
             </section>
@@ -5447,16 +5730,12 @@
     }
 
     function getMarketFavorites() {
-        try {
-            const stored = JSON.parse(localStorage.getItem(MARKET_FAVORITES_KEY) || "[]");
-            return Array.isArray(stored) ? stored : [];
-        } catch (error) {
-            return [];
-        }
+        const stored = window.EGStorage ? window.EGStorage.read(MARKET_FAVORITES_KEY) : [];
+        return Array.isArray(stored) ? stored : [];
     }
 
     function saveMarketFavorites(favorites) {
-        localStorage.setItem(MARKET_FAVORITES_KEY, JSON.stringify([...new Set(favorites)]));
+        if (window.EGStorage) window.EGStorage.write(MARKET_FAVORITES_KEY, [...new Set(favorites)]);
     }
 
     function isMarketFavorite(playerId) {
@@ -6991,6 +7270,9 @@
     }
 
     function renderClub() {
+        ensureClubProfile(GameState.club);
+        const club = GameState.club;
+        const fanMood = getFanMood();
         document.getElementById("screen-root").innerHTML = `
             <section class="screen stack">
                 <div>
@@ -6999,28 +7281,46 @@
                 </div>
                 <div class="card card-pad stack">
                     <div class="club-heading">
-                        ${renderClubCrest(GameState.club, "large")}
+                        ${renderClubCrest(club, "large")}
                         <div>
-                            <h2>${GameState.club.name}</h2>
-                            <div class="meta"><span>${GameState.club.city}</span><span>${GameState.club.country}</span><span>${GameState.club.size}</span></div>
+                            <h2>${escapeHtml(club.name)}</h2>
+                            <div class="meta"><span>${escapeHtml(club.city)}</span><span>${escapeHtml(club.country)}</span><span>${escapeHtml(club.size)}</span><span>Fundado em ${club.founded}</span></div>
                         </div>
                     </div>
+                    <p class="eg-text">${escapeHtml(club.history)}</p>
                     <div class="stat-grid">
-                        <div class="stat"><span>Estadio</span><strong>${GameState.club.stadium.name}</strong></div>
-                        <div class="stat"><span>Capacidade</span><strong>${number(GameState.club.stadium.capacity)}</strong></div>
+                        <div class="stat"><span>Nome</span><strong>${escapeHtml(club.name)}</strong></div>
+                        <div class="stat"><span>Cidade</span><strong>${escapeHtml(club.city)}</strong></div>
+                        <div class="stat"><span>Estadio</span><strong>${escapeHtml(club.stadium.name)}</strong></div>
+                        <div class="stat"><span>Capacidade</span><strong>${number(club.stadium.capacity)}</strong></div>
                         <div class="stat"><span>Orcamento</span><strong>${money(GameState.budget)}</strong></div>
-                        <div class="stat"><span>Reputacao</span><strong>${GameState.club.reputation}</strong></div>
+                        <div class="stat"><span>Reputacao</span><strong>${club.reputation}</strong></div>
                         <div class="stat"><span>Confianca</span><strong>${GameState.boardConfidence}%</strong></div>
-                        <div class="stat"><span>Torcida</span><strong>${number(GameState.club.fans)}</strong></div>
-                        <div class="stat"><span>Tradicao</span><strong>${GameState.club.tradition}</strong></div>
-                        <div class="stat"><span>Instalacoes</span><strong>${GameState.club.facilities}</strong></div>
-                        <div class="stat"><span>Base</span><strong>${GameState.club.youthQuality}</strong></div>
-                        <div class="stat"><span>Scout</span><strong>${GameState.club.scoutQuality}</strong></div>
-                        <div class="stat"><span>Bilheteria</span><strong>${money(GameState.club.stadium.ticketRevenue)} / torcedor</strong></div>
+                        <div class="stat"><span>Torcida</span><strong>${number(club.fans)}</strong></div>
+                        <div class="stat"><span>Moral da torcida</span><strong>${escapeHtml(fanMood.label)}</strong></div>
+                        <div class="stat"><span>Popularidade</span><strong>${club.popularity}</strong></div>
+                        <div class="stat"><span>Prestigio</span><strong>${club.prestige}</strong></div>
+                        <div class="stat"><span>Tradicao</span><strong>${club.tradition}</strong></div>
+                        <div class="stat"><span>Instalacoes</span><strong>${club.facilities}</strong></div>
+                        <div class="stat"><span>Base</span><strong>${club.youthQuality}</strong></div>
+                        <div class="stat"><span>Scout</span><strong>${club.scoutQuality}</strong></div>
+                        <div class="stat"><span>Patrocinio</span><strong>${escapeHtml(club.sponsorship.master)}</strong></div>
+                        <div class="stat"><span>Valor do patrocinio</span><strong>${money(club.sponsorship.value)}</strong></div>
+                        <div class="stat"><span>Bilheteria</span><strong>${money(club.stadium.ticketRevenue)} / torcedor</strong></div>
+                    </div>
+                    <div class="club-identity-grid">
+                        <div>
+                            <h2>Cores</h2>
+                            <div class="color-row">${club.colors.map((color) => `<span class="color-swatch" style="--swatch:${color}"></span>`).join("")}</div>
+                        </div>
+                        <div>
+                            <h2>Uniformes</h2>
+                            <div class="kit-grid">${Object.values(club.kits).map(renderKitSwatch).join("")}</div>
+                        </div>
                     </div>
                     <div>
                         <h2>Objetivos da diretoria</h2>
-                        ${renderSimpleList(GameState.club.objectives)}
+                        ${renderSimpleList(club.objectives)}
                     </div>
                     <div class="button-row">
                         <button class="btn btn-primary" id="open-structure" type="button">Abrir Estrutura</button>
@@ -7183,6 +7483,41 @@
         return benefits[key] || "Benefício operacional ativo.";
     }
 
+    function exportSave() {
+        saveCareer();
+        const payload = JSON.stringify(GameState, null, 2);
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `eleven-genesis-save-${GameState.club?.id || "carreira"}-${GameState.season}.json`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+        showToast("Save exportado.");
+    }
+
+    function importSaveFromFile(event) {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.addEventListener("load", () => {
+            try {
+                const parsed = JSON.parse(String(reader.result || "{}"));
+                GameState = migrateState(parsed);
+                saveCareer();
+                switchScreen(GameState.currentScreen || "home", { silent: true });
+                showToast("Save importado.");
+            } catch (error) {
+                showToast("Arquivo de save inválido.");
+            } finally {
+                event.target.value = "";
+            }
+        });
+        reader.readAsText(file);
+    }
+
     function renderSettings() {
         document.getElementById("screen-root").innerHTML = `
             <section class="screen stack internal-screen settings-screen">
@@ -7196,6 +7531,26 @@
                             <option value="Español" ${GameState.settings.language === "Español" ? "selected" : ""}>Español</option>
                         </select>
                     </label>
+                    <label class="field">
+                        <span>Volume</span>
+                        <input id="settings-volume" type="range" min="0" max="100" value="${GameState.settings.volume}">
+                    </label>
+                    <label class="field">
+                        <span>Velocidade das animações</span>
+                        <select id="settings-animation-speed">
+                            <option value="slow" ${GameState.settings.animationSpeed === "slow" ? "selected" : ""}>Lenta</option>
+                            <option value="normal" ${GameState.settings.animationSpeed === "normal" ? "selected" : ""}>Normal</option>
+                            <option value="fast" ${GameState.settings.animationSpeed === "fast" ? "selected" : ""}>Rápida</option>
+                        </select>
+                    </label>
+                    <div class="row-card">
+                        <div class="row-main">
+                            <strong>Modo escuro</strong>
+                            <span class="pill">${GameState.settings.darkMode ? "Ativo" : "Claro"}</span>
+                        </div>
+                        <span class="muted">Alterna a base visual preservando o contraste dos cards e botões.</span>
+                        <button class="btn" id="toggle-dark-mode" type="button">${GameState.settings.darkMode ? "Usar modo claro" : "Usar modo escuro"}</button>
+                    </div>
                     <div class="row-card">
                         <div class="row-main">
                             <strong>${escapeHtml(t("settings.autoSave"))}</strong>
@@ -7207,6 +7562,9 @@
                     <div class="button-row">
                         <button class="btn btn-primary" id="settings-save" type="button">${escapeHtml(t("settings.save"))}</button>
                         <button class="btn" id="settings-load" type="button">${escapeHtml(t("settings.load"))}</button>
+                        <button class="btn" id="settings-export" type="button">Exportar save</button>
+                        <label class="btn import-save-label" for="settings-import">Importar save</label>
+                        <input class="visually-hidden" id="settings-import" type="file" accept="application/json">
                         <button class="btn btn-danger" id="settings-reset" type="button">${escapeHtml(t("settings.resetCareer"))}</button>
                     </div>
                 </div>
@@ -7214,6 +7572,24 @@
         `;
         document.getElementById("settings-language-select").addEventListener("change", (event) => {
             changeLanguage(event.target.value);
+        });
+        document.getElementById("settings-volume").addEventListener("input", (event) => {
+            GameState.settings.volume = Number(event.target.value);
+            saveMenuPreferences();
+            if (window.ElevenGenesisAudio) window.ElevenGenesisAudio.volume = GameState.settings.volume;
+        });
+        document.getElementById("settings-animation-speed").addEventListener("change", (event) => {
+            GameState.settings.animationSpeed = event.target.value;
+            saveMenuPreferences();
+            updateChrome();
+            saveCareer();
+        });
+        document.getElementById("toggle-dark-mode").addEventListener("click", () => {
+            GameState.settings.darkMode = !GameState.settings.darkMode;
+            saveMenuPreferences();
+            updateChrome();
+            saveCareer();
+            renderSettings();
         });
         document.getElementById("toggle-autosave").addEventListener("click", () => {
             GameState.settings.autoSave = !GameState.settings.autoSave;
@@ -7225,6 +7601,8 @@
             showToast(t("settings.saved"));
         });
         document.getElementById("settings-load").addEventListener("click", loadCareer);
+        document.getElementById("settings-export").addEventListener("click", exportSave);
+        document.getElementById("settings-import").addEventListener("change", importSaveFromFile);
         document.getElementById("settings-reset").addEventListener("click", resetCareer);
         updateChrome();
     }
@@ -7236,16 +7614,7 @@
             switchScreen(button.dataset.screen);
         });
         document.getElementById("settings-button").addEventListener("click", () => switchScreen("settings"));
-        document.addEventListener("pointerdown", (event) => {
-            const button = event.target.closest("button, .btn, .icon-action, .row-card, .news-item, .market-card-main, .coach-mini-card, .coach-match-card, .coach-headline-card, .coach-result-card");
-            if (!button || button.disabled || button.classList.contains("is-rippling")) return;
-            button.classList.add("is-rippling");
-            const rect = button.getBoundingClientRect();
-            button.style.setProperty("--ripple-x", `${event.clientX - rect.left}px`);
-            button.style.setProperty("--ripple-y", `${event.clientY - rect.top}px`);
-            triggerGameFeedback("tap");
-            window.setTimeout(() => button.classList.remove("is-rippling"), 520);
-        });
+        if (window.EGUI) window.EGUI.bindPressFeedback(() => triggerGameFeedback("tap"));
     }
 
     function boot() {
