@@ -38,3 +38,22 @@
 - Detalhe do jogador ampliado com atributos, evolução, contrato, histórico, temporadas e estatísticas.
 - Finanças passaram a separar receitas e despesas com barras visuais em HTML/CSS.
 - Configurações receberam modo escuro, volume, velocidade das animações, exportação e importação de save.
+
+## Evolução Football Manager
+
+- Criado sistema de Staff com treinador, auxiliar, preparadores, médico, olheiro, psicólogo e diretor de futebol.
+- Staff agora afeta treinamento, recuperação, scout, negociação e custo financeiro semanal.
+- Criado sistema de treinamento coletivo e individual com evolução real de atributos.
+- Desenvolvimento dos jogadores passou a considerar idade, potencial, moral, energia, forma e staff.
+- Mercado ampliado com venda, empréstimo, renovação, interessados, contratos e contrapropostas.
+- Scout recebeu busca por idade, posição, overall, potencial, nacionalidade e valor.
+- IA dos clubes passou a comprar, vender, renovar, trocar treinador, melhorar elenco e equilibrar finanças.
+- Eventos aleatórios incluem lesões, suspensões, discussões, patrocinadores, imprensa, promessas e base.
+
+## Camada de Emoção
+
+- Adicionado `EventBus` global para eventos narrativos sem dependências externas.
+- Adicionado ritual de matchday com overlay cinematográfico para momentos decisivos.
+- Integrado disparo de drama ao `advanceRound()` sem alterar o motor de resultado, tabela, finanças, moral, mercado ou save.
+- Overlay fecha por botão, Enter, Espaço ou Escape e emite `RITUAL_COMPLETE`.
+- Implementação possui fallback: se EventBus ou overlay não carregar, o jogo continua normalmente.

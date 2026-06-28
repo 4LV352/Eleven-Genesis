@@ -1,0 +1,170 @@
+:root {
+    --tension-bg: rgba(2, 6, 23, 0.9);
+    --tension-panel: #0f172a;
+    --tension-text: #f8fafc;
+    --tension-muted: #cbd5e1;
+    --tension-soft: #64748b;
+    --tension-accent: #ef4444;
+    --tension-glow: rgba(239, 68, 68, 0.42);
+}
+
+.tension-overlay {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 1.25rem;
+    background:
+        radial-gradient(circle at top, rgba(15, 23, 42, 0.52), transparent 36%),
+        var(--tension-bg);
+    backdrop-filter: blur(8px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.28s ease;
+}
+
+.tension-overlay.hidden {
+    display: none;
+}
+
+.tension-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+    animation: tension-impact 0.42s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+.tension-overlay.state-euphoria {
+    --tension-accent: #fbbf24;
+    --tension-glow: rgba(251, 191, 36, 0.48);
+}
+
+.tension-overlay.state-danger {
+    --tension-accent: #ef4444;
+    --tension-glow: rgba(239, 68, 68, 0.48);
+}
+
+.tension-overlay.state-tension {
+    --tension-accent: #38bdf8;
+    --tension-glow: rgba(56, 189, 248, 0.38);
+}
+
+.tension-card {
+    width: min(680px, 100%);
+    padding: clamp(1.4rem, 4vw, 3rem);
+    text-align: center;
+    border: 2px solid var(--tension-accent);
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.98));
+    box-shadow: 0 0 42px var(--tension-glow), inset 0 0 38px rgba(255, 255, 255, 0.03);
+    transform: scale(0.94) translateY(10px);
+    transition: transform 0.36s cubic-bezier(0.175, 0.885, 0.32, 1.18);
+}
+
+.tension-overlay.active .tension-card {
+    transform: scale(1) translateY(0);
+}
+
+.tension-card-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.tension-card .minute {
+    color: var(--tension-accent);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: clamp(2rem, 8vw, 3.25rem);
+    line-height: 1;
+    font-weight: 800;
+    text-shadow: 0 0 18px var(--tension-glow);
+}
+
+.tension-card .event-type {
+    color: var(--tension-soft);
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.tension-card .headline {
+    margin: 0.75rem 0 1.35rem;
+    color: var(--tension-text);
+    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+    font-size: clamp(2.2rem, 10vw, 4rem);
+    text-transform: uppercase;
+    line-height: 0.98;
+    letter-spacing: 0.025em;
+    text-shadow: 0 0 16px var(--tension-glow);
+}
+
+.tension-card .narrative {
+    min-height: 4.8rem;
+    margin: 0 0 2rem;
+    color: var(--tension-muted);
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: clamp(1rem, 3vw, 1.15rem);
+    line-height: 1.55;
+}
+
+.tension-actions {
+    display: flex;
+    justify-content: center;
+}
+
+.btn-continue {
+    padding: 0.82rem 2.3rem;
+    border: 2px solid var(--tension-accent);
+    background: transparent;
+    color: var(--tension-accent);
+    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+    font-size: 1.12rem;
+    text-transform: uppercase;
+    letter-spacing: 0.13em;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-continue:hover,
+.btn-continue:focus-visible {
+    background: var(--tension-accent);
+    color: #020617;
+    transform: translateY(-1px);
+}
+
+@keyframes tension-impact {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
+    40%, 60% { transform: translate3d(3px, 0, 0); }
+}
+
+@media (max-width: 520px) {
+    .tension-overlay {
+        align-items: flex-end;
+        padding: 1rem;
+    }
+
+    .tension-card {
+        padding: 1.45rem 1.1rem;
+    }
+
+    .btn-continue {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tension-overlay,
+    .tension-card,
+    .btn-continue {
+        animation: none !important;
+        transition: none !important;
+    }
+}

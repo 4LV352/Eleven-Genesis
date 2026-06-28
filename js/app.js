@@ -1118,6 +1118,8 @@
             selectedNewsId: null,
             transferLog: [],
             aiActivity: [],
+            staff: createDefaultStaffState(),
+            training: createDefaultTrainingState(),
             finance: {
                 income: 0,
                 expenses: 0,
@@ -1128,6 +1130,8 @@
                 wagesPaid: 0,
                 stadiumMaintenance: 0,
                 structureMaintenance: 0,
+                staff: 0,
+                transferInstallments: 0,
                 bonuses: 0,
                 merchandising: 0,
                 television: 0,
@@ -1199,6 +1203,14 @@
             assignments: {},
             reports: [],
             regions: [...SCOUT_REGIONS],
+            search: {
+                age: "any",
+                position: "ALL",
+                overall: "any",
+                potential: "any",
+                nationality: "ALL",
+                value: "any"
+            },
             lastUpdatedRound: 1
         };
     }
@@ -1241,6 +1253,44 @@
             campaigns: [],
             history: [],
             lastProposalRound: 0
+        };
+    }
+
+    function createDefaultStaffState() {
+        const roles = [
+            ["headCoach", "Treinador", "Tático", 7, 22000],
+            ["assistant", "Auxiliar", "Gestão de grupo", 6, 12500],
+            ["fitnessCoach", "Preparador Físico", "Resistência", 6, 10500],
+            ["technicalCoach", "Preparador Técnico", "Técnica individual", 6, 10800],
+            ["doctor", "Médico", "Prevenção de lesões", 6, 11800],
+            ["scout", "Olheiro", "Potencial", 6, 9600],
+            ["psychologist", "Psicólogo", "Moral", 5, 8200],
+            ["director", "Diretor de Futebol", "Negociação", 6, 15000]
+        ];
+        return {
+            members: roles.map(([id, role, specialty, level, salary], index) => ({
+                id,
+                name: `${role} ${index + 1}`,
+                role,
+                level,
+                salary,
+                specialty,
+                experience: 4 + index,
+                contract: { yearsRemaining: 2 + (index % 3), expiresYear: START_YEAR + 2 + (index % 3) },
+                morale: 72
+            })),
+            history: [],
+            aiChanges: []
+        };
+    }
+
+    function createDefaultTrainingState() {
+        return {
+            focus: "balanced",
+            individualPlans: {},
+            history: [],
+            weeklyIntensity: 60,
+            lastProcessedRound: 0
         };
     }
 
@@ -1879,7 +1929,7 @@
             ];
         }
         if (normalized.fitness < 45 && !normalized.injuries.length) normalized.injuries = [{ type: "Desgaste muscular", weeks: 1 }];
-        normalized.status = normalized.injuries.length ? "Lesionado" : normalized.energy < 35 ? "Cansado" : normalized.morale < 35 ? "Insatisfeito" : "Disponível";
+        normalized.status = normalized.loan ? "Emprestado" : normalized.suspendedWeeks ? "Suspenso" : normalized.injuries.length ? "Lesionado" : normalized.energy < 35 ? "Cansado" : normalized.morale < 35 ? "Insatisfeito" : "Disponível";
         return normalized;
     }
 
@@ -2232,9 +2282,10 @@
     }
 
     function recoverSquadBetweenRounds() {
+        const staff = getStaffEffect();
         GameState.squad.forEach((player) => {
-            player.energy = clamp(player.energy + 6, 1, 99);
-            player.fitness = clamp(player.fitness + 4, 1, 99);
+            player.energy = clamp(player.energy + 6 + Math.floor(staff.physical / 4), 1, 99);
+            player.fitness = clamp(player.fitness + 4 + Math.floor(staff.medical / 5), 1, 99);
             evolvePlayer(player);
         });
         GameState.squad.sort(byPositionThenOverall);
@@ -2728,7 +2779,8 @@
             ...(saved.scout || {}),
             assignments: saved.scout?.assignments && typeof saved.scout.assignments === "object" ? saved.scout.assignments : {},
             reports: Array.isArray(saved.scout?.reports) ? saved.scout.reports : [],
-            regions: Array.isArray(saved.scout?.regions) ? saved.scout.regions : fresh.scout.regions
+            regions: Array.isArray(saved.scout?.regions) ? saved.scout.regions : fresh.scout.regions,
+            search: { ...fresh.scout.search, ...(saved.scout?.search || {}) }
         };
         merged.academy = {
             ...fresh.academy,
@@ -2763,6 +2815,19 @@
         merged.selectedNewsId = saved.selectedNewsId || null;
         merged.transferLog = Array.isArray(saved.transferLog) ? saved.transferLog : [];
         merged.aiActivity = Array.isArray(saved.aiActivity) ? saved.aiActivity : [];
+        merged.staff = {
+            ...fresh.staff,
+            ...(saved.staff || {}),
+            members: Array.isArray(saved.staff?.members) ? saved.staff.members : fresh.staff.members,
+            history: Array.isArray(saved.staff?.history) ? saved.staff.history : [],
+            aiChanges: Array.isArray(saved.staff?.aiChanges) ? saved.staff.aiChanges : []
+        };
+        merged.training = {
+            ...fresh.training,
+            ...(saved.training || {}),
+            individualPlans: saved.training?.individualPlans && typeof saved.training.individualPlans === "object" ? saved.training.individualPlans : {},
+            history: Array.isArray(saved.training?.history) ? saved.training.history : []
+        };
         merged.finance = {
             ...fresh.finance,
             ...(saved.finance || {}),
@@ -2806,6 +2871,8 @@
         ensureAcademyState();
         ensureMarketingState();
         ensureSeasonFlowState();
+        ensureStaffState();
+        ensureTrainingState();
         if (merged.club && !merged.nextOpponentId) {
             pickNextOpponent();
         }
@@ -3028,6 +3095,8 @@
             if (club.id === GameState.club.id) return;
             const budgetGrowth = Math.round((club.fans / 120) + (club.reputation * 9500));
             club.budget += budgetGrowth;
+            club.aiCoachLevel = club.aiCoachLevel || deterministicNumber(`${club.id}-coach`, 4, 9);
+            club.aiFinancialPressure = club.budget < club.reputation * 90000;
             if (Math.random() < 0.34 && activeMarket.length) {
                 const affordable = activeMarket
                     .map((player, index) => ({ player, index }))
@@ -3042,6 +3111,17 @@
                     addNews("Mercado", `${club.name} se reforça`, activity, `A movimentação mostra que os rivais também estão ativos no mercado e ajustando seus elencos durante a temporada.`);
                     activeMarket.splice(target.index, 1);
                 }
+            } else if (Math.random() < 0.16) {
+                club.aiRenewals = (club.aiRenewals || 0) + 1;
+                club.budget -= Math.round(club.reputation * 2400);
+                const activity = `${club.name} renovou contrato com peça importante do elenco.`;
+                GameState.aiActivity.unshift(activity);
+            } else if (Math.random() < 0.08 && club.aiCoachLevel < 7) {
+                club.aiCoachLevel += 1;
+                club.budget -= Math.round(club.reputation * 5200);
+                const activity = `${club.name} demitiu o treinador e contratou nova comissão.`;
+                GameState.aiActivity.unshift(activity);
+                addNews("Liga", "Mudança no banco rival", activity, "A IA dos clubes reage a desempenho, reputação e pressão financeira.");
             } else if (Math.random() < 0.18 && (club.aiSquadSize || 24) > 20) {
                 const saleValue = Math.round((club.reputation * 18000 + Math.random() * 220000) * getEconomicMultiplier(GameState.currentYear));
                 club.budget += saleValue;
@@ -3049,6 +3129,12 @@
                 const activity = `${club.name} vendeu um jogador do elenco por ${money(saleValue)}.`;
                 GameState.aiActivity.unshift(activity);
                 addNews("Mercado", `${club.name} negocia saída`, activity, `A venda aumenta o orçamento do rival e pode mudar sua estratégia para as próximas semanas.`);
+            }
+            if (club.aiFinancialPressure && (club.aiSquadSize || 24) > 19) {
+                const savings = Math.round(club.reputation * 11000);
+                club.budget += savings;
+                club.aiSquadSize -= 1;
+                GameState.aiActivity.unshift(`${club.name} reduziu folha salarial e equilibrou as finanças.`);
             }
         });
         GameState.aiActivity = GameState.aiActivity.slice(0, 8);
@@ -3063,6 +3149,107 @@
                 a.name.localeCompare(b.name);
         });
         if (shouldSave && GameState.settings.autoSave) saveCareer();
+    }
+
+    function createMatchDramaEvent(outcome, opponent, result, homeClub, awayClub, isClassic, playerHome, streak) {
+        if (!GameState || !GameState.club || !opponent || !result) return null;
+        const playerGoals = playerHome ? result.homeGoals : result.awayGoals;
+        const opponentGoals = playerHome ? result.awayGoals : result.homeGoals;
+        const margin = Math.abs(playerGoals - opponentGoals);
+        const matchLabel = `${homeClub.name} ${result.homeGoals}x${result.awayGoals} ${awayClub.name}`;
+        const rivalName = opponent.name;
+        const clubName = GameState.club.name;
+        const negativeRun = streak && streak.type === "derrota" && streak.count >= 2;
+        const positiveRun = streak && streak.type === "vitoria" && streak.count >= 2;
+        const shouldTrigger = isClassic || margin <= 1 || playerGoals >= 4 || opponentGoals >= 4 || negativeRun || positiveRun || outcome === "empate";
+        if (!shouldTrigger) return null;
+
+        if (outcome === "vitoria" && margin === 1) {
+            return {
+                minute: isClassic ? "90+3" : "88",
+                type: isClassic ? "CLÁSSICO NO LIMITE" : "VITÓRIA DRAMÁTICA",
+                context: "vitoria",
+                headline: isClassic ? "O ESTÁDIO VEM ABAIXO!" : "GANHOU NA RAÇA!",
+                narrative: `${matchLabel}. O ${clubName} sofreu, resistiu e encontrou forças no fim para derrubar ${rivalName}. Não foi só resultado: foi alívio, grito preso e arquibancada em combustão.`
+            };
+        }
+
+        if (outcome === "derrota" && margin === 1) {
+            return {
+                minute: isClassic ? "90+2" : "86",
+                type: isClassic ? "DOR DE CLÁSSICO" : "DERROTA AMARGA",
+                context: "derrota",
+                headline: isClassic ? "SILÊNCIO PESADO" : "ESCAPOU POR DETALHE",
+                narrative: `${matchLabel}. O ${clubName} ficou perto de arrancar algo do jogo, mas o golpe final de ${rivalName} deixou a torcida entre vaias, silêncio e aquela sensação de que dava para ter sido diferente.`
+            };
+        }
+
+        if (outcome === "empate") {
+            return {
+                minute: isClassic ? "90+4" : "89",
+                type: isClassic ? "CLÁSSICO TRAVADO" : "PRESSÃO ATÉ O FIM",
+                context: "empate",
+                headline: isClassic ? "NINGUÉM RESPIRA" : "TUDO EM ABERTO",
+                narrative: `${matchLabel}. O jogo terminou sem vencedor, mas não sem tensão. Cada ataque parecia carregar uma temporada inteira, e a torcida saiu com a garganta gasta e a cabeça cheia de perguntas.`
+            };
+        }
+
+        if (outcome === "vitoria" && margin >= 3) {
+            return {
+                minute: "76",
+                type: "NOITE DE GALA",
+                context: "goleada-favor",
+                headline: "A TORCIDA VIROU CARNAVAL!",
+                narrative: `${matchLabel}. O ${clubName} atropelou ${rivalName} e transformou a rodada em festa. Quando a goleada virou realidade, o estádio deixou de assistir: passou a cantar junto.`
+            };
+        }
+
+        if (outcome === "derrota" && margin >= 3) {
+            return {
+                minute: "76",
+                type: "CRISE NA ARQUIBANCADA",
+                context: "goleada-contra",
+                headline: "VAIAS CORTAM A NOITE",
+                narrative: `${matchLabel}. A derrota pesada contra ${rivalName} não foi apenas placar. Foi cobrança, rosto fechado e a sensação de que o próximo treino terá clima de reunião de emergência.`
+            };
+        }
+
+        if (negativeRun) {
+            return {
+                minute: "90",
+                type: "PRESSÃO POPULAR",
+                context: "crise",
+                headline: "A TORCIDA PERDE A PACIÊNCIA",
+                narrative: `${matchLabel}. A sequência ruim já não é detalhe estatístico: virou assunto de arquibancada. O ${clubName} precisa dar resposta antes que a desconfiança vire rotina.`
+            };
+        }
+
+        if (positiveRun) {
+            return {
+                minute: "90",
+                type: "EMBALOU",
+                context: "euforia",
+                headline: "A CIDADE COMEÇA A ACREDITAR",
+                narrative: `${matchLabel}. A sequência positiva colocou o ${clubName} em outro tom emocional. O resultado não vive sozinho: ele se soma à confiança de um clube que começa a parecer maior a cada rodada.`
+            };
+        }
+
+        if (isClassic) {
+            return {
+                minute: "89",
+                type: "CLÁSSICO EM BRASA",
+                context: "classico",
+                headline: "RIVALIDADE EM CADA BOLA",
+                narrative: `${matchLabel}. Contra ${rivalName}, cada lance teve peso dobrado. A rodada virou disputa de orgulho, território e memória para a torcida.`
+            };
+        }
+
+        return null;
+    }
+
+    function dispatchMatchDramaEvent(dramaEvent) {
+        if (!dramaEvent || !window.EventBus || typeof window.EventBus.emit !== "function") return;
+        window.EventBus.emit("LARGE_EVENT", dramaEvent);
     }
 
     function advanceRound() {
@@ -3109,6 +3296,7 @@
             : outcome === "derrota"
                 ? `A torcida ficou preocupada com a derrota${isClassic ? " em clássico" : ""}.`
                 : "A torcida reagiu com cautela ao empate.";
+        const dramaEvent = createMatchDramaEvent(outcome, opponent, result, homeClub, awayClub, isClassic, playerHome, streak);
         registerFanReaction("Resultado da rodada", resultDelta + streakDelta, streak.count >= 3 && outcome === "derrota" ? "A torcida está preocupada com a sequência de derrotas." : fanComment, "news");
         const revenue = playerHome ? getAverageMatchRevenue() : 85000;
         const prize = outcome === "vitoria" ? 150000 : outcome === "empate" ? 65000 : 25000;
@@ -3139,6 +3327,7 @@
         pushMessage(`Rodada avancada: ${GameState.lastResult}.`);
         saveCareer();
         renderCurrentScreen();
+        dispatchMatchDramaEvent(dramaEvent);
     }
 
     function buyPlayer(playerId, agreedPrice = null) {
@@ -3191,6 +3380,57 @@
         showToast(t("market.signed"));
     }
 
+    function sellSquadPlayer(playerId) {
+        const index = GameState.squad.findIndex((player) => player.id === playerId);
+        if (index < 0 || GameState.squad.length <= 16) {
+            showToast("Elenco curto demais para vender.");
+            return;
+        }
+        const player = GameState.squad[index];
+        const staff = getStaffEffect();
+        const interestedClub = GameState.league.clubs
+            .filter((club) => club.id !== GameState.club.id)
+            .sort((a, b) => Math.abs((b.reputation || 70) - player.reputation) - Math.abs((a.reputation || 70) - player.reputation))[0];
+        const price = Math.round((player.marketValue || 0) * (0.88 + staff.negotiation / 80 + Math.random() * 0.18));
+        applyFinanceMovement("income", "Venda de jogadores", `Venda de ${player.name}`, price);
+        GameState.finance.transferIncome += price;
+        GameState.budget += price;
+        GameState.transferLog.unshift(`${player.name} vendido para ${interestedClub?.name || "clube interessado"} por ${money(price)}.`);
+        GameState.transferLog = GameState.transferLog.slice(0, 10);
+        GameState.squad.splice(index, 1);
+        addNews("Mercado", `${player.name} deixa o clube`, `Venda concluída por ${money(price)}.`, `Diretor de futebol nível ${Math.round(staff.negotiation)} influenciou a negociação.`);
+        saveCareer();
+        switchScreen("squad");
+    }
+
+    function loanSquadPlayer(playerId) {
+        const player = GameState.squad.find((item) => item.id === playerId);
+        if (!player) return;
+        player.status = "Emprestado";
+        player.loan = { club: pickNextOpponent()?.name || "Clube parceiro", until: GameState.season + 1 };
+        player.morale = clamp(player.morale + 4, 1, 99);
+        GameState.budget += Math.round((player.salary || 0) * 0.35);
+        GameState.transferLog.unshift(`${player.name} emprestado para ${player.loan.club}.`);
+        addNews("Mercado", `${player.name} será emprestado`, `O empréstimo dá minutos ao atleta e reduz custo salarial.`, `Contrato de empréstimo até ${player.loan.until}.`);
+        saveCareer();
+        renderPlayerDetail();
+    }
+
+    function renewSquadPlayer(playerId) {
+        const player = GameState.squad.find((item) => item.id === playerId);
+        if (!player) return;
+        const staff = getStaffEffect();
+        const salaryIncrease = Math.max(800, Math.round((player.salary || 5000) * (0.08 + (100 - staff.negotiation * 7) / 900)));
+        player.salary += salaryIncrease;
+        player.contract.yearsRemaining = clamp((player.contract.yearsRemaining || 1) + 2, 1, 5);
+        player.contract.expiresYear = GameState.currentYear + player.contract.yearsRemaining;
+        player.morale = clamp(player.morale + 6, 1, 99);
+        GameState.transferLog.unshift(`${player.name} renovou até ${player.contract.expiresYear}.`);
+        addNews("Mercado", `${player.name} renova contrato`, `Novo vínculo até ${player.contract.expiresYear}.`, `O salário subiu ${money(salaryIncrease)} e a moral do jogador melhorou.`);
+        saveCareer();
+        renderPlayerDetail();
+    }
+
     function switchScreen(screen, options = {}) {
         if (!GameState) GameState = createBaseState();
         const root = document.getElementById("screen-root");
@@ -3214,6 +3454,8 @@
             tactics: renderTactics,
             market: renderMarket,
             scout: renderScout,
+            staff: renderStaff,
+            training: renderTraining,
             academy: renderAcademy,
             marketing: renderMarketing,
             calendar: renderCalendar,
@@ -3659,6 +3901,131 @@
         return "Estável";
     }
 
+    function getInterestedClubs(player, limit = 3) {
+        return GameState.league.clubs
+            .filter((club) => club.id !== GameState.club.id)
+            .map((club) => ({
+                club,
+                score: 100 - Math.abs((club.reputation || 70) - (player.reputation || calculateCurrentOverall(player))) + deterministicNumber(`${club.id}-${player.id}`, 0, 18)
+            }))
+            .sort((a, b) => b.score - a.score)
+            .slice(0, limit)
+            .map((item) => item.club.name);
+    }
+
+    function ensureStaffState() {
+        const fresh = createDefaultStaffState();
+        GameState.staff = {
+            ...fresh,
+            ...(GameState.staff || {}),
+            members: Array.isArray(GameState.staff?.members) && GameState.staff.members.length ? GameState.staff.members : fresh.members,
+            history: Array.isArray(GameState.staff?.history) ? GameState.staff.history : [],
+            aiChanges: Array.isArray(GameState.staff?.aiChanges) ? GameState.staff.aiChanges : []
+        };
+        const byId = new Map(GameState.staff.members.map((member) => [member.id, member]));
+        fresh.members.forEach((member) => {
+            if (!byId.has(member.id)) GameState.staff.members.push(member);
+        });
+        return GameState.staff;
+    }
+
+    function ensureTrainingState() {
+        const fresh = createDefaultTrainingState();
+        GameState.training = {
+            ...fresh,
+            ...(GameState.training || {}),
+            individualPlans: GameState.training?.individualPlans && typeof GameState.training.individualPlans === "object" ? GameState.training.individualPlans : {},
+            history: Array.isArray(GameState.training?.history) ? GameState.training.history : []
+        };
+        return GameState.training;
+    }
+
+    function getStaffMember(id) {
+        return ensureStaffState().members.find((member) => member.id === id) || createDefaultStaffState().members.find((member) => member.id === id);
+    }
+
+    function getStaffEffect() {
+        ensureStaffState();
+        const level = (id) => getStaffMember(id)?.level || 1;
+        return {
+            tactical: level("headCoach") + level("assistant") * 0.45,
+            technical: level("technicalCoach") + level("headCoach") * 0.25,
+            physical: level("fitnessCoach"),
+            medical: level("doctor"),
+            scout: level("scout"),
+            morale: level("psychologist") + level("assistant") * 0.2,
+            negotiation: level("director")
+        };
+    }
+
+    function getTrainingDefinitions() {
+        return {
+            balanced: { label: "Equilibrado", attrs: ["stamina", "technique", "passing", "mentality"], energy: -4, morale: 1 },
+            attacking: { label: "Treino ofensivo", attrs: ["shooting", "dribbling", "vision", "technique"], energy: -6, morale: 1 },
+            defensive: { label: "Treino defensivo", attrs: ["defending", "physical", "mentality", "stamina"], energy: -6, morale: 0 },
+            technical: { label: "Treino técnico", attrs: ["technique", "passing", "dribbling", "vision"], energy: -5, morale: 1 },
+            physical: { label: "Treino físico", attrs: ["stamina", "physical", "pace"], energy: -9, morale: -1 },
+            tactical: { label: "Treino tático", attrs: ["mentality", "leadership", "passing", "vision"], energy: -5, morale: 1 },
+            recovery: { label: "Recuperação", attrs: ["stamina"], energy: 8, morale: 2 }
+        };
+    }
+
+    function setTrainingFocus(focus) {
+        const definitions = getTrainingDefinitions();
+        if (!definitions[focus]) return;
+        ensureTrainingState().focus = focus;
+        saveCareer();
+        renderTraining();
+    }
+
+    function setIndividualTraining(playerId, attribute) {
+        if (!PLAYER_ATTRIBUTES.includes(attribute)) return;
+        ensureTrainingState().individualPlans[playerId] = attribute;
+        saveCareer();
+        renderTraining();
+    }
+
+    function processTrainingWeek() {
+        const training = ensureTrainingState();
+        const staff = getStaffEffect();
+        const definition = getTrainingDefinitions()[training.focus] || getTrainingDefinitions().balanced;
+        const intensity = clamp(training.weeklyIntensity || 60, 20, 100);
+        let evolved = 0;
+        GameState.squad.forEach((player) => {
+            const age = calculateAge(player, GameState.currentYear);
+            const ageFactor = age <= 21 ? 1.55 : age <= 24 ? 1.25 : age <= 29 ? 0.85 : age <= 33 ? 0.45 : 0.18;
+            const moraleFactor = 0.75 + (player.morale || 50) / 170;
+            const energyFactor = 0.7 + (player.energy || 50) / 180;
+            const staffFactor = 0.65 + ((staff.technical + staff.tactical + staff.physical) / 36);
+            const gainChance = Math.min(0.78, (intensity / 130) * ageFactor * moraleFactor * energyFactor * staffFactor);
+            const attrs = [...definition.attrs];
+            const individual = training.individualPlans[player.id];
+            if (individual) attrs.unshift(individual);
+            attrs.slice(0, 4).forEach((attr) => {
+                if (Math.random() < gainChance && player.attributes[attr] < player.potential) {
+                    player.attributes[attr] = clamp(player.attributes[attr] + 1, 1, 99);
+                    evolved += 1;
+                }
+            });
+            player.energy = clamp((player.energy || 70) + definition.energy + Math.round(staff.physical / 3), 1, 99);
+            player.fitness = clamp((player.fitness || 70) + (definition.label === "Recuperação" ? 7 : -Math.round(intensity / 34)) + Math.round(staff.medical / 4), 1, 99);
+            player.morale = clamp((player.morale || 70) + definition.morale + Math.round(staff.morale / 7), 1, 99);
+            refreshPlayerRuntime(player);
+        });
+        const record = {
+            round: GameState.round,
+            focus: definition.label,
+            evolved,
+            intensity,
+            date: new Date().toISOString()
+        };
+        training.history.unshift(record);
+        training.history = training.history.slice(0, 20);
+        training.lastProcessedRound = GameState.round;
+        if (evolved > 0) addNews("Clube", "Treinamento gera evolução", `${evolved} atributos evoluíram no elenco.`, `Foco semanal: ${definition.label}. Staff técnico e moral do grupo influenciaram o ganho.`);
+        return record;
+    }
+
     function renderDashboard() {
         const opponent = getClubById(GameState.nextOpponentId) || pickNextOpponent();
         const position = currentPosition();
@@ -3779,6 +4146,8 @@
                     <button class="coach-mini-card" type="button" data-director-action="calendar"><i>▣</i><span>${escapeHtml(t("calendar.title"))}</span><strong>${escapeHtml(getCalendarMonth(GameState.round))}</strong><small>${escapeHtml(isTransferWindow(GameState.round) ? t("calendar.transferOpen") : t("calendar.transferClosed"))}</small></button>
                     <button class="coach-mini-card" type="button" data-director-action="scout"><i>⌖</i><span>${escapeHtml(t("nav.scout"))}</span><strong>${scoutAssignments.length}/${getScoutCapacity()}</strong><small>${escapeHtml(latestScoutReport?.playerName || latestObserved)}</small></button>
                     <button class="coach-mini-card" type="button" data-director-action="academy"><i>✦</i><span>${escapeHtml(t("nav.academy"))}</span><strong>${GameState.academy.prospects.length}</strong><small>${escapeHtml(latestAcademyEvent?.text || t("academy.noEvents"))}</small></button>
+                    <button class="coach-mini-card" type="button" data-director-action="staff"><i>ST</i><span>Staff</span><strong>${ensureStaffState().members.length}</strong><small>${escapeHtml(getStaffMember("headCoach").specialty)} · nível ${getStaffMember("headCoach").level}</small></button>
+                    <button class="coach-mini-card" type="button" data-director-action="training"><i>TR</i><span>Treinamento</span><strong>${escapeHtml(getTrainingDefinitions()[ensureTrainingState().focus].label)}</strong><small>Intensidade ${GameState.training.weeklyIntensity}%</small></button>
                 </div>
 
                 <div class="manager-dashboard-grid">
@@ -3822,6 +4191,8 @@
                             <button class="btn" type="button" data-director-action="finances">Finanças</button>
                             <button class="btn" type="button" data-director-action="club">Clube</button>
                             <button class="btn" type="button" data-director-action="notifications">Notificações</button>
+                            <button class="btn" type="button" data-director-action="staff">Staff</button>
+                            <button class="btn" type="button" data-director-action="training">Treino</button>
                         </div>
                     </section>
                 </div>
@@ -3867,6 +4238,8 @@
             scout: "scout",
             academy: "academy",
             marketing: "marketing",
+            staff: "staff",
+            training: "training",
             club: "club",
             structure: "structure",
             squad: "squad",
@@ -4113,6 +4486,7 @@
         const stadiumMaintenance = getWeeklyStadiumMaintenance();
         const structureMaintenance = Math.round(((GameState.club.facilities || 50) + (GameState.club.youthQuality || 50) + (GameState.club.scoutQuality || 50)) * 620 * (1 - administrationLevel * 0.018));
         const staff = Math.round(((GameState.club.facilities || 50) * 420) + ((GameState.club.scoutQuality || 50) * 260) + ((GameState.club.youthQuality || 50) * 310));
+        const staffPayroll = ensureStaffState().members.reduce((sum, member) => sum + (member.salary || 0), 0);
         const transferInstallments = Math.round((GameState.finance.transferSpend || 0) / 52);
         const bonuses = Math.round(Math.max(0, GameState.boardConfidence - 60) * 1800);
         const store = updateStoreProjection();
@@ -4120,7 +4494,7 @@
         const television = 0;
         const continentalRevenue = 0;
         const weekIncome = sponsorship + ticketRevenue + merchandising + television + continentalRevenue;
-        const weekExpenses = weeklyWages + stadiumMaintenance + structureMaintenance + staff + transferInstallments + bonuses;
+        const weekExpenses = weeklyWages + stadiumMaintenance + structureMaintenance + staff + staffPayroll + transferInstallments + bonuses;
         return {
             wages,
             weeklyWages,
@@ -4129,6 +4503,7 @@
             stadiumMaintenance,
             structureMaintenance,
             staff,
+            staffPayroll,
             transferInstallments,
             bonuses,
             merchandising,
@@ -4187,6 +4562,8 @@
         GameState.finance.structureMaintenance += finances.structureMaintenance;
         applyFinanceMovement("expense", "Funcionários", "Comissão técnica, análise, base e scout", finances.staff);
         GameState.finance.staff = (GameState.finance.staff || 0) + finances.staff;
+        applyFinanceMovement("expense", "Staff", "Salários da comissão e diretoria de futebol", finances.staffPayroll);
+        GameState.finance.staffPayroll = (GameState.finance.staffPayroll || 0) + finances.staffPayroll;
         applyFinanceMovement("expense", "Parcelas de transferências", "Amortização semanal de negociações", finances.transferInstallments);
         GameState.finance.transferInstallments = (GameState.finance.transferInstallments || 0) + finances.transferInstallments;
         applyFinanceMovement("expense", "Bônus", "Bônus de desempenho e metas internas", finances.bonuses);
@@ -4548,7 +4925,8 @@
             const player = GameState.squad[Math.floor(Math.random() * GameState.squad.length)];
             const medicalLevel = GameState.club.structure?.departments?.medical?.level || 1;
             const weeks = Math.max(1, (Math.random() > 0.65 ? 2 : 1) - (medicalLevel >= 7 ? 1 : 0));
-            player.injury = { type: "desconforto muscular", weeks };
+            player.injuries = [{ type: "Desconforto muscular", weeks }];
+            player.status = "Lesionado";
             player.fitness = clamp((player.fitness || 70) - (weeks * 12), 1, 99);
             applyPlayerMorale(player, -2, "Lesão no elenco", `${player.name} ficou abalado com a lesão e o grupo sentiu a ausência.`, { news: false });
             addNews("Lesões", `${player.name} preocupa o departamento médico`, `${player.name} sentiu desconforto muscular e será reavaliado.`, `A previsão inicial é de ${weeks} semana${weeks > 1 ? "s" : ""} de cuidados. A condição física caiu para ${player.fitness}/99.`);
@@ -4718,7 +5096,7 @@
     }
 
     function generateRandomWeeklyEvent() {
-        if (Math.random() > 0.28) return null;
+        if (Math.random() > 0.48) return null;
         const events = [
             () => {
                 const player = GameState.squad[Math.floor(Math.random() * GameState.squad.length)];
@@ -4726,10 +5104,29 @@
                 player.morale = clamp((player.morale || 70) + 3, 1, 99);
                 return addNews("Clube", `${player.name} pede renovação`, `${player.name} sinalizou desejo de discutir um contrato mais longo.`, "O empresário entende que o bom momento do atleta merece reconhecimento.");
             },
-            () => addNews("Mercado", "Empresário oferece atleta", "Um empresário apresentou uma oportunidade para a comissão analisar.", "A arquitetura para empresários está preparada para futuras missões."),
-            () => addNews("Mercado", "Clube rival consulta jogador", "Um rival sondou informalmente um nome do elenco.", "A diretoria decidiu apenas monitorar a situação por enquanto."),
-            () => addNews("Clube", "Convocação para seleção", "Um jogador do clube entrou no radar de sua seleção.", "As seleções estão preparadas como arquitetura futura."),
-            () => addNews("Jovens", "Jogador da base surpreende", "Um jovem treinou acima do esperado durante a semana.", "A comissão técnica passou a observar sua evolução com mais atenção."),
+            () => {
+                const player = GameState.squad[Math.floor(Math.random() * GameState.squad.length)];
+                if (!player) return null;
+                player.cards.yellow = (player.cards?.yellow || 0) + 1;
+                if (player.cards.yellow >= 5) {
+                    player.suspendedWeeks = 1;
+                    player.cards.yellow = 0;
+                    return addNews("Clube", `${player.name} está suspenso`, "Acúmulo de cartões tira o jogador da próxima semana.", "O status será normalizado após o avanço semanal.");
+                }
+                return addNews("Clube", `${player.name} recebe cartão`, `Cartões amarelos acumulados: ${player.cards.yellow}.`, "A comissão acompanha risco de suspensão.");
+            },
+            () => addNews("Patrocinadores", "Patrocinador cobra exposição", "O parceiro comercial pediu maior presença em ações de matchday.", "Campanhas de marketing podem melhorar confiança comercial."),
+            () => addNews("Imprensa", "Coletiva movimenta bastidores", "A imprensa questionou a evolução do projeto esportivo.", "Respostas públicas podem afetar diretoria, torcida e moral do elenco."),
+            () => addNews("Promessas", "Promessa ganha moral", "Um jovem treinou acima do esperado durante a semana.", "O treino individual e a base influenciam esse tipo de evolução."),
+            () => {
+                const a = GameState.squad[deterministicNumber(`disc-${GameState.round}`, 0, Math.max(0, GameState.squad.length - 1))];
+                const b = GameState.squad[deterministicNumber(`disc-b-${GameState.round}`, 0, Math.max(0, GameState.squad.length - 1))];
+                if (!a || !b || a.id === b.id) return null;
+                a.morale = clamp(a.morale - 3, 1, 99);
+                b.morale = clamp(b.morale - 2, 1, 99);
+                registerDressingRoomEvent("Discussão interna", -3, `${a.name} e ${b.name} discutiram após treino intenso.`, getSquadMoraleSummary().average + 3, getSquadMoraleSummary().average);
+                return addNews("Diretoria", "Discussão no vestiário", "O psicólogo do clube foi acionado para conter desgaste interno.", "Staff psicológico reduz a chance de recorrência.");
+            },
             () => {
                 registerFanReaction("Homenagem da torcida", 4, "A torcida preparou uma homenagem ao elenco.", "news");
                 return null;
@@ -4740,15 +5137,46 @@
         return event;
     }
 
+    function processContractsAndMarket() {
+        GameState.squad.forEach((player) => {
+            if (player.suspendedWeeks) {
+                player.suspendedWeeks -= 1;
+                if (player.suspendedWeeks <= 0) delete player.suspendedWeeks;
+            }
+            if (player.injuries?.length) {
+                player.injuries = player.injuries.map((injury) => ({ ...injury, weeks: Math.max(0, injury.weeks - 1) })).filter((injury) => injury.weeks > 0);
+            }
+            if ((player.contract?.yearsRemaining || 0) <= 1 && player.morale > 58 && Math.random() < 0.08) {
+                player.morale = clamp(player.morale + 1, 1, 99);
+                GameState.transferMarket.negotiations[player.id] = {
+                    status: "renewal-interest",
+                    salaryDemand: Math.round(player.salary * 1.12),
+                    contractDemand: 3,
+                    updatedRound: GameState.round
+                };
+            }
+        });
+        if (isTransferWindow(GameState.round) && GameState.market.length < 24) {
+            const newPlayer = createAcademyProspect(GameState.market.length + GameState.round);
+            newPlayer.id = `market-generated-${Date.now()}`;
+            newPlayer.marketValue = calculateMarketValue(newPlayer, GameState.currentYear);
+            GameState.market.push(normalizePlayer(newPlayer));
+            addNews("Mercado", "Novo jogador entra no mercado", `${newPlayer.name} passou a ser monitorado por clubes.`, `Posição ${newPlayer.primaryPosition}, potencial ${newPlayer.potential}.`);
+        }
+    }
+
     function advanceWeek() {
         ensureSeasonFlowState();
         ensureAcademyState();
         ensureMarketingState();
+        ensureStaffState();
+        ensureTrainingState();
         const finances = getFinanceSummary();
         const context = createWeeklyContext(finances);
         const beforeRound = GameState.round;
         runWeeklyStep("Atualizar calendário", () => updateCalendarRecord("before"), context);
-        runWeeklyStep("Atualizar treinos", () => recoverSquadBetweenRounds(), context);
+        runWeeklyStep("Atualizar recuperação", () => recoverSquadBetweenRounds(), context);
+        runWeeklyStep("Processar treinamento", processTrainingWeek, context);
         runWeeklyStep("Atualizar condição física", () => {
             GameState.squad.forEach((player) => {
                 player.energy = clamp(player.energy + 3, 1, 99);
@@ -4770,7 +5198,8 @@
         }, context);
         runWeeklyStep("Atualizar Finanças", () => closeWeeklyFinance(finances), context);
         runWeeklyStep("Atualizar Patrocínios", processMarketingWeek, context);
-        runWeeklyStep("Atualizar Mercado", () => null, context);
+        runWeeklyStep("Atualizar Mercado", processContractsAndMarket, context);
+        runWeeklyStep("IA dos clubes", simulateClubAI, context);
         runWeeklyStep("Simular partidas", advanceRound, context);
         runWeeklyStep("Atualizar classificação", () => updateLeagueTable(false), context);
         runWeeklyStep("Gerar notícias", () => {
@@ -5035,7 +5464,7 @@
         const expenseRows = [
             ["Salários", finances.weeklyWages],
             ["Manutenção", finances.stadiumMaintenance + finances.structureMaintenance],
-            ["Funcionários", finances.staff],
+            ["Funcionários", finances.staff + finances.staffPayroll],
             ["Transferências", finances.transferInstallments],
             ["Bônus", finances.bonuses]
         ];
@@ -5049,7 +5478,7 @@
                         <div class="stat"><span>Receitas semanais</span><strong>${money(finances.weekIncome)}</strong></div>
                         <div class="stat"><span>Despesas semanais</span><strong>${money(finances.weekExpenses)}</strong></div>
                         <div class="stat"><span>Folha salarial</span><strong>${money(finances.wages)}</strong></div>
-                        <div class="stat"><span>Funcionários</span><strong>${money(finances.staff)}</strong></div>
+                        <div class="stat"><span>Funcionários</span><strong>${money(finances.staff + finances.staffPayroll)}</strong></div>
                         <div class="stat"><span>Parcelas de transferências</span><strong>${money(finances.transferInstallments)}</strong></div>
                         <div class="stat"><span>Receitas acumuladas</span><strong>${money(GameState.finance.income)}</strong></div>
                         <div class="stat"><span>Despesas acumuladas</span><strong>${money(GameState.finance.expenses)}</strong></div>
@@ -5366,6 +5795,8 @@
         const overall = calculateCurrentOverall(player);
         const phase = getCareerPhase(player, GameState.currentYear);
         const trend = getPlayerTrend(player);
+        const isOwnPlayer = GameState.squad.some((item) => item.id === player.id);
+        const interestedClubs = getInterestedClubs(player);
         const valueGrowth = player.history?.[1]?.value ? Math.round(((player.marketValue - player.history[1].value) / Math.max(1, player.history[1].value)) * 100) : 0;
         document.getElementById("screen-root").innerHTML = `
             <section class="screen stack">
@@ -5402,6 +5833,7 @@
                             <div class="stat"><span>Reputacao</span><strong>${player.reputation}</strong></div>
                             <div class="stat"><span>Fase</span><strong>${phase}</strong></div>
                             <div class="stat"><span>Status</span><strong>${escapeHtml(player.status)}</strong></div>
+                            <div class="stat"><span>Clubes interessados</span><strong>${escapeHtml(interestedClubs.join(", "))}</strong></div>
                             <div class="stat"><span>Cartões</span><strong>${player.cards.yellow}A · ${player.cards.red}V</strong></div>
                             <div class="stat"><span>Áreas naturais</span><strong>${player.tacticalProfile.naturalAreas.join(", ")}</strong></div>
                             <div class="stat"><span>Versatilidade</span><strong>${player.tacticalProfile.versatility}</strong></div>
@@ -5443,6 +5875,8 @@
                             <div class="stat"><span>Assistências</span><strong>${player.statistics.assists}</strong></div>
                             <div class="stat"><span>Clean sheets</span><strong>${player.statistics.cleanSheets}</strong></div>
                             <div class="stat"><span>Nota média</span><strong>${player.statistics.averageRating.toFixed(1)}</strong></div>
+                            <div class="stat"><span>Suspensão</span><strong>${player.suspendedWeeks ? `${player.suspendedWeeks} semana(s)` : "Não"}</strong></div>
+                            <div class="stat"><span>Empréstimo</span><strong>${player.loan ? `${player.loan.club} até ${player.loan.until}` : "Não"}</strong></div>
                             <div class="stat"><span>Lesões</span><strong>${player.injuries.length ? player.injuries.map((item) => `${item.type} (${item.weeks}s)`).join(", ") : "Nenhuma"}</strong></div>
                         </div>
                     </div>
@@ -5477,10 +5911,22 @@
                 </div>
 
                 <div class="card card-pad stack">
+                    ${isOwnPlayer ? `
+                        <div class="button-row">
+                            <button class="btn btn-primary" id="renew-player" type="button">Renovar contrato</button>
+                            <button class="btn" id="loan-player" type="button">Emprestar</button>
+                            <button class="btn btn-danger" id="sell-player" type="button">Vender</button>
+                        </div>
+                    ` : ""}
                     <button class="btn" id="back-to-squad" type="button">Voltar</button>
                 </div>
             </section>
         `;
+        if (isOwnPlayer) {
+            document.getElementById("renew-player").addEventListener("click", () => renewSquadPlayer(player.id));
+            document.getElementById("loan-player").addEventListener("click", () => loanSquadPlayer(player.id));
+            document.getElementById("sell-player").addEventListener("click", () => sellSquadPlayer(player.id));
+        }
         document.getElementById("back-to-squad").addEventListener("click", () => switchScreen("squad"));
         updateChrome();
     }
@@ -5792,7 +6238,9 @@
     }
 
     function getScoutLevel() {
-        return clamp(GameState?.club?.structure?.departments?.scout?.level || Math.round((GameState?.club?.scoutQuality || 50) / 12) || 1, 1, 10);
+        const structureLevel = GameState?.club?.structure?.departments?.scout?.level || Math.round((GameState?.club?.scoutQuality || 50) / 12) || 1;
+        const staffLevel = getStaffMember("scout")?.level || 1;
+        return clamp(Math.round((structureLevel + staffLevel) / 2), 1, 10);
     }
 
     function getScoutAccuracy() {
@@ -6785,6 +7233,21 @@
         `;
     }
 
+    function getScoutSearchResults() {
+        const search = ensureScoutState().search || createDefaultScoutState().search;
+        return GameState.market.filter((player) => {
+            const age = calculateAge(player, GameState.currentYear);
+            const overall = calculateCurrentOverall(player);
+            if (search.position !== "ALL" && player.primaryPosition !== search.position && !player.secondaryPositions.includes(search.position)) return false;
+            if (search.nationality !== "ALL" && player.country !== search.nationality) return false;
+            if (!getRangeMatch(age, search.age, "age")) return false;
+            if (!getRangeMatch(overall, search.overall, "overall")) return false;
+            if (!getRangeMatch(player.potential, search.potential, "potential")) return false;
+            if (!getRangeMatch(player.marketValue, search.value, "value")) return false;
+            return true;
+        }).sort((a, b) => (b.potential + calculateCurrentOverall(b)) - (a.potential + calculateCurrentOverall(a))).slice(0, 8);
+    }
+
     function renderScout() {
         refreshAllPlayers();
         ensureScoutState();
@@ -6792,6 +7255,9 @@
             .map((assignment) => ({ assignment, player: GameState.market.find((item) => item.id === assignment.playerId) }))
             .filter((item) => item.player);
         const latestReport = getLatestScoutReport();
+        const search = GameState.scout.search || createDefaultScoutState().search;
+        const nationalities = [...new Set(GameState.market.map((player) => player.country))].sort();
+        const results = getScoutSearchResults();
         document.getElementById("screen-root").innerHTML = `
             <section class="screen stack scout-screen">
                 <div class="market-header">
@@ -6817,6 +7283,28 @@
                     <h2>${escapeHtml(t("scout.lastReport"))}</h2>
                     <p>${escapeHtml(latestReport ? `${latestReport.playerName}: ${latestReport.text}` : t("scout.noReport"))}</p>
                 </div>
+                <div class="card card-pad stack">
+                    <h2>Busca de Scout</h2>
+                    <div class="market-filter-grid">
+                        <label class="field"><span>Idade</span><select data-scout-search="age">
+                            ${getMarketFilterOptions("age").map((option) => `<option value="${option.value}" ${search.age === option.value ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}
+                        </select></label>
+                        <label class="field"><span>Posição</span><select data-scout-search="position"><option value="ALL">Todas</option>${PLAYER_POSITIONS.map((position) => `<option value="${position}" ${search.position === position ? "selected" : ""}>${position}</option>`).join("")}</select></label>
+                        <label class="field"><span>Overall</span><select data-scout-search="overall">${getMarketFilterOptions("overall").map((option) => `<option value="${option.value}" ${search.overall === option.value ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}</select></label>
+                        <label class="field"><span>Potencial</span><select data-scout-search="potential">${getMarketFilterOptions("potential").map((option) => `<option value="${option.value}" ${search.potential === option.value ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}</select></label>
+                        <label class="field"><span>Nacionalidade</span><select data-scout-search="nationality"><option value="ALL">Todas</option>${nationalities.map((country) => `<option value="${country}" ${search.nationality === country ? "selected" : ""}>${escapeHtml(country)}</option>`).join("")}</select></label>
+                        <label class="field"><span>Valor</span><select data-scout-search="value">${getMarketFilterOptions("value").map((option) => `<option value="${option.value}" ${search.value === option.value ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}</select></label>
+                    </div>
+                    <div class="market-player-list">
+                        ${results.map((player) => `
+                            <article class="market-player-card card card-pad stack">
+                                <div class="row-main"><strong>${escapeHtml(player.name)}</strong><span class="overall-badge">${calculateCurrentOverall(player)}</span></div>
+                                <div class="meta"><span>${player.primaryPosition}</span><span>${calculateAge(player, GameState.currentYear)} anos</span><span>${escapeHtml(player.country)}</span><span>${money(player.marketValue)}</span></div>
+                                <button class="btn" type="button" data-scout-add-result="${player.id}">${GameState.scout.assignments[player.id] ? "Em observação" : "Observar"}</button>
+                            </article>
+                        `).join("") || `<div class="empty-state">Nenhum jogador encontrado pelos filtros.</div>`}
+                    </div>
+                </div>
                 <div class="scout-list">
                     ${assignments.length ? assignments.map(({ player, assignment }) => renderScoutAssignment(player, assignment)).join("") : `
                         <div class="empty-state">${escapeHtml(t("scout.noObserved"))}</div>
@@ -6827,6 +7315,131 @@
         document.getElementById("scout-open-market").addEventListener("click", () => switchScreen("market"));
         document.querySelectorAll("[data-scout-remove]").forEach((button) => {
             button.addEventListener("click", () => removeScoutObservation(button.dataset.scoutRemove));
+        });
+        document.querySelectorAll("[data-scout-search]").forEach((select) => {
+            select.addEventListener("change", () => {
+                GameState.scout.search[select.dataset.scoutSearch] = select.value;
+                saveCareer();
+                renderScout();
+            });
+        });
+        document.querySelectorAll("[data-scout-add-result]").forEach((button) => {
+            button.addEventListener("click", () => startScoutObservation(button.dataset.scoutAddResult));
+        });
+        updateChrome();
+    }
+
+    function renderStaff() {
+        const staff = ensureStaffState();
+        const effects = getStaffEffect();
+        const weeklyCost = staff.members.reduce((sum, member) => sum + (member.salary || 0), 0);
+        document.getElementById("screen-root").innerHTML = `
+            <section class="screen stack internal-screen staff-screen">
+                ${renderInternalHero("Staff", "Comissão técnica, diretoria e especialistas com efeitos reais na carreira.", "STF")}
+                <div class="card card-pad stack internal-panel">
+                    <div class="stat-grid">
+                        <div class="stat"><span>Custo semanal</span><strong>${money(weeklyCost)}</strong></div>
+                        <div class="stat"><span>Tático</span><strong>${Math.round(effects.tactical)}</strong></div>
+                        <div class="stat"><span>Técnico</span><strong>${Math.round(effects.technical)}</strong></div>
+                        <div class="stat"><span>Médico</span><strong>${Math.round(effects.medical)}</strong></div>
+                        <div class="stat"><span>Scout</span><strong>${Math.round(effects.scout)}</strong></div>
+                        <div class="stat"><span>Negociação</span><strong>${Math.round(effects.negotiation)}</strong></div>
+                    </div>
+                    <div class="staff-grid">
+                        ${staff.members.map((member) => `
+                            <article class="manager-panel">
+                                <div class="manager-panel-head"><span>${escapeHtml(member.role)}</span><strong>Nível ${member.level}</strong></div>
+                                <h2>${escapeHtml(member.name)}</h2>
+                                <div class="stat-grid compact">
+                                    <div class="stat"><span>Salário</span><strong>${money(member.salary)}</strong></div>
+                                    <div class="stat"><span>Especialidade</span><strong>${escapeHtml(member.specialty)}</strong></div>
+                                    <div class="stat"><span>Experiência</span><strong>${member.experience}</strong></div>
+                                    <div class="stat"><span>Contrato</span><strong>${member.contract.yearsRemaining}a</strong></div>
+                                </div>
+                                <button class="btn" type="button" data-staff-renew="${member.id}">Renovar / melhorar</button>
+                            </article>
+                        `).join("")}
+                    </div>
+                    <div class="finance-section">
+                        <h2>Histórico</h2>
+                        ${renderMiniList(staff.history.slice(0, 6).map((item) => ({ title: item.text, meta: `Semana ${item.round}` })), "Sem mudanças recentes.")}
+                    </div>
+                </div>
+            </section>
+        `;
+        document.querySelectorAll("[data-staff-renew]").forEach((button) => {
+            button.addEventListener("click", () => improveStaffMember(button.dataset.staffRenew));
+        });
+        updateChrome();
+    }
+
+    function improveStaffMember(memberId) {
+        const member = ensureStaffState().members.find((item) => item.id === memberId);
+        if (!member) return;
+        const cost = Math.round(member.salary * (2.8 + member.level * 0.25));
+        if (GameState.budget < cost) {
+            showToast("Saldo insuficiente para melhorar staff.");
+            return;
+        }
+        GameState.budget -= cost;
+        member.level = clamp(member.level + 1, 1, 10);
+        member.experience = clamp(member.experience + 1, 1, 20);
+        member.salary = Math.round(member.salary * 1.08);
+        member.contract.yearsRemaining = Math.max(member.contract.yearsRemaining, 2);
+        const text = `${member.role} melhorou para nível ${member.level}.`;
+        GameState.staff.history.unshift({ text, round: GameState.round, date: new Date().toISOString() });
+        addNews("Clube", "Staff evolui", text, `Investimento de ${money(cost)} aprovado pela diretoria.`);
+        saveCareer();
+        renderStaff();
+    }
+
+    function renderTraining() {
+        const training = ensureTrainingState();
+        const definitions = getTrainingDefinitions();
+        const latest = training.history[0];
+        const topPlayers = [...GameState.squad]
+            .sort((a, b) => (b.potential - calculateCurrentOverall(b)) - (a.potential - calculateCurrentOverall(a)))
+            .slice(0, 8);
+        document.getElementById("screen-root").innerHTML = `
+            <section class="screen stack internal-screen training-screen">
+                ${renderInternalHero("Treinamento", "Foco semanal, evolução natural e planos individuais.", "TRN")}
+                <div class="card card-pad stack internal-panel">
+                    <div class="stat-grid">
+                        <div class="stat"><span>Foco atual</span><strong>${escapeHtml(definitions[training.focus].label)}</strong></div>
+                        <div class="stat"><span>Intensidade</span><strong>${training.weeklyIntensity}%</strong></div>
+                        <div class="stat"><span>Última evolução</span><strong>${latest ? latest.evolved : 0}</strong></div>
+                        <div class="stat"><span>Semana processada</span><strong>${training.lastProcessedRound || "-"}</strong></div>
+                    </div>
+                    <label class="field"><span>Foco coletivo</span><select id="training-focus">
+                        ${Object.entries(definitions).map(([key, item]) => `<option value="${key}" ${training.focus === key ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("")}
+                    </select></label>
+                    <label class="field"><span>Intensidade semanal</span><input id="training-intensity" type="range" min="20" max="100" value="${training.weeklyIntensity}"></label>
+                    <div class="training-grid">
+                        ${topPlayers.map((player) => `
+                            <article class="manager-panel">
+                                <div class="manager-panel-head"><span>${escapeHtml(player.primaryPosition)}</span><strong>${calculateCurrentOverall(player)}/${player.potential}</strong></div>
+                                <h2>${escapeHtml(player.name)}</h2>
+                                <p class="muted">${escapeHtml(getPlayerTrend(player))} · ${calculateAge(player, GameState.currentYear)} anos</p>
+                                <label class="field"><span>Treino individual</span><select data-individual-training="${player.id}">
+                                    ${PLAYER_ATTRIBUTES.map((attr) => `<option value="${attr}" ${training.individualPlans[player.id] === attr ? "selected" : ""}>${escapeHtml(ATTRIBUTE_LABELS[attr])}</option>`).join("")}
+                                </select></label>
+                            </article>
+                        `).join("")}
+                    </div>
+                    <div class="finance-section">
+                        <h2>Histórico</h2>
+                        ${renderMiniList(training.history.slice(0, 8).map((item) => ({ title: `${item.focus}: ${item.evolved} evolução(ões)`, meta: `Semana ${item.round}`, text: `Intensidade ${item.intensity}%` })), "Nenhum treino processado ainda.")}
+                    </div>
+                </div>
+            </section>
+        `;
+        document.getElementById("training-focus").addEventListener("change", (event) => setTrainingFocus(event.target.value));
+        document.getElementById("training-intensity").addEventListener("input", (event) => {
+            GameState.training.weeklyIntensity = Number(event.target.value);
+            saveCareer();
+        });
+        document.querySelectorAll("[data-individual-training]").forEach((select) => {
+            select.addEventListener("change", () => setIndividualTraining(select.dataset.individualTraining, select.value));
         });
         updateChrome();
     }

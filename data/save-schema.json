@@ -18,7 +18,9 @@
     "fans",
     "dressingRoom",
     "news",
-    "notifications"
+    "notifications",
+    "staff",
+    "training"
   ],
   "notes": "O jogo salva automaticamente o estado completo da carreira em localStorage e migra saves antigos no carregamento."
 }

@@ -7,6 +7,7 @@
     <title>Eleven Genesis — Manager</title>
     <link rel="stylesheet" href="css/app.css">
     <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/tension.css">
 </head>
 <body>
     <div id="app">
@@ -36,9 +37,25 @@
         <div class="modal-root" id="modal-root" aria-live="polite"></div>
     </div>
 
+    <div id="tension-overlay" class="tension-overlay hidden" aria-live="assertive" aria-modal="true" role="dialog">
+        <section class="tension-card" aria-labelledby="tension-headline">
+            <div class="tension-card-header">
+                <span id="tension-minute" class="minute">90+'</span>
+                <span id="tension-type" class="event-type">MOMENTO DECISIVO</span>
+            </div>
+            <h1 id="tension-headline" class="headline">O JOGO GANHOU ALMA</h1>
+            <p id="tension-narrative" class="narrative"></p>
+            <div class="tension-actions">
+                <button id="btn-continue" class="btn-continue" type="button">Continuar</button>
+            </div>
+        </section>
+    </div>
+
     <script src="js/storage.js"></script>
     <script src="js/navigation.js"></script>
     <script src="js/ui.js"></script>
+    <script src="js/eventBus.js"></script>
+    <script src="js/matchdayRitual.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

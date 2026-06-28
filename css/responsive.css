@@ -144,7 +144,9 @@
 .manager-dashboard-grid,
 .club-identity-grid,
 .kit-grid,
-.player-card-grid {
+.player-card-grid,
+.staff-grid,
+.training-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 12px;
@@ -308,6 +310,8 @@ body[data-animation-speed="fast"] {
     .club-identity-grid,
     .kit-grid,
     .player-card-grid,
+    .staff-grid,
+    .training-grid,
     .quick-actions {
         grid-template-columns: 1fr;
     }
