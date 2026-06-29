@@ -885,48 +885,1307 @@
         "beckenbauer-f": { naturalAreas: ["CB", "CDM", "CM"], versatility: 92, preferredRoles: ["CB", "CDM"], preferredSide: "Centro" },
     };
 
-    const clubCatalog = [
-        createClub("rio-vermelho", "Rio Vermelho", "Rio de Janeiro", "Brasil", "brasil_serie_a", 88, 6800000, 72, "#c91f2c", "#10151f", "RV", "diamond", 8200000, "Gigante", 92, 86, 78000, 86, 82, "Estadio da Lagoa", "Ganhar liga"),
-        createClub("sao-paulo-tricolor", "Sao Paulo Tricolor", "Sao Paulo", "Brasil", "brasil_serie_a", 84, 5200000, 74, "#f4f4f4", "#d32f2f", "SP", "stripe", 6100000, "Grande", 86, 82, 66000, 80, 78, "Arena Morumbi", "Classificar para continental"),
-        createClub("minas-azul", "Minas Azul", "Belo Horizonte", "Brasil", "brasil_serie_a", 78, 3400000, 78, "#1d5fd1", "#f6f6f6", "MA", "circle", 3900000, "Medio", 77, 72, 42000, 75, 68, "Parque Pampulha", "Top 6"),
-        createClub("porto-alegre-red", "Porto Alegre Red", "Porto Alegre", "Brasil", "brasil_serie_a", 80, 3900000, 76, "#b71c1c", "#ffffff", "PA", "chevron", 4300000, "Grande", 80, 76, 51000, 76, 70, "Estadio do Guaiba", "Top 4"),
-        createClub("santos-fc", "Santos FC", "Santos", "Brasil", "brasil_serie_a", 90, 6200000, 74, "#f7f7f2", "#111111", "SAN", "star", 6100000, "Gigante", 96, 84, 28000, 94, 78, "Vila Belmiro", "Ganhar liga"),
-        createClub("man-red", "Man Red", "Manchester", "Inglaterra", "england_premier", 92, 9800000, 68, "#da1f32", "#f2c94c", "MR", "shield", 9500000, "Gigante", 94, 90, 76000, 88, 86, "Red Trafford", "Ganhar liga"),
-        createClub("man-blue", "Man Blue", "Manchester", "Inglaterra", "england_premier", 89, 9200000, 70, "#66b8ff", "#ffffff", "MB", "circle", 7200000, "Gigante", 84, 88, 55000, 84, 90, "Bluelands", "Ganhar liga"),
-        createClub("north-london", "North London", "Londres", "Inglaterra", "england_premier", 85, 6400000, 73, "#f5f5f5", "#d71920", "NL", "cannon", 5200000, "Grande", 83, 84, 61000, 82, 80, "North Park", "Classificar para continental"),
-        createClub("merseyside-red", "Merseyside Red", "Liverpool", "Inglaterra", "england_premier", 91, 8900000, 69, "#c8102e", "#f6f6f6", "MR", "bird", 8300000, "Gigante", 95, 88, 54000, 84, 84, "Anfield Road", "Ganhar liga"),
-        createClub("madrid-chamartin", "Madrid Chamartin", "Madrid", "Espanha", "spain_primera", 94, 11200000, 66, "#f7f7f7", "#c9a227", "MC", "crown", 9800000, "Gigante", 98, 92, 81000, 90, 88, "Nuevo Chamartin", "Ganhar liga"),
-        createClub("catalunya-fc", "Catalunya FC", "Barcelona", "Espanha", "spain_primera", 93, 10800000, 67, "#154284", "#a50044", "CF", "cross", 9700000, "Gigante", 97, 92, 99000, 94, 86, "Estadi Catalunya", "Ganhar liga"),
-        createClub("madrid-rosas", "Madrid Rosas", "Madrid", "Espanha", "spain_primera", 86, 5900000, 71, "#d7195b", "#ffffff", "MR", "stripe", 4300000, "Grande", 82, 84, 68000, 80, 78, "Metropolitano Rosas", "Top 4"),
-        createClub("sevilla-blanco", "Sevilla Blanco", "Sevilha", "Espanha", "spain_primera", 79, 3100000, 78, "#ffffff", "#d71920", "SB", "diamond", 2100000, "Medio", 74, 74, 43000, 76, 70, "Nervion Blanco", "Top 8"),
-        createClub("milano-rosso", "Milano Rosso", "Milao", "Italia", "italy_serie_a", 88, 7200000, 70, "#d00027", "#111111", "MR", "cross", 6900000, "Gigante", 92, 86, 80000, 82, 82, "San Siro Rosso", "Ganhar liga"),
-        createClub("milano-blu", "Milano Blu", "Milao", "Italia", "italy_serie_a", 87, 7000000, 71, "#0057b8", "#111111", "MB", "stripe", 6500000, "Gigante", 89, 86, 80000, 80, 84, "San Siro Blu", "Ganhar liga"),
-        createClub("piemonte", "Piemonte", "Turim", "Italia", "italy_serie_a", 92, 9600000, 67, "#f8f8f8", "#111111", "PI", "star", 8900000, "Gigante", 96, 90, 41000, 82, 88, "Arena Piemonte", "Ganhar liga"),
-        createClub("roma-capitolina", "Roma Capitolina", "Roma", "Italia", "italy_serie_a", 82, 4300000, 76, "#8e1b1b", "#f4b942", "RC", "wolf", 3100000, "Grande", 79, 78, 61000, 77, 73, "Olimpico Capitolino", "Top 6"),
-        createClub("bayern-munchen", "Bayern Munchen", "Munique", "Alemanha", "germany_bundes", 93, 10600000, 66, "#dc052d", "#0066b2", "BM", "diamond", 9000000, "Gigante", 96, 92, 75000, 86, 88, "Munchen Arena", "Ganhar liga"),
-        createClub("ruhr-gelb", "Ruhr Gelb", "Dortmund", "Alemanha", "germany_bundes", 84, 5200000, 75, "#f6d21a", "#111111", "RG", "circle", 5100000, "Grande", 82, 82, 81000, 88, 78, "Westfalen Gelb", "Top 3"),
-        createClub("paris-sg", "Paris SG", "Paris", "Franca", "france_ligue", 89, 9100000, 68, "#163b73", "#d71920", "PS", "tower", 6100000, "Gigante", 75, 88, 48000, 82, 86, "Parc Parisien", "Ganhar liga"),
-        createClub("monaco-azur", "Monaco Azur", "Monaco", "Franca", "france_ligue", 78, 3700000, 79, "#ffffff", "#d71920", "MA", "diamond", 900000, "Medio", 70, 80, 18500, 86, 80, "Stade Azur", "Revelar jovens"),
-        createClub("lisboa-sl", "Lisboa SL", "Lisboa", "Portugal", "portugal_primeira", 86, 5600000, 72, "#d71920", "#ffffff", "SL", "eagle", 5900000, "Gigante", 88, 84, 65000, 88, 78, "Estadio da Luz Nova", "Ganhar liga"),
-        createClub("lisboa-cp", "Lisboa CP", "Lisboa", "Portugal", "portugal_primeira", 82, 4200000, 76, "#168a4a", "#ffffff", "CP", "stripe", 4100000, "Grande", 84, 80, 50000, 90, 76, "Alvalade Verde", "Top 3"),
-        createClub("porto-fc", "Porto FC", "Porto", "Portugal", "portugal_primeira", 85, 5100000, 73, "#0057b8", "#ffffff", "PF", "shield", 4800000, "Grande", 87, 82, 50000, 84, 80, "Dragao Norte", "Ganhar liga"),
-        createClub("amsterdam-afc", "Amsterdam AFC", "Amsterdam", "Holanda", "netherlands_eredivisie", 84, 4700000, 74, "#d71920", "#ffffff", "AA", "cross", 5200000, "Grande", 92, 82, 55000, 96, 82, "Arena Amsterdam", "Ganhar liga"),
-        createClub("rotterdam-fc", "Rotterdam FC", "Rotterdam", "Holanda", "netherlands_eredivisie", 77, 2900000, 80, "#d71920", "#111111", "RF", "stripe", 2300000, "Medio", 78, 72, 51000, 78, 68, "Maas Stadion", "Top 4"),
-        createClub("buenos-aires-red", "Buenos Aires Red", "Buenos Aires", "Argentina", "argentina_primera", 83, 3900000, 75, "#d71920", "#ffffff", "BR", "stripe", 5200000, "Grande", 91, 76, 54000, 86, 74, "Monumental Sur", "Ganhar liga"),
-        createClub("buenos-aires-blue", "Buenos Aires Blue", "Buenos Aires", "Argentina", "argentina_primera", 82, 3700000, 76, "#004b9b", "#f4c542", "BB", "star", 5000000, "Grande", 90, 76, 49000, 84, 74, "Bombonera Azul", "Ganhar liga")
-    ];
+    const HISTORICAL_LEAGUE_BLUEPRINTS = [
+        [
+                "brasil_serie_a",
+                "Brasileirão Série A 1970",
+                "Brasil",
+                1,
+                [
+                        "Santos FC",
+                        "Palmeiras",
+                        "Corinthians",
+                        "São Paulo FC",
+                        "Portuguesa",
+                        "Flamengo",
+                        "Fluminense",
+                        "Botafogo",
+                        "Vasco da Gama",
+                        "America RJ",
+                        "Atlético Mineiro",
+                        "Cruzeiro",
+                        "América Mineiro",
+                        "Internacional",
+                        "Grêmio",
+                        "Bahia",
+                        "Vitória",
+                        "Sport Recife",
+                        "Náutico",
+                        "Santa Cruz",
+                        "Athletico Paranaense",
+                        "Coritiba",
+                        "Goiás",
+                        "Ceará"
+                ]
+        ],
+        [
+                "brasil_serie_b",
+                "Brasileirão Série B 1970",
+                "Brasil",
+                2,
+                [
+                        "Guarani",
+                        "Ponte Preta",
+                        "Comercial SP",
+                        "XV de Piracicaba",
+                        "Bangu",
+                        "Olaria",
+                        "Madureira",
+                        "Remo",
+                        "Paysandu",
+                        "Fortaleza",
+                        "Ferroviário CE",
+                        "CSA",
+                        "CRB",
+                        "Treze",
+                        "Campinense",
+                        "Sergipe",
+                        "Confiança",
+                        "Joinville",
+                        "Figueirense",
+                        "Avaí",
+                        "Juventude",
+                        "Caxias",
+                        "Londrina",
+                        "Vila Nova"
+                ]
+        ],
+        [
+                "brasil_serie_c",
+                "Brasileirão Série C 1970",
+                "Brasil",
+                3,
+                [
+                        "Botafogo SP",
+                        "Noroeste",
+                        "Marília",
+                        "Ferroviária",
+                        "Volta Redonda",
+                        "Americano",
+                        "Desportiva",
+                        "Rio Branco ES",
+                        "ABC",
+                        "América RN",
+                        "Sampaio Corrêa",
+                        "Moto Club",
+                        "River PI",
+                        "Parnaíba",
+                        "Operário MS",
+                        "Mixto",
+                        "Uberaba",
+                        "Caldense",
+                        "Anapolina",
+                        "Itumbiara",
+                        "Pelotas",
+                        "Brasil de Pelotas",
+                        "Chapecoense",
+                        "Criciúma"
+                ]
+        ],
+        [
+                "brasil_serie_d",
+                "Brasileirão Série D 1970",
+                "Brasil",
+                4,
+                [
+                        "São Bento",
+                        "Taubaté",
+                        "Jabaquara",
+                        "Portuguesa Santista",
+                        "Tuna Luso",
+                        "Nacional AM",
+                        "São Raimundo AM",
+                        "Fast Clube",
+                        "Ypiranga AP",
+                        "Baré",
+                        "Rio Negro AM",
+                        "Flamengo PI",
+                        "Auto Esporte PB",
+                        "Central PE",
+                        "América PE",
+                        "Catuense",
+                        "Fluminense de Feira",
+                        "Colatina",
+                        "Tupi",
+                        "Democrata GV",
+                        "Uberlândia",
+                        "Esportivo Bento",
+                        "Novo Hamburgo",
+                        "Marcílio Dias"
+                ]
+        ],
+        [
+                "england_first",
+                "Football League First Division 1970",
+                "Inglaterra",
+                1,
+                [
+                        "Everton",
+                        "Leeds United",
+                        "Chelsea",
+                        "Derby County",
+                        "Liverpool",
+                        "Coventry City",
+                        "Newcastle United",
+                        "Manchester United",
+                        "Manchester City",
+                        "Tottenham Hotspur",
+                        "Arsenal",
+                        "Wolverhampton Wanderers",
+                        "West Bromwich Albion",
+                        "Stoke City",
+                        "Southampton",
+                        "Nottingham Forest",
+                        "Ipswich Town",
+                        "Crystal Palace",
+                        "West Ham United",
+                        "Burnley",
+                        "Sunderland",
+                        "Sheffield Wednesday",
+                        "Blackpool",
+                        "Huddersfield Town"
+                ]
+        ],
+        [
+                "england_second",
+                "Football League Second Division 1970",
+                "Inglaterra",
+                2,
+                [
+                        "Leicester City",
+                        "Sheffield United",
+                        "Middlesbrough",
+                        "Carlisle United",
+                        "Birmingham City",
+                        "Norwich City",
+                        "Portsmouth",
+                        "Queens Park Rangers",
+                        "Bristol City",
+                        "Hull City",
+                        "Millwall",
+                        "Cardiff City",
+                        "Preston North End",
+                        "Watford",
+                        "Oxford United",
+                        "Charlton Athletic",
+                        "Swindon Town",
+                        "Bolton Wanderers",
+                        "Blackburn Rovers",
+                        "Luton Town",
+                        "Orient",
+                        "Aston Villa",
+                        "Bury",
+                        "Sheffield United Reserves"
+                ]
+        ],
+        [
+                "england_third",
+                "Football League Third Division 1970",
+                "Inglaterra",
+                3,
+                [
+                        "Plymouth Argyle",
+                        "Torquay United",
+                        "Fulham",
+                        "Brighton",
+                        "Reading",
+                        "Wrexham",
+                        "Mansfield Town",
+                        "Tranmere Rovers",
+                        "Rotherham United",
+                        "Walsall",
+                        "Shrewsbury Town",
+                        "Gillingham",
+                        "Southend United",
+                        "Barnsley",
+                        "Bradford City",
+                        "Halifax Town",
+                        "Rochdale",
+                        "Doncaster Rovers",
+                        "Chesterfield",
+                        "Oldham Athletic",
+                        "Port Vale",
+                        "Aldershot",
+                        "Stockport County",
+                        "Scunthorpe United"
+                ]
+        ],
+        [
+                "england_fourth",
+                "Football League Fourth Division 1970",
+                "Inglaterra",
+                4,
+                [
+                        "Chester",
+                        "Darlington",
+                        "Crewe Alexandra",
+                        "Hartlepool",
+                        "Lincoln City",
+                        "Bradford Park Avenue",
+                        "Exeter City",
+                        "Grimsby Town",
+                        "Newport County",
+                        "Peterborough United",
+                        "Colchester United",
+                        "Southport",
+                        "Barrow",
+                        "York City",
+                        "Workington",
+                        "Cambridge United",
+                        "Northampton Town",
+                        "Brentford",
+                        "Swansea City",
+                        "Wigan Borough",
+                        "Hereford United",
+                        "Maidstone United",
+                        "Kettering Town",
+                        "Boston United"
+                ]
+        ],
+        [
+                "england_nonleague_1",
+                "English Alliance 1970",
+                "Inglaterra",
+                5,
+                [
+                        "Yeovil Town",
+                        "Kidderminster Harriers",
+                        "Telford United",
+                        "Barnet",
+                        "Enfield",
+                        "Worcester City",
+                        "Dagenham",
+                        "Dulwich Hamlet",
+                        "Hendon",
+                        "Bromley",
+                        "Woking",
+                        "Wycombe Wanderers",
+                        "Slough Town",
+                        "Wealdstone",
+                        "Harlow Town",
+                        "Chelmsford City",
+                        "Romford",
+                        "Billericay Town",
+                        "Leatherhead",
+                        "Sutton United",
+                        "Tooting & Mitcham",
+                        "Hastings United",
+                        "Dartford",
+                        "Folkestone Town"
+                ]
+        ],
+        [
+                "england_nonleague_2",
+                "Northern Premier 1970",
+                "Inglaterra",
+                6,
+                [
+                        "Macclesfield Town",
+                        "Altrincham",
+                        "Stafford Rangers",
+                        "South Liverpool",
+                        "Witton Albion",
+                        "Morecambe",
+                        "Lancaster City",
+                        "Runcorn",
+                        "Gateshead",
+                        "South Shields",
+                        "Northwich Victoria",
+                        "Matlock Town",
+                        "Buxton",
+                        "Worksop Town",
+                        "Gainsborough Trinity",
+                        "Goole Town",
+                        "Netherfield",
+                        "Fleetwood",
+                        "Frickley Athletic",
+                        "Scarborough",
+                        "Skelmersdale United",
+                        "Marine",
+                        "Hyde United",
+                        "Mossley"
+                ]
+        ],
+        [
+                "england_nonleague_3",
+                "Southern League 1970",
+                "Inglaterra",
+                7,
+                [
+                        "Cheltenham Town",
+                        "Bath City",
+                        "Gloucester City",
+                        "Weymouth",
+                        "Poole Town",
+                        "Dover",
+                        "Margate",
+                        "Folkestone & Shepway",
+                        "Cambridge City",
+                        "Bedford Town",
+                        "Chelmsford City II",
+                        "Nuneaton Borough",
+                        "Hillingdon Borough",
+                        "Banbury United",
+                        "Bognor Regis Town",
+                        "Dorchester Town",
+                        "Merthyr Tydfil",
+                        "Barry Town",
+                        "Tonbridge Angels",
+                        "Trowbridge Town",
+                        "Wellingborough Town",
+                        "Corby Town",
+                        "Bromsgrove Rovers",
+                        "Redditch United"
+                ]
+        ],
+        [
+                "england_nonleague_4",
+                "Isthmian League 1970",
+                "Inglaterra",
+                8,
+                [
+                        "Leytonstone",
+                        "Ilford",
+                        "St Albans City",
+                        "Bishop’s Stortford",
+                        "Harrow Borough",
+                        "Kingstonian",
+                        "Walton & Hersham",
+                        "Carshalton Athletic",
+                        "Corinthian-Casuals",
+                        "Finchley",
+                        "Hitchin Town",
+                        "Hornchurch",
+                        "Marlow",
+                        "Oxford City",
+                        "Walthamstow Avenue",
+                        "Wimbledon Amateur",
+                        "Dorking",
+                        "Epsom & Ewell",
+                        "Hayes",
+                        "Maidenhead United",
+                        "Metropolitan Police",
+                        "Tilbury",
+                        "Uxbridge",
+                        "Ware"
+                ]
+        ],
+        [
+                "england_county",
+                "County Leagues 1970",
+                "Inglaterra",
+                9,
+                [
+                        "Accrington Stanley",
+                        "Fleetwood Town",
+                        "Blyth Spartans",
+                        "Spennymoor United",
+                        "Workington Reds",
+                        "Ossett Town",
+                        "Stalybridge Celtic",
+                        "Burscough",
+                        "Droylsden",
+                        "Hednesford Town",
+                        "Tamworth",
+                        "Nuneaton Griff",
+                        "Bromley Common",
+                        "Croydon Amateurs",
+                        "Horsham",
+                        "Lewes",
+                        "Worthing",
+                        "Aylesbury United",
+                        "Basingstoke Town",
+                        "Frome Town",
+                        "Taunton Town",
+                        "Salisbury",
+                        "Waterlooville",
+                        "Bridgwater Town"
+                ]
+        ],
+        [
+                "spain_primera",
+                "Primera División Española 1970",
+                "Espanha",
+                1,
+                [
+                        "Atlético Madrid",
+                        "Real Madrid",
+                        "Barcelona",
+                        "Athletic Bilbao",
+                        "Valencia",
+                        "Sevilla",
+                        "Real Sociedad",
+                        "Celta Vigo",
+                        "Granada",
+                        "Las Palmas",
+                        "Málaga",
+                        "Sabadell",
+                        "Elche",
+                        "Espanyol",
+                        "Zaragoza",
+                        "Deportivo La Coruña",
+                        "Mallorca",
+                        "Pontevedra",
+                        "Betis",
+                        "Sporting Gijón",
+                        "Oviedo",
+                        "Valladolid",
+                        "Córdoba",
+                        "Murcia"
+                ]
+        ],
+        [
+                "spain_segunda",
+                "Segunda División Española 1970",
+                "Espanha",
+                2,
+                [
+                        "Burgos",
+                        "Castellón",
+                        "Cádiz",
+                        "Rayo Vallecano",
+                        "Osasuna",
+                        "Tenerife",
+                        "Hércules",
+                        "Levante",
+                        "Alavés",
+                        "Logroñés",
+                        "Santander",
+                        "Salamanca",
+                        "Gijón B",
+                        "Sestao",
+                        "Linares",
+                        "Jaén",
+                        "Recreativo Huelva",
+                        "Cartagena",
+                        "Alcoyano",
+                        "Europa",
+                        "Badalona",
+                        "Terrassa",
+                        "Lleida",
+                        "Gimnàstic"
+                ]
+        ],
+        [
+                "spain_tercera",
+                "Tercera Española 1970",
+                "Espanha",
+                3,
+                [
+                        "Barakaldo",
+                        "Eibar",
+                        "Real Unión",
+                        "Ponferradina",
+                        "Compostela",
+                        "Orense",
+                        "Pontevedra B",
+                        "Palencia",
+                        "Cultural Leonesa",
+                        "Talavera",
+                        "Toledo",
+                        "Mérida",
+                        "Badajoz",
+                        "Ceuta",
+                        "Melilla",
+                        "Algeciras",
+                        "Xerez",
+                        "San Fernando",
+                        "Eldense",
+                        "Ontinyent",
+                        "Manresa",
+                        "Sabadell B",
+                        "Huesca",
+                        "Numancia"
+                ]
+        ],
+        [
+                "spain_regional",
+                "Regional Española 1970",
+                "Espanha",
+                4,
+                [
+                        "Langreo",
+                        "Caudal",
+                        "Avilés",
+                        "Torrelavega",
+                        "Laredo",
+                        "Amorebieta",
+                        "Durango",
+                        "Beasain",
+                        "Tudelano",
+                        "Calahorra",
+                        "Binéfar",
+                        "Andorra CF",
+                        "Ibiza",
+                        "Manacor",
+                        "Constancia",
+                        "Olot",
+                        "Figueres",
+                        "Reus",
+                        "Lorca",
+                        "Yeclano",
+                        "Orihuela",
+                        "Benidorm",
+                        "Villena",
+                        "Puertollano"
+                ]
+        ],
+        [
+                "italy_serie_a",
+                "Serie A Italia 1970",
+                "Italia",
+                1,
+                [
+                        "Cagliari",
+                        "Inter Milan",
+                        "Juventus",
+                        "Fiorentina",
+                        "Lazio",
+                        "Bologna",
+                        "Torino",
+                        "Roma",
+                        "Milan",
+                        "Napoli",
+                        "Verona",
+                        "Sampdoria",
+                        "Vicenza",
+                        "Varese",
+                        "Bari",
+                        "Brescia",
+                        "Palermo",
+                        "Atalanta",
+                        "Genoa",
+                        "Cesena",
+                        "Catanzaro",
+                        "Foggia",
+                        "Mantova",
+                        "Reggiana"
+                ]
+        ],
+        [
+                "italy_serie_b",
+                "Serie B Italia 1970",
+                "Italia",
+                2,
+                [
+                        "Perugia",
+                        "Como",
+                        "Modena",
+                        "Monza",
+                        "Reggina",
+                        "Ternana",
+                        "Padova",
+                        "Parma",
+                        "Taranto",
+                        "Livorno",
+                        "Arezzo",
+                        "Novara",
+                        "Pisa",
+                        "Avellino",
+                        "Pescara",
+                        "Sambenedettese",
+                        "Piacenza",
+                        "Alessandria",
+                        "Lecco",
+                        "Triestina",
+                        "Spal",
+                        "Lecce",
+                        "Salernitana",
+                        "Catania"
+                ]
+        ],
+        [
+                "italy_serie_c",
+                "Serie C Italia 1970",
+                "Italia",
+                3,
+                [
+                        "Pro Vercelli",
+                        "Cremonese",
+                        "Venezia",
+                        "Treviso",
+                        "Udinese",
+                        "Ravenna",
+                        "Siena",
+                        "Empoli",
+                        "Lucchese",
+                        "Ancona",
+                        "Ascoli",
+                        "Aquila",
+                        "Casertana",
+                        "Benevento",
+                        "Cosenza",
+                        "Messina",
+                        "Siracusa",
+                        "Trapani",
+                        "Matera",
+                        "Potenza",
+                        "Savona",
+                        "Spezia",
+                        "Carrarese",
+                        "Pistoiese"
+                ]
+        ],
+        [
+                "italy_serie_d",
+                "Serie D Italia 1970",
+                "Italia",
+                4,
+                [
+                        "Biellese",
+                        "Legnano",
+                        "Seregno",
+                        "Vigevano",
+                        "Pro Patria",
+                        "Pergolettese",
+                        "Fanfulla",
+                        "Mestre",
+                        "Belluno",
+                        "Forlì",
+                        "Rimini",
+                        "Fano",
+                        "Grosseto",
+                        "Massese",
+                        "Prato",
+                        "Chieti",
+                        "Teramo",
+                        "Nocerina",
+                        "Savoia",
+                        "Acireale",
+                        "Marsala",
+                        "Vigor Lamezia",
+                        "Olbia",
+                        "Torres"
+                ]
+        ],
+        [
+                "germany_bundes",
+                "Bundesliga 1970",
+                "Alemanha",
+                1,
+                [
+                        "Bayern München",
+                        "Borussia Mönchengladbach",
+                        "Hamburger SV",
+                        "Werder Bremen",
+                        "Eintracht Frankfurt",
+                        "Schalke 04",
+                        "Borussia Dortmund",
+                        "VfB Stuttgart",
+                        "Köln",
+                        "Hannover 96",
+                        "MSV Duisburg",
+                        "Hertha Berlin",
+                        "Kaiserslautern",
+                        "Rot-Weiss Essen",
+                        "Alemannia Aachen",
+                        "1860 München",
+                        "Nürnberg",
+                        "Fortuna Düsseldorf",
+                        "Bochum",
+                        "Arminia Bielefeld",
+                        "Karlsruher SC",
+                        "Wuppertaler SV",
+                        "Dynamo Berlin",
+                        "Dynamo Dresden"
+                ]
+        ],
+        [
+                "germany_regionalliga_nord",
+                "Regionalliga Nord 1970",
+                "Alemanha",
+                2,
+                [
+                        "St Pauli",
+                        "Holstein Kiel",
+                        "VfL Osnabrück",
+                        "Lübeck",
+                        "Wolfsburg",
+                        "Bremerhaven",
+                        "Oldenburg",
+                        "Heider SV",
+                        "Altona 93",
+                        "VfB Lübeck",
+                        "Concordia Hamburg",
+                        "Arminia Hannover",
+                        "Itzehoe",
+                        "Phönix Lübeck",
+                        "Wilhelmshaven",
+                        "Göttingen 05",
+                        "Bergedorf 85",
+                        "Hannover 96 II",
+                        "Celle",
+                        "Meppen",
+                        "Emden",
+                        "Delmenhorst",
+                        "Lüneburger SK",
+                        "Hildesheim"
+                ]
+        ],
+        [
+                "germany_regionalliga_west",
+                "Regionalliga West 1970",
+                "Alemanha",
+                3,
+                [
+                        "Rot-Weiss Oberhausen",
+                        "Wattenscheid",
+                        "Preußen Münster",
+                        "Alemannia Aachen II",
+                        "Fortuna Köln",
+                        "Bonner SC",
+                        "Viktoria Köln",
+                        "Bayer Leverkusen",
+                        "Wuppertal II",
+                        "Solingen",
+                        "Remscheid",
+                        "Siegen",
+                        "Lüner SV",
+                        "Hamm",
+                        "Herford",
+                        "Bielefeld II",
+                        "Düren",
+                        "Euskirchen",
+                        "Gladbeck",
+                        "Marl-Hüls",
+                        "Neuss",
+                        "Velbert",
+                        "Rheydt",
+                        "Bocholt"
+                ]
+        ],
+        [
+                "germany_regionalliga_sud",
+                "Regionalliga Süd 1970",
+                "Alemanha",
+                4,
+                [
+                        "Kickers Offenbach",
+                        "Stuttgarter Kickers",
+                        "Ulm 1846",
+                        "Freiburg",
+                        "Heilbronn",
+                        "Reutlingen",
+                        "Bayern Hof",
+                        "Wacker München",
+                        "Jahn Regensburg",
+                        "Ingolstadt",
+                        "Augsburg",
+                        "Fürth",
+                        "Würzburg",
+                        "Schweinfurt",
+                        "Hessen Kassel",
+                        "Darmstadt",
+                        "Waldhof Mannheim",
+                        "Pforzheim",
+                        "VfR Mannheim",
+                        "Karlsruhe II",
+                        "Aschaffenburg",
+                        "Bayreuth",
+                        "Bamberg",
+                        "Neu-Isenburg"
+                ]
+        ],
+        [
+                "france_ligue_1",
+                "Division 1 Française 1970",
+                "Franca",
+                1,
+                [
+                        "Saint-Étienne",
+                        "Marseille",
+                        "Bordeaux",
+                        "Nantes",
+                        "Lyon",
+                        "Monaco",
+                        "Nice",
+                        "Rennes",
+                        "Angers",
+                        "Sochaux",
+                        "Metz",
+                        "Nancy",
+                        "Reims",
+                        "Sedan",
+                        "Bastia",
+                        "Ajaccio",
+                        "Nîmes",
+                        "Lens",
+                        "Paris FC",
+                        "Strasbourg",
+                        "Valenciennes",
+                        "Rouen",
+                        "Troyes",
+                        "Red Star"
+                ]
+        ],
+        [
+                "france_ligue_2",
+                "Division 2 Française 1970",
+                "Franca",
+                2,
+                [
+                        "Lille",
+                        "Toulouse",
+                        "Montpellier",
+                        "Grenoble",
+                        "Tours",
+                        "Dunkerque",
+                        "Amiens",
+                        "Caen",
+                        "Le Havre",
+                        "Laval",
+                        "Lorient",
+                        "Quimper",
+                        "Limoges",
+                        "Béziers",
+                        "Avignon",
+                        "Arles",
+                        "Martigues",
+                        "Châteauroux",
+                        "Niort",
+                        "Poitiers",
+                        "Mulhouse",
+                        "Besançon",
+                        "Epinal",
+                        "Calais"
+                ]
+        ],
+        [
+                "france_national",
+                "National Française 1970",
+                "Franca",
+                3,
+                [
+                        "Cannes",
+                        "Istres",
+                        "Alès",
+                        "Sète",
+                        "Gap",
+                        "Annecy",
+                        "Bourg-Péronnas",
+                        "Villefranche",
+                        "Mantes",
+                        "Créteil",
+                        "Melun",
+                        "Boulogne",
+                        "Dieppe",
+                        "Cherbourg",
+                        "Blois",
+                        "Orléans",
+                        "Bourges",
+                        "Angoulême",
+                        "Pau",
+                        "Bayonne",
+                        "Brive",
+                        "Périgueux",
+                        "Vannes",
+                        "Saint-Malo"
+                ]
+        ],
+        [
+                "france_regional",
+                "Régional Française 1970",
+                "Franca",
+                4,
+                [
+                        "Draguignan",
+                        "Fréjus",
+                        "Hyères",
+                        "La Ciotat",
+                        "Aubagne",
+                        "Rodez",
+                        "Montauban",
+                        "Auch",
+                        "Albi",
+                        "Carcassonne",
+                        "Muret",
+                        "Cognac",
+                        "Libourne",
+                        "Bergerac",
+                        "Thouars",
+                        "Saumur",
+                        "Cholet",
+                        "Saint-Nazaire",
+                        "La Roche",
+                        "Saint-Brieuc",
+                        "Lannion",
+                        "Morlaix",
+                        "Guingamp",
+                        "Vitré"
+                ]
+        ],
+        [
+                "portugal_primeira",
+                "Primeira Divisão Portuguesa 1970",
+                "Portugal",
+                1,
+                [
+                        "Benfica",
+                        "Sporting CP",
+                        "Porto",
+                        "Belenenses",
+                        "Vitória Setúbal",
+                        "Académica",
+                        "Boavista",
+                        "Braga",
+                        "Vitória Guimarães",
+                        "Leixões",
+                        "Varzim",
+                        "Farense",
+                        "Marítimo",
+                        "União Tomar",
+                        "Montijo",
+                        "Tirsense",
+                        "Salgueiros",
+                        "Beira-Mar",
+                        "Portimonense",
+                        "Covilhã",
+                        "Espinho",
+                        "Olhanense",
+                        "Barreirense",
+                        "Oriental"
+                ]
+        ],
+        [
+                "portugal_segunda",
+                "Segunda Portuguesa 1970",
+                "Portugal",
+                2,
+                [
+                        "Penafiel",
+                        "Famalicão",
+                        "Rio Ave",
+                        "Gil Vicente",
+                        "Chaves",
+                        "Fafe",
+                        "Vizela",
+                        "Feirense",
+                        "Lusitano Évora",
+                        "Atlético CP",
+                        "Torreense",
+                        "Estoril",
+                        "Sesimbra",
+                        "Sintrense",
+                        "Caldas",
+                        "U. Leiria",
+                        "Naval",
+                        "Académico Viseu",
+                        "Guarda",
+                        "Sanjoanense",
+                        "Lamego",
+                        "Mirandela",
+                        "Macedo",
+                        "Bragança"
+                ]
+        ],
+        [
+                "portugal_terceira",
+                "Terceira Portuguesa 1970",
+                "Portugal",
+                3,
+                [
+                        "Louletano",
+                        "Imortal",
+                        "Esperança Lagos",
+                        "Lusitano VRSA",
+                        "Aljustrelense",
+                        "Moura",
+                        "Serpa",
+                        "Elvas",
+                        "Campomaiorense",
+                        "Estrela Portalegre",
+                        "Abrantes",
+                        "Tomar",
+                        "Fátima",
+                        "Alcobaça",
+                        "Marinhense",
+                        "Pombal",
+                        "Sourense",
+                        "Oliveirense",
+                        "Cesarense",
+                        "Valecambrense",
+                        "Gondomar",
+                        "Pedras Rubras",
+                        "Vianense",
+                        "Limianos"
+                ]
+        ],
+        [
+                "netherlands_eredivisie",
+                "Eredivisie 1970",
+                "Holanda",
+                1,
+                [
+                        "Ajax",
+                        "Feyenoord",
+                        "PSV",
+                        "FC Twente",
+                        "Sparta Rotterdam",
+                        "ADO Den Haag",
+                        "NAC Breda",
+                        "Go Ahead Eagles",
+                        "DWS",
+                        "MVV",
+                        "NEC",
+                        "Telstar",
+                        "Haarlem",
+                        "Utrecht",
+                        "AZ Alkmaar",
+                        "Excelsior",
+                        "Volendam",
+                        "Fortuna Sittard",
+                        "Roda JC",
+                        "Heracles",
+                        "PEC Zwolle",
+                        "Heerenveen",
+                        "Groningen",
+                        "Willem II"
+                ]
+        ],
+        [
+                "netherlands_eerste",
+                "Eerste Divisie 1970",
+                "Holanda",
+                2,
+                [
+                        "De Graafschap",
+                        "Eindhoven",
+                        "Helmond Sport",
+                        "Vitesse",
+                        "Veendam",
+                        "Cambuur",
+                        "Den Bosch",
+                        "Dordrecht",
+                        "Wageningen",
+                        "FC Amsterdam",
+                        "Vlaardingen",
+                        "Elinkwijk",
+                        "ZFC",
+                        "SC Amersfoort",
+                        "Gooiland",
+                        "RBC",
+                        "NOAD",
+                        "Limburgia",
+                        "Hermes DVS",
+                        "Baronie",
+                        "RCH",
+                        "EDO",
+                        "Zwartemeer",
+                        "Alkmaar B"
+                ]
+        ],
+        [
+                "netherlands_tweede",
+                "Tweede Divisie 1970",
+                "Holanda",
+                3,
+                [
+                        "Quick Boys",
+                        "Katwijk",
+                        "IJsselmeervogels",
+                        "Spakenburg",
+                        "Rijnsburgse Boys",
+                        "Noordwijk",
+                        "Kozakken Boys",
+                        "GVVV",
+                        "DOVO",
+                        "HHC Hardenberg",
+                        "WHC",
+                        "DOS Kampen",
+                        "Excelsior Maassluis",
+                        "ASWH",
+                        "Barendrecht",
+                        "Scheveningen",
+                        "Harkemase Boys",
+                        "Hoek",
+                        "Lisse",
+                        "AFC Amsterdam",
+                        "Hollandia",
+                        "Blauw Wit",
+                        "DWV",
+                        "Zeeburgia"
+                ]
+        ],
+        [
+                "argentina_primera",
+                "Primera Argentina 1970",
+                "Argentina",
+                1,
+                [
+                        "Boca Juniors",
+                        "River Plate",
+                        "Independiente",
+                        "Racing Club",
+                        "San Lorenzo",
+                        "Vélez Sarsfield",
+                        "Estudiantes",
+                        "Huracán",
+                        "Newell’s Old Boys",
+                        "Rosario Central",
+                        "Argentinos Juniors",
+                        "Ferro Carril Oeste",
+                        "Atlanta",
+                        "Chacarita Juniors",
+                        "Banfield",
+                        "Lanús",
+                        "Gimnasia La Plata",
+                        "Colón",
+                        "Unión Santa Fe",
+                        "Talleres Córdoba",
+                        "Belgrano",
+                        "Instituto",
+                        "Platense",
+                        "Quilmes"
+                ]
+        ],
+        [
+                "argentina_nacional_b",
+                "Nacional B Argentina 1970",
+                "Argentina",
+                2,
+                [
+                        "All Boys",
+                        "Nueva Chicago",
+                        "Deportivo Morón",
+                        "Almagro",
+                        "Temperley",
+                        "Los Andes",
+                        "Defensores de Belgrano",
+                        "Arsenal Sarandí",
+                        "Tigre",
+                        "Sarmiento Junín",
+                        "Douglas Haig",
+                        "San Martín Tucumán",
+                        "Atlético Tucumán",
+                        "Central Córdoba",
+                        "Chaco For Ever",
+                        "Gimnasia Jujuy",
+                        "Godoy Cruz",
+                        "San Martín San Juan",
+                        "Aldosivi",
+                        "Olimpo",
+                        "Cipolletti",
+                        "Guillermo Brown",
+                        "Almirante Brown",
+                        "Estudiantes BA"
+                ]
+        ],
+        [
+                "argentina_primera_b",
+                "Primera B Argentina 1970",
+                "Argentina",
+                3,
+                [
+                        "Barracas Central",
+                        "Colegiales",
+                        "Comunicaciones",
+                        "Excursionistas",
+                        "Flandria",
+                        "Ituzaingó",
+                        "Laferrere",
+                        "Liniers",
+                        "Midland",
+                        "San Miguel",
+                        "Sportivo Italiano",
+                        "Talleres RE",
+                        "Tristán Suárez",
+                        "Villa Dálmine",
+                        "Acassuso",
+                        "Argentino Quilmes",
+                        "Berazategui",
+                        "Cambaceres",
+                        "Dock Sud",
+                        "El Porvenir",
+                        "Luján",
+                        "San Telmo",
+                        "UAI Urquiza",
+                        "Villa San Carlos"
+                ]
+        ],
+        [
+                "argentina_regional",
+                "Regional Argentina 1970",
+                "Argentina",
+                4,
+                [
+                        "Güemes",
+                        "Mitre Santiago",
+                        "Sportivo Belgrano",
+                        "Racing Córdoba",
+                        "Atenas Río Cuarto",
+                        "Desamparados",
+                        "Juventud Unida SL",
+                        "Huracán Las Heras",
+                        "Maipú",
+                        "Independiente Rivadavia",
+                        "Alvarado",
+                        "Santamarina",
+                        "Villa Mitre",
+                        "Sol de Mayo",
+                        "Deportivo Roca",
+                        "Huracán Comodoro",
+                        "Boca Río Gallegos",
+                        "Crucero del Norte",
+                        "Guaraní Antonio Franco",
+                        "Sarmiento Resistencia",
+                        "Patronato",
+                        "Atlético Paraná",
+                        "9 de Julio Rafaela",
+                        "Ben Hur"
+                ]
+        ]
+];
 
-    const leagueCatalog = [
-        createLeague("brasil_serie_a", "Liga Brasileira", "Brasil", 1, ["santos-fc", "rio-vermelho", "sao-paulo-tricolor", "minas-azul", "porto-alegre-red"]),
-        createLeague("england_premier", "English Premier", "Inglaterra", 1, ["man-red", "man-blue", "north-london", "merseyside-red"]),
-        createLeague("spain_primera", "Primera Espanhola", "Espanha", 1, ["madrid-chamartin", "catalunya-fc", "madrid-rosas", "sevilla-blanco"]),
-        createLeague("italy_serie_a", "Serie Italia", "Italia", 1, ["milano-rosso", "milano-blu", "piemonte", "roma-capitolina"]),
-        createLeague("germany_bundes", "Bundes Liga", "Alemanha", 1, ["bayern-munchen", "ruhr-gelb"]),
-        createLeague("france_ligue", "Ligue Francaise", "Franca", 1, ["paris-sg", "monaco-azur"]),
-        createLeague("portugal_primeira", "Primeira Portuguesa", "Portugal", 1, ["lisboa-sl", "lisboa-cp", "porto-fc"]),
-        createLeague("netherlands_eredivisie", "Eredivisie Holland", "Holanda", 1, ["amsterdam-afc", "rotterdam-fc"]),
-        createLeague("argentina_primera", "Primera Argentina", "Argentina", 1, ["buenos-aires-red", "buenos-aires-blue"])
-    ];
+    function slugifyWorldName(value) {
+        return String(value || "clube")
+            .normalize("NFD").replace(/[̀-ͯ]/g, "")
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "");
+    }
+
+    function countryVisualSeed(country) {
+        const palette = {
+            Brasil: ["#f7d117", "#0b7f3a"],
+            Inglaterra: ["#b5121b", "#f2f2f2"],
+            Espanha: ["#c9a227", "#8a1f1f"],
+            Italia: ["#0f7b4f", "#f1f1e6"],
+            Alemanha: ["#111111", "#d4a62a"],
+            Franca: ["#173c80", "#d71920"],
+            Portugal: ["#0b6b3a", "#d71920"],
+            Holanda: ["#f36f21", "#ffffff"],
+            Argentina: ["#75aadb", "#ffffff"]
+        };
+        return palette[country] || ["#203827", "#d4a62a"];
+    }
+
+    function buildHistoricalWorldCatalog() {
+        const clubs = [];
+        const leagues = [];
+        const symbolCycle = ["shield", "stripe", "circle", "diamond", "star", "chevron", "cross", "crown", "bird", "tower"];
+        const objectiveByDivision = (division) => division === 1 ? "Disputar o topo" : division === 2 ? "Buscar acesso" : division === 3 ? "Consolidar projeto" : "Sobreviver e revelar jovens";
+        HISTORICAL_LEAGUE_BLUEPRINTS.forEach(([leagueId, leagueName, country, division, clubNames]) => {
+            const leagueClubIds = [];
+            clubNames.forEach((clubName, index) => {
+                const id = `${leagueId}-${slugifyWorldName(clubName)}-${index + 1}`;
+                const [primary, secondary] = countryVisualSeed(country);
+                const reputationBase = Math.max(42, 94 - (division - 1) * 10 - Math.floor(index / 3));
+                const reputation = clamp(reputationBase + deterministicNumber(`${id}-rep`, -4, 5), 35, 96);
+                const budget = Math.round((650000 + reputation * reputation * (division === 1 ? 1300 : 720)) * getEconomicMultiplier(START_YEAR));
+                const fans = Math.round((120000 + reputation * reputation * 900) / Math.max(1, division * 0.7));
+                const capacity = clamp(Math.round(12000 + reputation * 650 - division * 2200 + deterministicNumber(`${id}-cap`, -4000, 7000)), 6000, 98000);
+                const city = clubName.split(" ").slice(0, 2).join(" ").replace(/FC|CF|AC|SC|United|City|Club|Real|Atlético|Borussia|Sporting|Benfica|Santos/g, "").trim() || clubName;
+                leagueClubIds.push(id);
+                clubs.push(createClub(id, clubName, city, country, leagueId, reputation, budget, clamp(64 + deterministicNumber(`${id}-board`, -12, 18), 35, 95), primary, secondary, clubName.split(/\s+/).map(p => p[0]).join("").slice(0, 3).toUpperCase(), symbolCycle[index % symbolCycle.length], fans, division === 1 && reputation >= 86 ? "Gigante" : division <= 2 ? "Grande" : "Medio", clamp(reputation + deterministicNumber(`${id}-trad`, -8, 8), 25, 98), clamp(reputation + deterministicNumber(`${id}-fac`, -10, 10), 20, 96), capacity, clamp(reputation + deterministicNumber(`${id}-youth`, -8, 14), 20, 98), clamp(reputation + deterministicNumber(`${id}-scout`, -10, 10), 20, 96), `${city} Stadium`, objectiveByDivision(division)));
+            });
+            leagues.push(createLeague(leagueId, leagueName, country, division, leagueClubIds));
+        });
+        return { clubs, leagues };
+    }
+
+    const HISTORICAL_WORLD_CATALOG = buildHistoricalWorldCatalog();
+    const clubCatalog = HISTORICAL_WORLD_CATALOG.clubs;
+    const leagueCatalog = HISTORICAL_WORLD_CATALOG.leagues;
 
     const competitionBlueprints = {
         nationalLeague: { name: "Liga Nacional", active: true },
@@ -1925,35 +3184,35 @@
     };
 
     const EG6_CLUB_COPY = {
-        "santos-fc": {
+        "brasil_serie_a-santos-fc-1": {
             essence: "O clube onde o futebol parece nascer com areia no pé.",
             challenge: "Manter Pelé no centro de um time que o mundo inteiro observa.",
             fanVoice: "Aqui não basta vencer. O povo quer encanto.",
             idols: ["Pelé", "Pepe", "Carlos Alberto"],
             contractLine: "Você não assume apenas um clube. Assume a responsabilidade de proteger uma era."
         },
-        "man-red": {
+        "england_first-manchester-united-8": {
             essence: "Um gigante inglês que ainda mede sua grandeza pelo barulho das arquibancadas.",
             challenge: "Renovar sem trair a geração que colocou o clube no mapa.",
             fanVoice: "Queremos coragem. Não queremos desculpas.",
             idols: ["Bobby Charlton", "George Best", "Denis Law"],
             contractLine: "A cidade conhece cada promessa. Assine apenas se estiver pronto para cobrá-las de si mesmo."
         },
-        "amsterdam-afc": {
+        "netherlands_eredivisie-ajax-1": {
             essence: "Uma escola de futebol total disfarçada de clube.",
             challenge: "Transformar ideia em domínio antes que a Europa aprenda a copiá-la.",
             fanVoice: "Queremos ganhar pensando. Queremos atacar com ordem.",
             idols: ["Johan Cruyff", "Johan Neeskens", "Ruud Krol"],
             contractLine: "Aqui o treinador não escolhe onze nomes. Escolhe uma filosofia."
         },
-        "bayern-munchen": {
+        "germany_bundes-bayern-munchen-1": {
             essence: "Eficiência bávara, fome continental e cobrança sem sentimentalismo.",
             challenge: "Vencer sem perder o controle emocional do grupo.",
             fanVoice: "Trabalhe direito e a torcida espera. Pareça perdido e ela percebe antes da imprensa.",
             idols: ["Franz Beckenbauer", "Gerd Müller", "Sepp Maier"],
             contractLine: "O clube oferece estrutura. Em troca, exige convicção."
         },
-        "lisboa-sl": {
+        "portugal_primeira-benfica-1": {
             essence: "Um clube de águias, estádio cheio e memória europeia.",
             challenge: "Proteger a lenda de Eusébio enquanto prepara a próxima geração.",
             fanVoice: "A camisa pesa porque já levantou noites maiores que esta.",
@@ -1963,7 +3222,7 @@
     };
 
     const EG6_HISTORICAL_ROSTERS = {
-        "santos-fc": [
+        "brasil_serie_a-santos-fc-1": [
             ["pele", "Pelé", "Pelé", "Brasil", 1940, "CF", 99, 99, 99, "lendario"],
             ["carlos-alberto", "Carlos Alberto", "Capita", "Brasil", 1944, "RB", 91, 91, 90, "estrela"],
             ["clodoaldo", "Clodoaldo", "Clodoaldo", "Brasil", 1949, "CDM", 88, 90, 86, "estrela"],
@@ -1973,7 +3232,7 @@
             ["agustin-cejas", "Agustín Cejas", "Cejas", "Argentina", 1945, "GK", 84, 85, 80, "comum"],
             ["lima-santos", "Lima", "Coringa", "Brasil", 1942, "CM", 82, 82, 78, "comum"]
         ],
-        "man-red": [
+        "england_first-manchester-united-8": [
             ["bobby-charlton", "Bobby Charlton", "Charlton", "Inglaterra", 1937, "CM", 88, 88, 91, "estrela"],
             ["george-best", "George Best", "Best", "Irlanda do Norte", 1946, "RW", 94, 94, 93, "lendario"],
             ["denis-law", "Denis Law", "Law", "Escocia", 1940, "ST", 86, 86, 88, "estrela"],
@@ -1981,21 +3240,21 @@
             ["brian-kidd", "Brian Kidd", "Kidd", "Inglaterra", 1949, "ST", 80, 85, 76, "comum"],
             ["nobby-stiles", "Nobby Stiles", "Stiles", "Inglaterra", 1942, "CDM", 80, 80, 82, "comum"]
         ],
-        "amsterdam-afc": [
+        "netherlands_eredivisie-ajax-1": [
             ["johan-cruyff", "Johan Cruyff", "Cruyff", "Holanda", 1947, "CF", 97, 98, 96, "lendario"],
             ["johan-neeskens", "Johan Neeskens", "Neeskens", "Holanda", 1951, "CM", 88, 93, 86, "estrela"],
             ["ruud-krol", "Ruud Krol", "Krol", "Holanda", 1949, "LB", 84, 91, 80, "estrela"],
             ["arie-haan", "Arie Haan", "Haan", "Holanda", 1948, "CB", 83, 88, 78, "comum"],
             ["piet-keizer", "Piet Keizer", "Keizer", "Holanda", 1943, "LW", 87, 87, 86, "estrela"]
         ],
-        "bayern-munchen": [
+        "germany_bundes-bayern-munchen-1": [
             ["franz-beckenbauer", "Franz Beckenbauer", "Kaiser", "Alemanha", 1945, "CB", 96, 96, 95, "lendario"],
             ["gerd-muller", "Gerd Müller", "Bomber", "Alemanha", 1945, "ST", 95, 95, 94, "lendario"],
             ["sepp-maier", "Sepp Maier", "Maier", "Alemanha", 1944, "GK", 91, 91, 90, "estrela"],
             ["paul-breitner", "Paul Breitner", "Breitner", "Alemanha", 1951, "LB", 82, 92, 76, "promessa"],
             ["uli-hoeness", "Uli Hoeness", "Hoeness", "Alemanha", 1952, "RW", 78, 89, 70, "promessa"]
         ],
-        "lisboa-sl": [
+        "portugal_primeira-benfica-1": [
             ["eusebio", "Eusébio", "Pantera", "Portugal", 1942, "ST", 93, 93, 94, "lendario"],
             ["mario-coluna", "Mário Coluna", "Coluna", "Portugal", 1935, "CM", 84, 84, 86, "estrela"],
             ["jose-augusto", "José Augusto", "Augusto", "Portugal", 1937, "RW", 82, 82, 80, "comum"],
@@ -2099,6 +3358,7 @@
             energy: 86,
             fitness: 92,
             rarity,
+            historical: true,
             contract: { yearsRemaining: 2 + (index % 4), expiresYear: START_YEAR + 2 + (index % 4) },
             salary: Math.round((overall * 260 + reputation * 170) * getEconomicMultiplier(START_YEAR)),
             marketValue: Math.round((overall * overall * 210) * (rarity === "lendario" ? 2.8 : rarity === "estrela" ? 1.7 : 1.1)),
@@ -2145,9 +3405,9 @@
 
     function eg6BuildClubSquad(club) {
         const legends = (EG6_HISTORICAL_ROSTERS[club.id] || []).map((profile, index) => eg6CreateLegendPlayer(profile, club, index));
-        const locals = eg6GenerateLocalSquad(club, Math.max(18 - legends.length, 10));
+        const locals = eg6GenerateLocalSquad(club, Math.max(24 - legends.length, 16));
         const used = new Set(legends.map((player) => player.primaryPosition));
-        const squad = [...legends, ...locals].slice(0, 18).map(refreshPlayerRuntime);
+        const squad = [...legends, ...locals].slice(0, 24).map(refreshPlayerRuntime);
         return squad.sort(byPositionThenOverall);
     }
 
@@ -2644,9 +3904,86 @@
     }
 
     function createMarket() {
-        return playerDatabase.slice(18, 38)
-            .map((record, index) => createPlayerFromRecord(record, "market", index, 0))
+        return buildWorldMarketPlayers(3200)
             .sort((a, b) => calculateCurrentOverall(b) - calculateCurrentOverall(a));
+    }
+
+    function buildWorldMarketPlayers(total = 3200) {
+        const countries = ["Brasil", "Argentina", "Uruguai", "Inglaterra", "Escocia", "Espanha", "Italia", "Alemanha", "Franca", "Portugal", "Holanda", "Iugoslavia", "Uniao Sovietica", "Mexico", "Angola"];
+        const positions = ["GK", "RB", "CB", "CB", "LB", "CDM", "CM", "CM", "CAM", "RW", "LW", "ST"];
+        const players = [];
+        const historic = [
+            { id: "maradona-1976", name: "Diego Maradona", country: "Argentina", birthYear: 1960, position: "CAM", overall: 61, potential: 99, club: "Argentinos Juniors", availableFrom: 1976, note: "ainda é um rumor de Buenos Aires" },
+            { id: "zico-1971", name: "Zico", country: "Brasil", birthYear: 1953, position: "CAM", overall: 58, potential: 94, club: "Flamengo", availableFrom: 1971, note: "o garoto da Gávea começa a ser comentado" },
+            { id: "platini-1972", name: "Michel Platini", country: "Franca", birthYear: 1955, position: "CAM", overall: 55, potential: 94, club: "Nancy", availableFrom: 1972, note: "um meia francês de visão incomum" },
+            { id: "keegan-1971", name: "Kevin Keegan", country: "Inglaterra", birthYear: 1951, position: "ST", overall: 68, potential: 90, club: "Liverpool", availableFrom: 1971, note: "energia e fome competitiva" },
+            { id: "kempes-1973", name: "Mario Kempes", country: "Argentina", birthYear: 1954, position: "ST", overall: 60, potential: 92, club: "Rosario Central", availableFrom: 1973, note: "um atacante argentino que ataca a área como destino" },
+            { id: "dalglish-1971", name: "Kenny Dalglish", country: "Escocia", birthYear: 1951, position: "CF", overall: 68, potential: 92, club: "Celtic", availableFrom: 1971, note: "frio em jogos grandes" }
+        ];
+        historic.forEach((h, index) => {
+            if (START_YEAR <= h.availableFrom) {
+                players.push(normalizePlayer({
+                    id: `world-historic-${h.id}`, databaseId: h.id, name: h.name, fullName: h.name, shortName: h.name, nickname: h.name.split(" ")[0], country: h.country, birthYear: h.birthYear, primaryPosition: h.position, secondaryPositions: h.position === "CAM" ? ["CM", "CF"] : ["CF"], height: 172 + deterministicNumber(`${h.id}-height`, -5, 12), weight: 69 + deterministicNumber(`${h.id}-weight`, -5, 11), dominantFoot: deterministicNumber(`${h.id}-foot`, 0, 1) ? "Direito" : "Esquerdo", personality: "Destino histórico", potential: h.potential, reputation: Math.max(42, h.overall - 8), morale: 72, energy: 88, fitness: 92, currentClub: h.club, rarity: "histórico", contract: { yearsRemaining: 3, expiresYear: START_YEAR + 3 }, salary: Math.round(h.overall * 240 * getEconomicMultiplier(START_YEAR)), marketValue: Math.round(h.overall * h.overall * 180), attributes: generateAttributesForPosition(h.position, h.overall, `hist-${h.id}`), history: [{ season: h.availableFrom, club: h.club, event: h.note, value: Math.round(h.overall * h.overall * 180) }]
+                }));
+            }
+        });
+        for (let i = 0; players.length < total; i += 1) {
+            const country = countries[i % countries.length];
+            const pos = positions[i % positions.length];
+            const name = generatePersonName(country, i);
+            const age = 16 + deterministicNumber(`world-age-${i}`, 0, 18);
+            const base = clamp(48 + deterministicNumber(`world-ovr-${country}-${i}`, 0, 38), 42, 88);
+            const potential = clamp(base + deterministicNumber(`world-pot-${country}-${i}`, 0, 16), base, 96);
+            const club = clubCatalog[(i * 37 + deterministicNumber(`world-club-${i}`, 0, clubCatalog.length - 1)) % clubCatalog.length];
+            players.push(normalizePlayer({
+                id: `world-market-${slugifyWorldName(country)}-${i}`, databaseId: `world-market-${i}`, name, fullName: name, shortName: name.split(" ").slice(-1)[0], nickname: name.split(" ")[0], country, birthYear: START_YEAR - age, primaryPosition: pos, secondaryPositions: inferSecondaryPositions(pos), height: 168 + deterministicNumber(`world-h-${i}`, 0, 24), weight: 63 + deterministicNumber(`world-w-${i}`, 0, 24), dominantFoot: deterministicNumber(`world-foot-${i}`, 0, 2) === 0 ? "Esquerdo" : "Direito", personality: pickCountryPersonality(country, i), potential, reputation: clamp(base + deterministicNumber(`world-rep-${i}`, -12, 10), 30, 95), morale: clamp(65 + deterministicNumber(`world-morale-${i}`, -18, 21), 1, 99), energy: 86, fitness: 91, currentClub: club?.name || "Sem clube", rarity: potential >= 90 ? "promessa" : base >= 80 ? "estrela" : "comum", contract: { yearsRemaining: 1 + (i % 5), expiresYear: START_YEAR + 1 + (i % 5) }, salary: Math.round((base * 210 + potential * 80) * getEconomicMultiplier(START_YEAR)), marketValue: Math.round(Math.pow(base, 2.05) * 90 * (potential >= 88 ? 1.4 : 1)), attributes: generateAttributesForPosition(pos, base, `world-attrs-${i}`)
+            }));
+        }
+        return players;
+    }
+
+    function inferSecondaryPositions(position) {
+        const map = { GK: [], RB: ["RWB", "CB"], LB: ["LWB", "CB"], CB: ["CDM"], CDM: ["CM", "CB"], CM: ["CDM", "CAM"], CAM: ["CM", "CF"], RW: ["RM", "LW"], LW: ["LM", "RW"], ST: ["CF"], CF: ["ST", "CAM"] };
+        return map[position] || ["CM"];
+    }
+
+    function generatePersonName(country, seed) {
+        const pools = {
+            Brasil: [["João", "Carlos", "Paulo", "Roberto", "Luiz", "Jair", "Tostão", "Rivelino", "Edu", "Clodoaldo"], ["Silva", "Santos", "Oliveira", "Pereira", "Costa", "Nascimento", "Lima", "Souza", "Ferreira", "Almeida"]],
+            Argentina: [["Diego", "Mario", "Héctor", "Oscar", "Norberto", "Ricardo", "Jorge", "Miguel", "Daniel", "Rubén"], ["González", "Rossi", "Menéndez", "Alonso", "Kempes", "Pastoriza", "Perfumo", "Ardiles", "Bertoni", "Gallego"]],
+            Uruguai: [["Luis", "Pedro", "Hugo", "Enzo", "Julio", "Juan", "Pablo", "Héctor"], ["Silva", "Pereira", "Francescoli", "Morales", "Rocha", "Cubilla", "Montero", "Vidal"]],
+            Inglaterra: [["John", "Bobby", "Brian", "Kevin", "Peter", "Alan", "Steve", "Tony", "David", "Martin"], ["Smith", "Charlton", "Keegan", "Moore", "Bell", "Hunter", "Lee", "Clarke", "Hughes", "Wilson"]],
+            Escocia: [["Kenny", "Denis", "Billy", "Graeme", "Archie", "Gordon", "Jimmy"], ["Dalglish", "Law", "Johnstone", "Souness", "Gemmill", "McNeill", "Bremner"]],
+            Espanha: [["José", "Luis", "Juan", "Amancio", "Miguel", "Francisco", "Carlos", "Javier"], ["Gárate", "Aragonés", "Pirri", "Gento", "Suárez", "Santillana", "Asensi", "Rexach"]],
+            Italia: [["Gianni", "Gigi", "Sandro", "Roberto", "Giacinto", "Dino", "Fabio", "Claudio"], ["Riva", "Rivera", "Mazzola", "Facchetti", "Zoff", "Anastasi", "Capello", "Prati"]],
+            Alemanha: [["Franz", "Gerd", "Sepp", "Paul", "Uli", "Bernd", "Horst", "Wolfgang"], ["Beckenbauer", "Müller", "Maier", "Breitner", "Hoeness", "Netzer", "Vogts", "Overath"]],
+            Franca: [["Michel", "Jean", "Henri", "Bernard", "Dominique", "Patrick", "Robert"], ["Platini", "Tigana", "Bossis", "Lacombe", "Rocheteau", "Giresse", "Trésor"]],
+            Portugal: [["Eusébio", "António", "Mário", "José", "Fernando", "Rui", "Nené", "Toni"], ["Silva", "Costa", "Coluna", "Augusto", "Torres", "Gomes", "Bento", "Dinis"]],
+            Holanda: [["Johan", "Ruud", "Wim", "Piet", "Arie", "Johnny", "Rob", "René"], ["Cruyff", "Krol", "Neeskens", "Keizer", "Haan", "Rep", "Rensenbrink", "Jansen"]],
+            Iugoslavia: [["Dragan", "Safet", "Josip", "Ivan", "Zoran", "Vladimir"], ["Džajić", "Sušić", "Katalinski", "Buljan", "Filipović", "Petrović"]],
+            "Uniao Sovietica": [["Oleg", "Viktor", "Anatoliy", "Valeriy", "Eduard", "Vladimir"], ["Blokhin", "Kolotov", "Konkov", "Onishchenko", "Streltsov", "Dasaev"]],
+            Mexico: [["Hugo", "Enrique", "Javier", "Carlos", "Manuel", "Raúl"], ["Sánchez", "Borja", "Guzmán", "Reinoso", "Hermosillo", "Flores"]],
+            Angola: [["António", "Joaquim", "Manuel", "Paulo", "Rui", "Sebastião"], ["Mendonça", "Matateu", "Akwá", "Silva", "Lopes", "Bastos"]]
+        };
+        const pool = pools[country] || pools.Brasil;
+        return `${pool[0][seed % pool[0].length]} ${pool[1][Math.floor(seed / pool[0].length) % pool[1].length]}`;
+    }
+
+    function pickCountryPersonality(country, seed) {
+        const map = { Brasil: ["Improvisador", "Ousado", "Carismático"], Argentina: ["Intenso", "Orgulhoso", "Competitivo"], Italia: ["Disciplinado", "Tático", "Frio"], Inglaterra: ["Direto", "Lutador", "Profissional"], Alemanha: ["Metódico", "Confiável", "Mentalidade forte"], Holanda: ["Inteligente", "Sistêmico", "Versátil"] };
+        const arr = map[country] || ["Profissional", "Reservado", "Ambicioso"];
+        return arr[seed % arr.length];
+    }
+
+    function generateAttributesForPosition(position, base, seed) {
+        const weights = POSITION_WEIGHTS[position] || POSITION_WEIGHTS.CM;
+        const attrs = {};
+        PLAYER_ATTRIBUTES.forEach((attr) => {
+            const emphasis = weights[attr] || 0.03;
+            attrs[attr] = clamp(Math.round(base - 8 + emphasis * 55 + deterministicNumber(`${seed}-${attr}`, -7, 7)), 1, 99);
+        });
+        if (position !== "GK") attrs.goalkeeping = clamp(deterministicNumber(`${seed}-gk`, 1, 14), 1, 20);
+        return attrs;
     }
 
     function initializeLeague(selectedClub) {

@@ -68,6 +68,63 @@
     --nav: 64px;
 }
 
+/* EG6.3: chips de filtro e cards de carreira mais densos */
+.chip-pos,
+.eg3-clear-chip {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
+    padding: 7px 12px;
+    border: 1px solid rgba(212, 166, 58, .22);
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(245,245,239,.075), rgba(245,245,239,.035));
+    color: rgba(245,245,239,.82);
+    font-size: .78rem;
+    font-weight: 850;
+    line-height: 1;
+    letter-spacing: .02em;
+    cursor: pointer;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+    transition: transform .16s ease, border-color .16s ease, background .16s ease, color .16s ease;
+}
+
+.chip-pos:hover,
+.chip-pos:focus-visible,
+.eg3-clear-chip:hover,
+.eg3-clear-chip:focus-visible {
+    border-color: rgba(212, 166, 58, .5);
+    background: linear-gradient(180deg, rgba(212,166,58,.18), rgba(245,245,239,.055));
+    color: #fff;
+    transform: translateY(-1px);
+    outline: none;
+}
+
+.chip-pos.active,
+.eg3-clear-chip.active {
+    border-color: rgba(212, 166, 58, .78);
+    background: linear-gradient(135deg, var(--gold), #f2d984);
+    color: #07120d;
+}
+
+.eg3-chip-row,
+.eg4-chip-row,
+.eg5-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+@media (max-width: 760px) {
+    .chip-pos,
+    .eg3-clear-chip {
+        min-height: 34px;
+        padding-inline: 10px;
+        font-size: .74rem;
+    }
+}
+
 * {
     box-sizing: border-box;
 }
@@ -6002,6 +6059,12 @@ body[data-club-rhythm="pressure"] {
     transform: none !important;
     animation: none !important;
 }
+
+.eg6-career-setup {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+}
 .eg6-newspaper-front {
     width: min(900px, 100%);
     padding: clamp(24px, 5vw, 58px);
@@ -6083,4 +6146,19 @@ body[data-club-rhythm="pressure"] {
     }
     body:has(.eg6-career-setup),
     body:has(.eg6-contract-signed) { overflow-x: hidden; }
+}
+
+@media (min-width: 1181px) {
+    .eg6-league-grid,
+    .eg6-club-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    }
+    .eg6-league-card,
+    .eg6-club-card {
+        min-height: 188px !important;
+        padding: 18px !important;
+    }
+    .eg6-club-card {
+        min-height: 204px !important;
+    }
 }
