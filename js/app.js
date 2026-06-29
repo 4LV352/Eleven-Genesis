@@ -890,6 +890,7 @@
         createClub("sao-paulo-tricolor", "Sao Paulo Tricolor", "Sao Paulo", "Brasil", "brasil_serie_a", 84, 5200000, 74, "#f4f4f4", "#d32f2f", "SP", "stripe", 6100000, "Grande", 86, 82, 66000, 80, 78, "Arena Morumbi", "Classificar para continental"),
         createClub("minas-azul", "Minas Azul", "Belo Horizonte", "Brasil", "brasil_serie_a", 78, 3400000, 78, "#1d5fd1", "#f6f6f6", "MA", "circle", 3900000, "Medio", 77, 72, 42000, 75, 68, "Parque Pampulha", "Top 6"),
         createClub("porto-alegre-red", "Porto Alegre Red", "Porto Alegre", "Brasil", "brasil_serie_a", 80, 3900000, 76, "#b71c1c", "#ffffff", "PA", "chevron", 4300000, "Grande", 80, 76, 51000, 76, 70, "Estadio do Guaiba", "Top 4"),
+        createClub("santos-fc", "Santos FC", "Santos", "Brasil", "brasil_serie_a", 90, 6200000, 74, "#f7f7f2", "#111111", "SAN", "star", 6100000, "Gigante", 96, 84, 28000, 94, 78, "Vila Belmiro", "Ganhar liga"),
         createClub("man-red", "Man Red", "Manchester", "Inglaterra", "england_premier", 92, 9800000, 68, "#da1f32", "#f2c94c", "MR", "shield", 9500000, "Gigante", 94, 90, 76000, 88, 86, "Red Trafford", "Ganhar liga"),
         createClub("man-blue", "Man Blue", "Manchester", "Inglaterra", "england_premier", 89, 9200000, 70, "#66b8ff", "#ffffff", "MB", "circle", 7200000, "Gigante", 84, 88, 55000, 84, 90, "Bluelands", "Ganhar liga"),
         createClub("north-london", "North London", "Londres", "Inglaterra", "england_premier", 85, 6400000, 73, "#f5f5f5", "#d71920", "NL", "cannon", 5200000, "Grande", 83, 84, 61000, 82, 80, "North Park", "Classificar para continental"),
@@ -916,7 +917,7 @@
     ];
 
     const leagueCatalog = [
-        createLeague("brasil_serie_a", "Liga Brasileira", "Brasil", 1, ["rio-vermelho", "sao-paulo-tricolor", "minas-azul", "porto-alegre-red"]),
+        createLeague("brasil_serie_a", "Liga Brasileira", "Brasil", 1, ["santos-fc", "rio-vermelho", "sao-paulo-tricolor", "minas-azul", "porto-alegre-red"]),
         createLeague("england_premier", "English Premier", "Inglaterra", 1, ["man-red", "man-blue", "north-london", "merseyside-red"]),
         createLeague("spain_primera", "Primera Espanhola", "Espanha", 1, ["madrid-chamartin", "catalunya-fc", "madrid-rosas", "sevilla-blanco"]),
         createLeague("italy_serie_a", "Serie Italia", "Italia", 1, ["milano-rosso", "milano-blu", "piemonte", "roma-capitolina"]),
@@ -1020,7 +1021,9 @@
     let GameState = null;
     let toastTimer = null;
     const UIState = {
-        currentDrawer: null
+        currentDrawer: null,
+        careerLeagueId: null,
+        careerPreviewClubId: null
     };
     let marketSearchTimer = null;
 
@@ -1872,6 +1875,282 @@
         return "Futebol moderno";
     }
 
+
+    const EG6_CLUB_IDENTITIES = {
+        brasil_serie_a: {
+            headline: "Onde futebol vira assunto de família.",
+            description: "Estádios quentes, base fértil e torcidas que perdoam erro técnico antes de perdoar falta de alma.",
+            newspaper: "Jornal do Esporte"
+        },
+        england_premier: {
+            headline: "Físico, inverno e arquibancada no pescoço.",
+            description: "A bola corre pesada, os estádios vivem cheios e cada derrota vira conversa de pub até segunda-feira.",
+            newspaper: "The Football Chronicle"
+        },
+        spain_primera: {
+            headline: "Técnica, posse e política de vestiário.",
+            description: "Grandes clubes carregam história; os médios vivem de orgulho e paciência tática.",
+            newspaper: "El Deportivo"
+        },
+        italy_serie_a: {
+            headline: "Tática antes do aplauso.",
+            description: "A imprensa lê cada empate como tese. A torcida percebe o detalhe que o placar não mostra.",
+            newspaper: "La Gazzetta del Calcio"
+        },
+        germany_bundes: {
+            headline: "Método, força e estádio inteiro cantando.",
+            description: "O coletivo pesa. A paciência existe, mas apenas quando o trabalho é visível.",
+            newspaper: "Fussball Zeitung"
+        },
+        france_ligue: {
+            headline: "Talento, vitrine e impaciência elegante.",
+            description: "Um campeonato onde o próximo craque pode estar a uma estação de trem de distância.",
+            newspaper: "Le Sportif"
+        },
+        portugal_primeira: {
+            headline: "Clubes de bairro com ambição continental.",
+            description: "A formação decide destinos; uma venda certa pode mudar dez anos do clube.",
+            newspaper: "A Bola do Norte"
+        },
+        netherlands_eredivisie: {
+            headline: "Sistema, juventude e coragem tática.",
+            description: "O jogador aprende a pensar antes de correr. O treinador que ignora isso perde o vestiário.",
+            newspaper: "Voetbal Dagblad"
+        },
+        argentina_primera: {
+            headline: "Honra, potrero e pressão que não dorme.",
+            description: "Cada clássico parece definitivo. Cada camisa 10 carrega uma cidade no peito.",
+            newspaper: "El Gráfico Popular"
+        }
+    };
+
+    const EG6_CLUB_COPY = {
+        "santos-fc": {
+            essence: "O clube onde o futebol parece nascer com areia no pé.",
+            challenge: "Manter Pelé no centro de um time que o mundo inteiro observa.",
+            fanVoice: "Aqui não basta vencer. O povo quer encanto.",
+            idols: ["Pelé", "Pepe", "Carlos Alberto"],
+            contractLine: "Você não assume apenas um clube. Assume a responsabilidade de proteger uma era."
+        },
+        "man-red": {
+            essence: "Um gigante inglês que ainda mede sua grandeza pelo barulho das arquibancadas.",
+            challenge: "Renovar sem trair a geração que colocou o clube no mapa.",
+            fanVoice: "Queremos coragem. Não queremos desculpas.",
+            idols: ["Bobby Charlton", "George Best", "Denis Law"],
+            contractLine: "A cidade conhece cada promessa. Assine apenas se estiver pronto para cobrá-las de si mesmo."
+        },
+        "amsterdam-afc": {
+            essence: "Uma escola de futebol total disfarçada de clube.",
+            challenge: "Transformar ideia em domínio antes que a Europa aprenda a copiá-la.",
+            fanVoice: "Queremos ganhar pensando. Queremos atacar com ordem.",
+            idols: ["Johan Cruyff", "Johan Neeskens", "Ruud Krol"],
+            contractLine: "Aqui o treinador não escolhe onze nomes. Escolhe uma filosofia."
+        },
+        "bayern-munchen": {
+            essence: "Eficiência bávara, fome continental e cobrança sem sentimentalismo.",
+            challenge: "Vencer sem perder o controle emocional do grupo.",
+            fanVoice: "Trabalhe direito e a torcida espera. Pareça perdido e ela percebe antes da imprensa.",
+            idols: ["Franz Beckenbauer", "Gerd Müller", "Sepp Maier"],
+            contractLine: "O clube oferece estrutura. Em troca, exige convicção."
+        },
+        "lisboa-sl": {
+            essence: "Um clube de águias, estádio cheio e memória europeia.",
+            challenge: "Proteger a lenda de Eusébio enquanto prepara a próxima geração.",
+            fanVoice: "A camisa pesa porque já levantou noites maiores que esta.",
+            idols: ["Eusébio", "Mário Coluna", "José Augusto"],
+            contractLine: "Assinar aqui é conversar com fantasmas bons antes de cada jogo grande."
+        }
+    };
+
+    const EG6_HISTORICAL_ROSTERS = {
+        "santos-fc": [
+            ["pele", "Pelé", "Pelé", "Brasil", 1940, "CF", 99, 99, 99, "lendario"],
+            ["carlos-alberto", "Carlos Alberto", "Capita", "Brasil", 1944, "RB", 91, 91, 90, "estrela"],
+            ["clodoaldo", "Clodoaldo", "Clodoaldo", "Brasil", 1949, "CDM", 88, 90, 86, "estrela"],
+            ["edu", "Edu", "Edu", "Brasil", 1949, "LW", 86, 90, 84, "estrela"],
+            ["pepe", "Pepe", "Canhão", "Brasil", 1935, "LW", 84, 84, 82, "estrela"],
+            ["ramos-delgado", "Ramos Delgado", "Ramos", "Brasil", 1935, "CB", 82, 82, 78, "comum"],
+            ["agustin-cejas", "Agustín Cejas", "Cejas", "Argentina", 1945, "GK", 84, 85, 80, "comum"],
+            ["lima-santos", "Lima", "Coringa", "Brasil", 1942, "CM", 82, 82, 78, "comum"]
+        ],
+        "man-red": [
+            ["bobby-charlton", "Bobby Charlton", "Charlton", "Inglaterra", 1937, "CM", 88, 88, 91, "estrela"],
+            ["george-best", "George Best", "Best", "Irlanda do Norte", 1946, "RW", 94, 94, 93, "lendario"],
+            ["denis-law", "Denis Law", "Law", "Escocia", 1940, "ST", 86, 86, 88, "estrela"],
+            ["alex-stepney", "Alex Stepney", "Stepney", "Inglaterra", 1942, "GK", 82, 82, 80, "comum"],
+            ["brian-kidd", "Brian Kidd", "Kidd", "Inglaterra", 1949, "ST", 80, 85, 76, "comum"],
+            ["nobby-stiles", "Nobby Stiles", "Stiles", "Inglaterra", 1942, "CDM", 80, 80, 82, "comum"]
+        ],
+        "amsterdam-afc": [
+            ["johan-cruyff", "Johan Cruyff", "Cruyff", "Holanda", 1947, "CF", 97, 98, 96, "lendario"],
+            ["johan-neeskens", "Johan Neeskens", "Neeskens", "Holanda", 1951, "CM", 88, 93, 86, "estrela"],
+            ["ruud-krol", "Ruud Krol", "Krol", "Holanda", 1949, "LB", 84, 91, 80, "estrela"],
+            ["arie-haan", "Arie Haan", "Haan", "Holanda", 1948, "CB", 83, 88, 78, "comum"],
+            ["piet-keizer", "Piet Keizer", "Keizer", "Holanda", 1943, "LW", 87, 87, 86, "estrela"]
+        ],
+        "bayern-munchen": [
+            ["franz-beckenbauer", "Franz Beckenbauer", "Kaiser", "Alemanha", 1945, "CB", 96, 96, 95, "lendario"],
+            ["gerd-muller", "Gerd Müller", "Bomber", "Alemanha", 1945, "ST", 95, 95, 94, "lendario"],
+            ["sepp-maier", "Sepp Maier", "Maier", "Alemanha", 1944, "GK", 91, 91, 90, "estrela"],
+            ["paul-breitner", "Paul Breitner", "Breitner", "Alemanha", 1951, "LB", 82, 92, 76, "promessa"],
+            ["uli-hoeness", "Uli Hoeness", "Hoeness", "Alemanha", 1952, "RW", 78, 89, 70, "promessa"]
+        ],
+        "lisboa-sl": [
+            ["eusebio", "Eusébio", "Pantera", "Portugal", 1942, "ST", 93, 93, 94, "lendario"],
+            ["mario-coluna", "Mário Coluna", "Coluna", "Portugal", 1935, "CM", 84, 84, 86, "estrela"],
+            ["jose-augusto", "José Augusto", "Augusto", "Portugal", 1937, "RW", 82, 82, 80, "comum"],
+            ["toni-benfica", "Toni", "Toni", "Portugal", 1946, "CDM", 80, 82, 78, "comum"]
+        ]
+    };
+
+    function getClubEraIcons(club) {
+        const byCountry = {
+            Brasil: ["Pelé", "Garrincha", "Didi"],
+            Inglaterra: ["Bobby Charlton", "George Best", "Denis Law"],
+            Espanha: ["Di Stéfano", "Gento", "Luis Suárez"],
+            Italia: ["Rivera", "Mazzola", "Facchetti"],
+            Alemanha: ["Beckenbauer", "Gerd Müller", "Sepp Maier"],
+            Portugal: ["Eusébio", "Coluna", "José Augusto"],
+            Holanda: ["Cruyff", "Neeskens", "Keizer"],
+            Argentina: ["Perfumo", "Pastoriza", "Rattín"],
+            Franca: ["Kopa", "Fontaine", "Herbin"]
+        };
+        return byCountry[eg5NormalizeCountry(club?.country)] || ["Capitão histórico", "Ídolo da arquibancada", "Garoto da base"];
+    }
+
+    function eg6ClubCopy(club) {
+        return EG6_CLUB_COPY[club?.id] || {
+            essence: `${club?.name || "O clube"} precisa de um treinador que transforme contexto em identidade.`,
+            challenge: club?.objectives?.[0] || "Construir uma temporada respeitável.",
+            fanVoice: "A torcida quer reconhecer o time antes de cobrar troféus.",
+            idols: getClubEraIcons(club).slice(0, 3),
+            contractLine: "Assinar aqui é aceitar que cada semana vai deixar marca."
+        };
+    }
+
+    function eg6LeagueStory(leagueId) {
+        return EG6_CLUB_IDENTITIES[leagueId] || { headline: "Um novo país, uma nova pressão.", description: "Cada liga tem seus próprios medos, vícios e formas de amar o jogo.", newspaper: "Football Gazette" };
+    }
+
+    function eg6GetLeagueClubs(leagueId) {
+        const league = getLeagueById(leagueId);
+        if (!league) return [];
+        return clubCatalog.filter((club) => league.clubs.includes(club.id));
+    }
+
+    function eg6FormatClubPressure(club) {
+        if ((club.reputation || 0) >= 88) return "Pressão imediata";
+        if ((club.reputation || 0) >= 80) return "Projeto competitivo";
+        return "Reconstrução paciente";
+    }
+
+    function eg6RenderMiniSquadPreview(club, limit = 6) {
+        const historicalIds = new Set((EG6_HISTORICAL_ROSTERS[club.id] || []).map((profile) => profile[0]));
+        const squad = createInitialSquad(club)
+            .slice()
+            .sort((a, b) => {
+                const aHistorical = historicalIds.has(a.databaseId);
+                const bHistorical = historicalIds.has(b.databaseId);
+                if (aHistorical !== bHistorical) return aHistorical ? -1 : 1;
+                if (aHistorical && bHistorical) return calculateCurrentOverall(b) - calculateCurrentOverall(a);
+                return byPositionThenOverall(a, b);
+            })
+            .slice(0, limit);
+        return squad.map((player) => `
+            <div class="eg6-roster-row">
+                <strong>${escapeHtml(player.name)}</strong>
+                <span>${escapeHtml(translatePosition(player.primaryPosition))} · ${calculateAge(player, START_YEAR)} anos · ${escapeHtml(translateCountry(player.country))}</span>
+                <em>${escapeHtml(eg5PlayerHumanDescription(player))}</em>
+            </div>
+        `).join("");
+    }
+
+    function eg6CreateLegendPlayer(profile, club, index) {
+        const [id, name, nickname, country, birthYear, primaryPosition, overall, potential, reputation, rarity] = profile;
+        const attributes = createFallbackAttributes(overall, primaryPosition);
+        if (["CF", "ST", "RW", "LW", "CAM"].includes(primaryPosition)) {
+            attributes.shooting = clamp(overall + 4, 1, 99);
+            attributes.technique = clamp(overall + 3, 1, 99);
+            attributes.dribbling = clamp(overall + 2, 1, 99);
+        }
+        if (["CB", "CDM", "LB", "RB"].includes(primaryPosition)) {
+            attributes.defending = clamp(overall + 4, 1, 99);
+            attributes.mentality = clamp(overall + 2, 1, 99);
+        }
+        if (primaryPosition === "GK") attributes.goalkeeping = clamp(overall + 5, 1, 99);
+        return normalizePlayer({
+            id: `squad-${club.id}-${id}-${index}`,
+            databaseId: id,
+            name,
+            fullName: name,
+            shortName: nickname || name,
+            nickname: nickname || name,
+            country,
+            birthYear,
+            primaryPosition,
+            secondaryPositions: [],
+            height: 170 + (Math.abs(hashText(id)) % 22),
+            weight: 66 + (Math.abs(hashText(`${id}-w`)) % 18),
+            dominantFoot: Math.abs(hashText(id)) % 3 === 0 ? "Esquerdo" : "Direito",
+            personality: rarity === "lendario" ? "Lenda viva" : rarity === "estrela" ? "Referência" : rarity === "promessa" ? "Promessa especial" : "Profissional",
+            potential,
+            reputation,
+            morale: clamp(72 + Math.floor((reputation - 70) / 4), 1, 99),
+            energy: 86,
+            fitness: 92,
+            rarity,
+            contract: { yearsRemaining: 2 + (index % 4), expiresYear: START_YEAR + 2 + (index % 4) },
+            salary: Math.round((overall * 260 + reputation * 170) * getEconomicMultiplier(START_YEAR)),
+            marketValue: Math.round((overall * overall * 210) * (rarity === "lendario" ? 2.8 : rarity === "estrela" ? 1.7 : 1.1)),
+            attributes
+        });
+    }
+
+    function eg6GenerateLocalSquad(club, count = 18) {
+        const positions = ["GK", "RB", "CB", "CB", "LB", "CDM", "CM", "CM", "CAM", "RW", "ST", "LW", "GK", "CB", "RB", "CM", "ST", "LW"];
+        const modifier = Math.round(((club?.reputation || 70) - 70) / 4);
+        return positions.slice(0, count).map((position, index) => {
+            const base = clamp(58 + modifier + deterministicNumber(`${club.id}-${index}`, -5, 13), 38, 88);
+            const country = eg5NormalizeCountry(club.country);
+            const name = eg5BuildLocalName(country, `${club.id}-${index}-${position}`);
+            const attributes = createFallbackAttributes(base, position);
+            return normalizePlayer({
+                id: `squad-${club.id}-local-${index}`,
+                databaseId: `local-${club.id}-${index}`,
+                name,
+                fullName: name,
+                shortName: name.split(" ").slice(-1)[0],
+                nickname: name.split(" ").slice(-1)[0],
+                country,
+                birthYear: START_YEAR - deterministicNumber(`${club.id}-age-${index}`, 18, 32),
+                primaryPosition: position,
+                secondaryPositions: position === "CM" ? ["CDM", "CAM"] : position === "ST" ? ["CF"] : [],
+                height: 168 + deterministicNumber(`${club.id}-h-${index}`, 0, 24),
+                weight: 65 + deterministicNumber(`${club.id}-w-${index}`, 0, 20),
+                dominantFoot: deterministicNumber(`${club.id}-foot-${index}`, 0, 2) === 0 ? "Esquerdo" : "Direito",
+                personality: eg5Pick(["Profissional", "Competitivo", "Reservado", "Carismático", "Tático", "Ousado"], `${club.id}-persona-${index}`),
+                potential: clamp(base + deterministicNumber(`${club.id}-pot-${index}`, 0, 12), 45, 95),
+                reputation: clamp(base + deterministicNumber(`${club.id}-rep-${index}`, -8, 8), 30, 95),
+                morale: clamp(62 + deterministicNumber(`${club.id}-mor-${index}`, -10, 16), 1, 99),
+                energy: 88,
+                fitness: 92,
+                rarity: "comum",
+                contract: { yearsRemaining: 1 + (index % 4), expiresYear: START_YEAR + 1 + (index % 4) },
+                salary: Math.round((base * 210 + (club.reputation || 70) * 90) * getEconomicMultiplier(START_YEAR)),
+                marketValue: Math.round(Math.pow(base, 2.05) * 90),
+                attributes
+            });
+        });
+    }
+
+    function eg6BuildClubSquad(club) {
+        const legends = (EG6_HISTORICAL_ROSTERS[club.id] || []).map((profile, index) => eg6CreateLegendPlayer(profile, club, index));
+        const locals = eg6GenerateLocalSquad(club, Math.max(18 - legends.length, 10));
+        const used = new Set(legends.map((player) => player.primaryPosition));
+        const squad = [...legends, ...locals].slice(0, 18).map(refreshPlayerRuntime);
+        return squad.sort(byPositionThenOverall);
+    }
+
     function deterministicNumber(seed, min, max) {
         const range = max - min + 1;
         return min + (Math.abs(hashText(seed)) % range);
@@ -2361,10 +2640,7 @@
     }
 
     function createInitialSquad(club) {
-        const modifier = Math.round((club.reputation - 65) / 5);
-        return playerDatabase.slice(0, 18)
-            .map((record, index) => createPlayerFromRecord(record, `squad-${club.id}`, index, modifier))
-            .sort(byPositionThenOverall);
+        return eg6BuildClubSquad(club);
     }
 
     function createMarket() {
@@ -3140,7 +3416,8 @@
             `O desempenho na liga, a estabilidade financeira e a evolução do elenco serão acompanhados semanalmente pela diretoria.`
         );
         saveCareer();
-        switchScreen("home", { silent: true });
+        closeUIDrawer();
+        renderContractSignedMoment(club);
     }
 
     function generateSimpleMatch(homeClub, awayClub) {
@@ -3624,7 +3901,7 @@
         const root = document.getElementById("screen-root");
         const inCareer = window.EGNavigation ? window.EGNavigation.isCareerScreen(GameState) : Boolean(GameState && GameState.club);
         const app = document.getElementById("app");
-        const isMenuArea = ["menu", "menuSettings", "menuCredits", "clubSelect"].includes(GameState?.currentScreen);
+        const isMenuArea = ["menu", "menuSettings", "menuCredits", "clubSelect", "contractSigned"].includes(GameState?.currentScreen);
 
         document.body.dataset.theme = GameState?.settings?.darkMode === false ? "light" : "dark";
         document.body.dataset.animationSpeed = GameState?.settings?.animationSpeed || "normal";
@@ -3916,50 +4193,160 @@
     function renderClubSelect() {
         GameState.currentScreen = "clubSelect";
         updateChrome();
-        const offerClubs = clubCatalog
-            .filter((club) => ["rio-vermelho", "man-red", "north-london", "madrid-chamartin", "catalunya-fc", "milano-rosso", "piemonte", "bayern-munchen", "paris-sg", "lisboa-sl", "amsterdam-afc", "buenos-aires-blue"].includes(club.id));
-        const cards = offerClubs.map((club) => {
-            const league = getLeagueById(club.leagueId);
-            const tier = getClubTier(club);
-            const difficulty = club.reputation >= 88 ? t("clubSelect.easy") : club.reputation >= 80 ? t("clubSelect.medium") : t("clubSelect.hard");
-            const challengeKey = tier === "Gigante" ? "clubSelect.challenge.giant" : tier === "Grande" ? "clubSelect.challenge.big" : tier === "Medio" ? "clubSelect.challenge.medium" : "clubSelect.challenge.small";
-            return `
-            <article class="club-offer-card" style="--club-a:${club.colors?.[0] || club.color};--club-b:${club.colors?.[1] || "#f7f8f4"}">
-                <div class="club-offer-banner" aria-hidden="true"></div>
-                <div class="club-offer-top">
-                    ${renderClubCrest(club, "offer")}
-                    <div>
-                        <span class="menu-kicker">${escapeHtml(league?.name || "Liga Nacional")}</span>
-                        <h2>${escapeHtml(club.name)}</h2>
-                        <div class="meta"><span>${escapeHtml(club.city)}</span><span>${escapeHtml(club.country)}</span><span>${escapeHtml(club.stadium?.name || club.name)}</span></div>
-                    </div>
-                </div>
-                <p>${escapeHtml(t(challengeKey))}</p>
-                <div class="club-offer-stats">
-                    <div><span>${escapeHtml(t("clubSelect.reputation"))}</span><strong>${club.reputation}</strong></div>
-                    <div><span>${escapeHtml(t("clubSelect.budget"))}</span><strong>${money(club.budget)}</strong></div>
-                    <div><span>${escapeHtml(t("clubSelect.difficulty"))}</span><strong>${escapeHtml(difficulty)}</strong></div>
-                    <div><span>${escapeHtml(t("clubSelect.expectation"))}</span><strong>${escapeHtml(club.objectives[0])}</strong></div>
-                </div>
-                <button class="btn btn-primary" type="button" data-start-club="${club.id}">${escapeHtml(t("clubSelect.accept"))}</button>
-            </article>
-        `}).join("");
+        const selectedLeagueId = UIState.careerLeagueId;
+        const selectedLeague = selectedLeagueId ? getLeagueById(selectedLeagueId) : null;
+        const root = document.getElementById("screen-root");
 
-        document.getElementById("screen-root").innerHTML = `
-            <section class="screen stack club-select-screen">
-                <div class="club-select-hero">
-                    <div class="club-select-lights" aria-hidden="true"></div>
-                    <span class="menu-kicker">${escapeHtml(t("brand.name"))}</span>
-                    <h1>${escapeHtml(t("clubSelect.title"))}</h1>
-                    <p>${escapeHtml(t("clubSelect.subtitle"))}</p>
-                </div>
-                <div class="club-offer-grid">${cards}</div>
+        if (!selectedLeague) {
+            const leagueCards = leagueCatalog.map((league) => {
+                const story = eg6LeagueStory(league.id);
+                const clubs = eg6GetLeagueClubs(league.id);
+                return `
+                    <article class="eg6-league-card" data-career-league="${league.id}">
+                        <div>
+                            <span class="eg5-eyebrow">${escapeHtml(league.country)} · ${clubs.length} clubes</span>
+                            <h2>${escapeHtml(league.name)}</h2>
+                            <p>${escapeHtml(story.headline)}</p>
+                            <small>${escapeHtml(story.description)}</small>
+                        </div>
+                        <button class="btn btn-primary" type="button">Entrar nesta liga</button>
+                    </article>
+                `;
+            }).join("");
+            root.innerHTML = `
+                <section class="screen eg6-career-setup" aria-label="Escolha da carreira">
+                    <header class="eg6-contract-hero">
+                        <span class="eg5-eyebrow">Contrato de 1970</span>
+                        <h1>Onde você quer construir sua história?</h1>
+                        <p>Escolha primeiro o país. Cada liga tem uma cultura, uma pressão e uma forma diferente de tratar treinadores.</p>
+                    </header>
+                    <div class="eg6-league-grid">${leagueCards}</div>
+                    <button class="btn btn-ghost" type="button" id="career-back-menu">Voltar</button>
+                </section>
+            `;
+            document.querySelectorAll("[data-career-league]").forEach((card) => card.addEventListener("click", () => {
+                UIState.careerLeagueId = card.dataset.careerLeague;
+                renderClubSelect();
+            }));
+            document.getElementById("career-back-menu")?.addEventListener("click", renderMenu);
+            return;
+        }
+
+        const story = eg6LeagueStory(selectedLeague.id);
+        const clubs = eg6GetLeagueClubs(selectedLeague.id);
+        const clubCards = clubs.map((club) => {
+            const copy = eg6ClubCopy(club);
+            return `
+                <article class="eg6-club-card" style="--club-a:${club.colors?.[0] || club.color};--club-b:${club.colors?.[1] || "#f7f8f4"}" data-preview-club="${club.id}">
+                    <div class="eg6-club-card-top">
+                        ${renderClubCrest(club, "offer")}
+                        <div>
+                            <span class="eg5-eyebrow">${escapeHtml(club.city)} · ${escapeHtml(eg6FormatClubPressure(club))}</span>
+                            <h2>${escapeHtml(club.name)}</h2>
+                        </div>
+                    </div>
+                    <p>${escapeHtml(copy.essence)}</p>
+                    <div class="eg6-club-mini-meta">
+                        <span>${escapeHtml(club.stadium?.name || club.name)}</span>
+                        <span>${money(club.budget)}</span>
+                        <span>${escapeHtml(club.objectives[0])}</span>
+                    </div>
+                    <button class="btn" type="button">Conhecer o clube</button>
+                </article>
+            `;
+        }).join("");
+        root.innerHTML = `
+            <section class="screen eg6-career-setup" aria-label="Escolha do clube">
+                <header class="eg6-contract-hero compact">
+                    <button class="btn btn-ghost" type="button" id="career-league-back">← Ligas</button>
+                    <span class="eg5-eyebrow">${escapeHtml(story.newspaper)}</span>
+                    <h1>${escapeHtml(selectedLeague.name)}</h1>
+                    <p>${escapeHtml(story.description)}</p>
+                </header>
+                <div class="eg6-club-grid">${clubCards}</div>
             </section>
         `;
-
-        document.querySelectorAll("[data-start-club]").forEach((button) => {
-            button.addEventListener("click", () => startNewCareer(button.dataset.startClub));
+        document.getElementById("career-league-back")?.addEventListener("click", () => {
+            UIState.careerLeagueId = null;
+            renderClubSelect();
         });
+        document.querySelectorAll("[data-preview-club]").forEach((card) => card.addEventListener("click", () => renderCareerClubPreview(card.dataset.previewClub)));
+    }
+
+    function renderCareerClubPreview(clubId) {
+        const club = clubCatalog.find((item) => item.id === clubId);
+        if (!club) return;
+        const copy = eg6ClubCopy(club);
+        const league = getLeagueById(club.leagueId);
+        const squadPreview = eg6RenderMiniSquadPreview(club, 7);
+        const content = `
+            <section class="eg6-contract-panel" style="--club-a:${club.colors?.[0] || club.color};--club-b:${club.colors?.[1] || "#f7f8f4"}">
+                <header class="eg6-contract-head">
+                    ${renderClubCrest(club, "offer")}
+                    <div>
+                        <span class="eg5-eyebrow">${escapeHtml(league?.name || "Liga")} · ${escapeHtml(club.city)}</span>
+                        <h2>${escapeHtml(club.name)}</h2>
+                        <p>${escapeHtml(copy.essence)}</p>
+                    </div>
+                </header>
+                <div class="eg6-contract-scene">
+                    <div>
+                        <span>Estádio</span>
+                        <strong>${escapeHtml(club.stadium?.name || club.name)}</strong>
+                        <p>${escapeHtml(club.stadium?.capacity ? `${club.stadium.capacity.toLocaleString("pt-BR")} lugares. Em dias grandes, o bairro para antes do apito inicial.` : "A casa ainda precisa escrever sua próxima noite grande.")}</p>
+                    </div>
+                    <div>
+                        <span>Torcida</span>
+                        <strong>${escapeHtml(copy.fanVoice)}</strong>
+                        <p>Paciência: ${club.boardConfidence >= 75 ? "média" : "curta"}. Cobrança: ${eg6FormatClubPressure(club).toLowerCase()}.</p>
+                    </div>
+                    <div>
+                        <span>Diretoria</span>
+                        <strong>${escapeHtml(club.objectives[0])}</strong>
+                        <p>${escapeHtml(copy.challenge)}</p>
+                    </div>
+                </div>
+                <div class="eg6-idols"><span>Ídolos e memória</span><strong>${copy.idols.map(escapeHtml).join(" · ")}</strong></div>
+                <div class="eg6-roster-preview">
+                    <h3>Vestiário de 1970</h3>
+                    ${squadPreview}
+                </div>
+                <blockquote>${escapeHtml(copy.contractLine)}</blockquote>
+                <div class="button-row">
+                    <button class="btn btn-primary" type="button" data-start-club="${club.id}">Assinar contrato</button>
+                    <button class="btn btn-ghost" type="button" data-close-contract>Escolher outro clube</button>
+                </div>
+            </section>
+        `;
+        openUIDrawer(content, `Contrato: ${club.name}`);
+        document.querySelector("[data-start-club]")?.addEventListener("click", () => startNewCareer(club.id));
+        document.querySelector("[data-close-contract]")?.addEventListener("click", closeUIDrawer);
+    }
+
+
+    function renderContractSignedMoment(club) {
+        GameState.currentScreen = "contractSigned";
+        updateChrome();
+        const copy = eg6ClubCopy(club);
+        const league = getLeagueById(club.leagueId);
+        document.getElementById("screen-root").innerHTML = `
+            <section class="screen eg6-contract-signed" aria-label="Contrato assinado">
+                <article class="eg6-newspaper-front contract">
+                    <span class="eg6-paper-name">${escapeHtml(eg6LeagueStory(club.leagueId).newspaper)}</span>
+                    <span class="eg6-paper-date">Janeiro de ${START_YEAR} · Edição especial</span>
+                    <h1>NOVO TREINADOR CONFIRMADO.</h1>
+                    <h2>${escapeHtml(club.name)} entrega o vestiário a você.</h2>
+                    <p>${escapeHtml(copy.contractLine)} A primeira cobrança já existe: ${escapeHtml(club.objectives[0])}.</p>
+                    <div class="eg6-paper-briefs">
+                        <span>${escapeHtml(league?.name || "Liga")} começa com expectativa alta.</span>
+                        <span>${escapeHtml(club.stadium?.name || "O estádio")} espera a primeira resposta.</span>
+                        <span>${escapeHtml(copy.fanVoice)}</span>
+                    </div>
+                    <button class="btn btn-primary" id="enter-club-after-contract" type="button">Entrar no clube</button>
+                </article>
+            </section>
+        `;
+        document.getElementById("enter-club-after-contract")?.addEventListener("click", () => switchScreen("home", { silent: true }));
     }
 
     function renderInternalHero(title, subtitle, icon = "EG") {
