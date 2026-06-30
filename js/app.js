@@ -2281,6 +2281,7 @@
     let toastTimer = null;
     const UIState = {
         currentDrawer: null,
+        careerCountry: null,
         careerLeagueId: null,
         careerPreviewClubId: null
     };
@@ -4711,6 +4712,9 @@
     function startNewCareer(clubId) {
         if (!clubId) {
             GameState = createBaseState();
+            UIState.careerCountry = null;
+            UIState.careerLeagueId = null;
+            UIState.careerPreviewClubId = null;
             renderClubSelect();
             return;
         }
@@ -5527,139 +5531,294 @@
         showToast("Jogo resetado.");
     }
 
+
+    function eg7CountryMeta(country) {
+        const map = {
+            Brasil: { code: "br", flag: "🇧🇷", region: "Américas", line: "O futebol é expressão antes de resultado. A base revela talentos que o mundo inteiro vai querer." },
+            Argentina: { code: "ar", flag: "🇦🇷", region: "Américas", line: "Perder um clássico dói por um ano inteiro. Ganhar justifica quase qualquer coisa." },
+            Uruguai: { code: "uy", flag: "🇺🇾", region: "Américas", line: "Pequeno no mapa, gigante na memória. Aqui cada camisa pesa como história." },
+            Chile: { code: "cl", flag: "🇨🇱", region: "Américas", line: "Um futebol de resistência, altitude, viagem longa e orgulho nacional." },
+            Inglaterra: { code: "en", flag: "🏴", region: "Europa", line: "Físico, apaixonado, implacável. A torcida não perdoa meio-termo." },
+            Espanha: { code: "es", flag: "🇪🇸", region: "Europa", line: "Técnica, controle e cobrança de grandeza. A bola precisa ter sentido." },
+            Italia: { code: "it", flag: "🇮🇹", region: "Europa", line: "Onde a tática é religião e cada derrota vira julgamento de filosofia." },
+            Alemanha: { code: "de", flag: "🇩🇪", region: "Europa", line: "Método, intensidade e processo. O resultado precisa parecer inevitável." },
+            Franca: { code: "fr", flag: "🇫🇷", region: "Europa", line: "Talento em formação, cidades diferentes e uma liga procurando sua identidade." },
+            Portugal: { code: "pt", flag: "🇵🇹", region: "Europa", line: "Clubes históricos, olheiros atentos e talento que atravessa o Atlântico." },
+            Holanda: { code: "nl", flag: "🇳🇱", region: "Europa", line: "Futebol como sistema. O espaço é pensado antes da bola chegar." },
+            "Uniao Sovietica": { code: "su", flag: "☭", region: "Europa", line: "Disciplina, Estado e método. O futebol também é projeto político." },
+            Croacia: { code: "hr", flag: "🇭🇷", region: "Europa", line: "Técnica de rua, orgulho regional e jogadores que crescem em silêncio." },
+            Iugoslavia: { code: "yu", flag: "★", region: "Europa", line: "Um mosaico de escolas, temperamentos e talentos difíceis de controlar." },
+            Angola: { code: "ao", flag: "🇦🇴", region: "África", line: "Talento bruto, pouco visto pelo mundo e com muito a provar." }
+        };
+        return map[country] || { code: "world", flag: "⚑", region: "Mundo", line: "Uma cultura de futebol ainda esperando para ser descoberta." };
+    }
+
+    function eg7GetCareerCountries() {
+        const seen = new Map();
+        leagueCatalog.forEach((league) => {
+            const clubs = eg6GetLeagueClubs(league.id);
+            if (!seen.has(league.country)) seen.set(league.country, { country: league.country, leagues: 0, clubs: 0, divisions: [] });
+            const entry = seen.get(league.country);
+            entry.leagues += 1;
+            entry.clubs += clubs.length;
+            if (!entry.divisions.includes(league.division)) entry.divisions.push(league.division);
+        });
+        return Array.from(seen.values()).sort((a, b) => {
+            const ra = eg7CountryMeta(a.country).region;
+            const rb = eg7CountryMeta(b.country).region;
+            return ra.localeCompare(rb) || a.country.localeCompare(b.country);
+        });
+    }
+
+    function eg7GetCountryLeagues(country) {
+        return leagueCatalog
+            .filter((league) => league.country === country)
+            .sort((a, b) => (a.division || 9) - (b.division || 9) || a.name.localeCompare(b.name));
+    }
+
+    function eg7DivisionName(division) {
+        if (division === 1) return "Primeira divisão";
+        if (division === 2) return "Segunda divisão";
+        if (division === 3) return "Terceira divisão";
+        if (division === 4) return "Quarta divisão";
+        return `${division || "?"}ª divisão`;
+    }
+
+    function eg7LeagueLine(league) {
+        if ((league.division || 1) === 1) return "Os maiores clubes, a imprensa mais presente e a cobrança desde o primeiro treino.";
+        if (league.division === 2) return "Acesso, reconstrução e futebol de sobrevivência. Aqui a temporada cobra caráter.";
+        if (league.division === 3) return "Menos holofote, mais projeto. O treinador precisa construir antes de vencer.";
+        return "Estrada longa, pouco dinheiro e jogadores que ainda sonham ser vistos.";
+    }
+
+    function eg7CareerSteps(active) {
+        const steps = ["País", "Liga", "Clube", "Contrato"];
+        return `<ol class="eg7-career-steps">${steps.map((step, index) => `<li class="${index <= active ? "is-active" : ""}">${escapeHtml(step)}</li>`).join("")}</ol>`;
+    }
+
+    function eg7RenderBackButton(label, action) {
+        return `<button class="eg7-back-link" type="button" data-career-back="${escapeHtml(action)}">← ${escapeHtml(label)}</button>`;
+    }
+
+    function eg7BindBackButtons() {
+        document.querySelectorAll("[data-career-back]").forEach((button) => button.addEventListener("click", () => {
+            const action = button.dataset.careerBack;
+            if (action === "menu") { UIState.careerCountry = null; UIState.careerLeagueId = null; renderMenu(); return; }
+            if (action === "countries") { UIState.careerCountry = null; UIState.careerLeagueId = null; renderClubSelect(); return; }
+            if (action === "leagues") { UIState.careerLeagueId = null; renderClubSelect(); return; }
+        }));
+    }
+
     function renderClubSelect() {
         GameState.currentScreen = "clubSelect";
         updateChrome();
+        const root = document.getElementById("screen-root");
+        const selectedCountry = UIState.careerCountry;
         const selectedLeagueId = UIState.careerLeagueId;
         const selectedLeague = selectedLeagueId ? getLeagueById(selectedLeagueId) : null;
-        const root = document.getElementById("screen-root");
 
-        if (!selectedLeague) {
-            const leagueCards = leagueCatalog.map((league) => {
-                const story = eg6LeagueStory(league.id);
-                const clubs = eg6GetLeagueClubs(league.id);
+        if (!selectedCountry) {
+            const countries = eg7GetCareerCountries();
+            const countryRows = countries.map((entry) => {
+                const meta = eg7CountryMeta(entry.country);
                 return `
-                    <article class="eg6-league-card" data-career-league="${league.id}">
-                        <div>
-                            <span class="eg5-eyebrow">${escapeHtml(league.country)} · ${clubs.length} clubes</span>
-                            <h2>${escapeHtml(league.name)}</h2>
-                            <p>${escapeHtml(story.headline)}</p>
-                            <small>${escapeHtml(story.description)}</small>
-                        </div>
-                        <button class="btn btn-primary" type="button">Entrar nesta liga</button>
-                    </article>
+                    <button class="eg7-country-row" type="button" data-career-country="${escapeHtml(entry.country)}">
+                        <span class="eg7-flag eg7-flag-${escapeHtml(meta.code || "world")}" aria-label="${escapeHtml(translateCountry(entry.country))}"></span>
+                        <span class="eg7-row-main">
+                            <strong>${escapeHtml(translateCountry(entry.country))}</strong>
+                            <small>${escapeHtml(meta.line)}</small>
+                        </span>
+                        <span class="eg7-row-meta">${entry.leagues} ligas · ${entry.clubs} clubes</span>
+                        <span class="eg7-row-arrow" aria-hidden="true">›</span>
+                    </button>
                 `;
             }).join("");
             root.innerHTML = `
-                <section class="screen eg6-career-setup" aria-label="Escolha da carreira">
-                    <header class="eg6-contract-hero">
-                        <span class="eg5-eyebrow">Contrato de 1970</span>
-                        <h1>Onde você quer construir sua história?</h1>
-                        <p>Escolha primeiro o país. Cada liga tem uma cultura, uma pressão e uma forma diferente de tratar treinadores.</p>
+                <section class="screen eg7-career-flow" aria-label="Nova carreira: escolha do país">
+                    <header class="eg7-career-hero">
+                        ${eg7CareerSteps(0)}
+                        <span class="eg5-eyebrow">Contrato de ${START_YEAR}</span>
+                        <h1>Onde você quer escrever sua história?</h1>
+                        <p>Escolha primeiro uma cultura de futebol. Ligas e clubes aparecem depois, no momento certo.</p>
                     </header>
-                    <div class="eg6-league-grid">${leagueCards}</div>
-                    <button class="btn btn-ghost" type="button" id="career-back-menu">Voltar</button>
+                    <div class="eg7-list-panel">
+                        <div class="eg7-list-head">
+                            <h2>Países disponíveis</h2>
+                            <p>Uma decisão de carreira começa pelo mundo em que você quer viver.</p>
+                        </div>
+                        <div class="eg7-list">${countryRows}</div>
+                    </div>
+                    ${eg7RenderBackButton("Voltar ao menu", "menu")}
                 </section>
             `;
-            document.querySelectorAll("[data-career-league]").forEach((card) => card.addEventListener("click", () => {
-                UIState.careerLeagueId = card.dataset.careerLeague;
+            document.querySelectorAll("[data-career-country]").forEach((button) => button.addEventListener("click", () => {
+                UIState.careerCountry = button.dataset.careerCountry;
+                UIState.careerLeagueId = null;
                 renderClubSelect();
             }));
-            document.getElementById("career-back-menu")?.addEventListener("click", renderMenu);
+            eg7BindBackButtons();
+            return;
+        }
+
+        if (!selectedLeague) {
+            const meta = eg7CountryMeta(selectedCountry);
+            const leagues = eg7GetCountryLeagues(selectedCountry);
+            const leagueRows = leagues.map((league) => {
+                const clubs = eg6GetLeagueClubs(league.id);
+                return `
+                    <button class="eg7-league-row" type="button" data-career-league="${escapeHtml(league.id)}">
+                        <span class="eg7-division-badge">${escapeHtml(String(league.division || "?"))}</span>
+                        <span class="eg7-row-main">
+                            <strong>${escapeHtml(league.name)}</strong>
+                            <small>${escapeHtml(eg7LeagueLine(league))}</small>
+                        </span>
+                        <span class="eg7-row-meta">${clubs.length} clubes · ${escapeHtml(eg7DivisionName(league.division))}</span>
+                        <span class="eg7-row-arrow" aria-hidden="true">›</span>
+                    </button>
+                `;
+            }).join("");
+            root.innerHTML = `
+                <section class="screen eg7-career-flow" aria-label="Nova carreira: escolha da liga">
+                    <header class="eg7-career-hero compact">
+                        ${eg7CareerSteps(1)}
+                        ${eg7RenderBackButton("Países", "countries")}
+                        <span class="eg7-hero-flag" aria-hidden="true">${escapeHtml(meta.flag)}</span>
+                        <span class="eg5-eyebrow">${escapeHtml(meta.region)}</span>
+                        <h1>${escapeHtml(translateCountry(selectedCountry))}</h1>
+                        <p>${escapeHtml(meta.line)}</p>
+                    </header>
+                    <div class="eg7-list-panel">
+                        <div class="eg7-list-head">
+                            <h2>Ligas do país</h2>
+                            <p>Escolha o nível onde a carreira começa. O clube vem depois.</p>
+                        </div>
+                        <div class="eg7-list">${leagueRows}</div>
+                    </div>
+                </section>
+            `;
+            document.querySelectorAll("[data-career-league]").forEach((button) => button.addEventListener("click", () => {
+                UIState.careerLeagueId = button.dataset.careerLeague;
+                renderClubSelect();
+            }));
+            eg7BindBackButtons();
             return;
         }
 
         const story = eg6LeagueStory(selectedLeague.id);
         const clubs = eg6GetLeagueClubs(selectedLeague.id);
-        const clubCards = clubs.map((club) => {
-            const copy = eg6ClubCopy(club);
+        const clubRows = clubs.map((club) => {
+            const pressure = eg6FormatClubPressure(club);
+            const objective = club.objectives?.[0] || "Construir identidade";
+            const repLabel = club.reputation >= 86 ? "Gigante" : club.reputation >= 75 ? "Grande" : club.reputation >= 62 ? "Médio" : "Pequeno";
             return `
-                <article class="eg6-club-card" style="--club-a:${club.colors?.[0] || club.color};--club-b:${club.colors?.[1] || "#f7f8f4"}" data-preview-club="${club.id}">
-                    <div class="eg6-club-card-top">
-                        ${renderClubCrest(club, "offer")}
-                        <div>
-                            <span class="eg5-eyebrow">${escapeHtml(club.city)} · ${escapeHtml(eg6FormatClubPressure(club))}</span>
-                            <h2>${escapeHtml(club.name)}</h2>
-                        </div>
-                    </div>
-                    <p>${escapeHtml(copy.essence)}</p>
-                    <div class="eg6-club-mini-meta">
-                        <span>${escapeHtml(club.stadium?.name || club.name)}</span>
-                        <span>${money(club.budget)}</span>
-                        <span>${escapeHtml(club.objectives[0])}</span>
-                    </div>
-                    <button class="btn" type="button">Conhecer o clube</button>
-                </article>
+                <button class="eg7-club-row" type="button" data-preview-club="${escapeHtml(club.id)}" style="--club-a:${club.colors?.[0] || club.color};--club-b:${club.colors?.[1] || "#f7f8f4"}">
+                    ${renderClubCrest(club, "offer")}
+                    <span class="eg7-row-main">
+                        <strong>${escapeHtml(club.name)}</strong>
+                        <small>${escapeHtml(club.city)} · ${escapeHtml(repLabel)}</small>
+                    </span>
+                    <span class="eg7-club-pill">${escapeHtml(pressure)}</span>
+                    <span class="eg7-row-meta">${escapeHtml(objective)}</span>
+                    <span class="eg7-row-arrow" aria-hidden="true">›</span>
+                </button>
             `;
         }).join("");
         root.innerHTML = `
-            <section class="screen eg6-career-setup" aria-label="Escolha do clube">
-                <header class="eg6-contract-hero compact">
-                    <button class="btn btn-ghost" type="button" id="career-league-back">← Ligas</button>
-                    <span class="eg5-eyebrow">${escapeHtml(story.newspaper)}</span>
+            <section class="screen eg7-career-flow" aria-label="Nova carreira: escolha do clube">
+                <header class="eg7-career-hero compact">
+                    ${eg7CareerSteps(2)}
+                    ${eg7RenderBackButton("Ligas", "leagues")}
+                    <span class="eg5-eyebrow">${escapeHtml(selectedLeague.country)} · ${escapeHtml(story.newspaper)}</span>
                     <h1>${escapeHtml(selectedLeague.name)}</h1>
                     <p>${escapeHtml(story.description)}</p>
                 </header>
-                <div class="eg6-club-grid">${clubCards}</div>
+                <div class="eg7-list-panel">
+                    <div class="eg7-list-head">
+                        <h2>Clubes da liga</h2>
+                        <p>Lista compacta. Clique para conhecer o clube antes de assinar.</p>
+                    </div>
+                    <div class="eg7-list club-list">${clubRows}</div>
+                </div>
             </section>
         `;
-        document.getElementById("career-league-back")?.addEventListener("click", () => {
-            UIState.careerLeagueId = null;
-            renderClubSelect();
-        });
         document.querySelectorAll("[data-preview-club]").forEach((card) => card.addEventListener("click", () => renderCareerClubPreview(card.dataset.previewClub)));
+        eg7BindBackButtons();
     }
 
     function renderCareerClubPreview(clubId) {
         const club = clubCatalog.find((item) => item.id === clubId);
         if (!club) return;
+        UIState.careerPreviewClubId = clubId;
+        GameState.currentScreen = "clubSelect";
+        updateChrome();
         const copy = eg6ClubCopy(club);
         const league = getLeagueById(club.leagueId);
-        const squadPreview = eg6RenderMiniSquadPreview(club, 7);
-        const content = `
-            <section class="eg6-contract-panel" style="--club-a:${club.colors?.[0] || club.color};--club-b:${club.colors?.[1] || "#f7f8f4"}">
-                <header class="eg6-contract-head">
-                    ${renderClubCrest(club, "offer")}
-                    <div>
-                        <span class="eg5-eyebrow">${escapeHtml(league?.name || "Liga")} · ${escapeHtml(club.city)}</span>
-                        <h2>${escapeHtml(club.name)}</h2>
-                        <p>${escapeHtml(copy.essence)}</p>
+        const squadPreview = eg6RenderMiniSquadPreview(club, 9);
+        const root = document.getElementById("screen-root");
+        root.innerHTML = `
+            <section class="screen eg7-club-profile" aria-label="Conhecer clube" style="--club-a:${club.colors?.[0] || club.color};--club-b:${club.colors?.[1] || "#f7f8f4"}">
+                <header class="eg7-club-hero">
+                    ${eg7CareerSteps(3)}
+                    <button class="eg7-back-link" type="button" data-back-to-clubs>← Clubes</button>
+                    <div class="eg7-club-identity">
+                        ${renderClubCrest(club, "large")}
+                        <div>
+                            <span class="eg5-eyebrow">${escapeHtml(league?.name || "Liga")} · ${escapeHtml(club.city)}</span>
+                            <h1>${escapeHtml(club.name)}</h1>
+                            <p>${escapeHtml(copy.essence)}</p>
+                        </div>
                     </div>
                 </header>
-                <div class="eg6-contract-scene">
-                    <div>
+
+                <div class="eg7-club-profile-grid">
+                    <article class="eg7-story-card primary">
+                        <span>Identidade</span>
+                        <h2>${escapeHtml(club.name)} não é apenas um cargo.</h2>
+                        <p>${escapeHtml(copy.contractLine)}</p>
+                    </article>
+                    <article class="eg7-story-card">
                         <span>Estádio</span>
-                        <strong>${escapeHtml(club.stadium?.name || club.name)}</strong>
+                        <h3>${escapeHtml(club.stadium?.name || club.name)}</h3>
                         <p>${escapeHtml(club.stadium?.capacity ? `${club.stadium.capacity.toLocaleString("pt-BR")} lugares. Em dias grandes, o bairro para antes do apito inicial.` : "A casa ainda precisa escrever sua próxima noite grande.")}</p>
-                    </div>
-                    <div>
+                    </article>
+                    <article class="eg7-story-card">
                         <span>Torcida</span>
-                        <strong>${escapeHtml(copy.fanVoice)}</strong>
+                        <h3>${escapeHtml(copy.fanVoice)}</h3>
                         <p>Paciência: ${club.boardConfidence >= 75 ? "média" : "curta"}. Cobrança: ${eg6FormatClubPressure(club).toLowerCase()}.</p>
-                    </div>
-                    <div>
+                    </article>
+                    <article class="eg7-story-card">
                         <span>Diretoria</span>
-                        <strong>${escapeHtml(club.objectives[0])}</strong>
+                        <h3>${escapeHtml(club.objectives[0])}</h3>
                         <p>${escapeHtml(copy.challenge)}</p>
+                    </article>
+                    <article class="eg7-story-card wide">
+                        <span>Pessoas e memória</span>
+                        <h3>${copy.idols.map(escapeHtml).join(" · ")}</h3>
+                        <p>O clube já tinha história antes de você. A pergunta é se a sua passagem vai virar parte dela.</p>
+                    </article>
+                    <article class="eg7-story-card wide">
+                        <span>Vestiário de 1970</span>
+                        <h3>Primeiros nomes que você vai encontrar</h3>
+                        ${squadPreview}
+                    </article>
+                </div>
+
+                <footer class="eg7-contract-choice">
+                    <div>
+                        <span class="eg5-eyebrow">Contrato de ${START_YEAR}</span>
+                        <strong>Você aceita este desafio?</strong>
+                        <p>Assinar muda o mundo do jogo. A primeira manchete virá depois disso.</p>
                     </div>
-                </div>
-                <div class="eg6-idols"><span>Ídolos e memória</span><strong>${copy.idols.map(escapeHtml).join(" · ")}</strong></div>
-                <div class="eg6-roster-preview">
-                    <h3>Vestiário de 1970</h3>
-                    ${squadPreview}
-                </div>
-                <blockquote>${escapeHtml(copy.contractLine)}</blockquote>
-                <div class="button-row">
-                    <button class="btn btn-primary" type="button" data-start-club="${club.id}">Assinar contrato</button>
-                    <button class="btn btn-ghost" type="button" data-close-contract>Escolher outro clube</button>
-                </div>
+                    <div class="button-row">
+                        <button class="btn btn-primary" type="button" data-start-club="${club.id}">Assinar contrato</button>
+                        <button class="btn btn-ghost" type="button" data-back-to-clubs>Escolher outro clube</button>
+                    </div>
+                </footer>
             </section>
         `;
-        openUIDrawer(content, `Contrato: ${club.name}`);
+        document.querySelectorAll("[data-back-to-clubs]").forEach((button) => button.addEventListener("click", () => renderClubSelect()));
         document.querySelector("[data-start-club]")?.addEventListener("click", () => startNewCareer(club.id));
-        document.querySelector("[data-close-contract]")?.addEventListener("click", closeUIDrawer);
     }
-
 
     function renderContractSignedMoment(club) {
         GameState.currentScreen = "contractSigned";
