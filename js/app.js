@@ -5591,6 +5591,92 @@
         return "Estrada longa, pouco dinheiro e jogadores que ainda sonham ser vistos.";
     }
 
+
+
+    function eg8CountryFlag(country) {
+        return eg7CountryMeta(country).code || "world";
+    }
+
+    function eg8CountryLine(country) {
+        const lines = {
+            Brasil: "Onde o futebol é expressão antes de resultado. A base revela talentos que o mundo inteiro vai querer.",
+            Portugal: "Tradição, técnica e clubes acostumados a sobreviver entre gigantes.",
+            Inglaterra: "Físico, apaixonado, sem espaço para desculpas. O estádio cobra antes da imprensa.",
+            Espanha: "Ritmo, posse e identidade. Ganhar importa, mas a forma como o time joga também pesa.",
+            Italia: "Onde a tática é religião e cada derrota é analisada como um julgamento.",
+            Alemanha: "O método acima de tudo. Os resultados são consequência do processo.",
+            Argentina: "Onde perder um clássico dói por um ano inteiro. Ganhar justifica qualquer coisa.",
+            Holanda: "O jogo como sistema. O jogador aprende a ocupar o campo antes de ocupar manchetes.",
+            Franca: "Talento espalhado pelo país e clubes tentando transformar promessa em estrutura.",
+            Uruguai: "Poucos recursos, muita alma. Cada duelo parece carregar uma história antiga."
+        };
+        return lines[country] || "Uma cultura de futebol própria, com seus vícios, suas glórias e sua forma de cobrar.";
+    }
+
+    function eg8LeagueLine(league) {
+        const d = league.division || 1;
+        if (d === 1) return "Os maiores clubes. A maior pressão. Uma derrota aqui vira manchete nacional.";
+        if (d === 2) return "O futebol do esforço e da ambição. Ganhar aqui significa subir.";
+        if (d === 3) return "Onde projetos nascem com pouco dinheiro e muita sobrevivência.";
+        return "Território duro. Menos brilho, mais estrada. Quem sobe daqui vira história.";
+    }
+
+    function eg8ClubMemoryList(club) {
+        const known = {
+            "Santos FC": ["Pelé", "Pepe", "Coutinho", "Carlos Alberto"],
+            "Botafogo": ["Garrincha", "Nilton Santos", "Didi", "Jairzinho"],
+            "Flamengo": ["Zico", "Júnior", "Leandro", "Adílio"],
+            "Palmeiras": ["Ademir da Guia", "Dudu", "Leivinha"],
+            "São Paulo FC": ["Pedro Rocha", "Gérson", "Toninho Guerreiro"],
+            "Corinthians": ["Rivelino", "Sócrates", "Wladimir"],
+            "Bayern Munich": ["Franz Beckenbauer", "Gerd Müller", "Sepp Maier"],
+            "Ajax": ["Johan Cruyff", "Johan Neeskens", "Ruud Krol"],
+            "Manchester United": ["Bobby Charlton", "George Best", "Denis Law"],
+            "Liverpool": ["Emlyn Hughes", "Kevin Keegan", "Ian Callaghan"],
+            "Benfica": ["Eusébio", "José Águas", "Coluna"],
+            "Real Madrid": ["Amancio", "Pirri", "Gento"],
+            "Barcelona": ["Carles Rexach", "Johan Cruyff", "Migueli"],
+            "Milan": ["Gianni Rivera", "Cesare Maldini", "Nereo Rocco"],
+            "Inter": ["Sandro Mazzola", "Giacinto Facchetti", "Luis Suárez"],
+            "Napoli": ["Dino Zoff", "José Altafini", "Antonio Juliano"]
+        };
+        return known[club.name] || (club.legends && club.legends.length ? club.legends.slice(0, 4) : ["O capitão que segura o vestiário", "O garoto que a torcida ainda espera ver crescer", "O veterano que sabe o peso da camisa"]);
+    }
+
+    function eg8ClubColorOverride(name) {
+        const map = {
+            "Flamengo": ["#c1121f", "#050505"], "Santos FC": ["#f6f1e6", "#111111"], "Palmeiras": ["#0b6b3a", "#f6f1e6"], "São Paulo FC": ["#c1121f", "#111111"], "Corinthians": ["#f6f1e6", "#111111"], "Botafogo": ["#111111", "#f6f1e6"],
+            "Manchester United": ["#da291c", "#f7c600"], "Manchester City": ["#6cabdd", "#ffffff"], "Liverpool": ["#c8102e", "#f6f1e6"], "Everton": ["#003399", "#ffffff"], "Arsenal": ["#db0007", "#ffffff"], "Chelsea": ["#034694", "#ffffff"],
+            "Real Madrid": ["#f6f1e6", "#c9a227"], "Barcelona": ["#a50044", "#004d98"], "Atletico Madrid": ["#c1121f", "#ffffff"], "Milan": ["#fb090b", "#000000"], "Inter": ["#0057b8", "#000000"], "Juventus": ["#ffffff", "#000000"], "Bayern Munich": ["#dc052d", "#0066b2"], "Ajax": ["#d2122e", "#ffffff"], "Benfica": ["#e30613", "#ffffff"], "Porto": ["#00428c", "#ffffff"]
+        };
+        return map[name] || null;
+    }
+
+    function eg8ClubColors(club) {
+        return eg8ClubColorOverride(club.name) || club.colors || [club.color || "#214d35", "#f7f8f4"];
+    }
+
+    function eg8HumanizePlayerLine(player) {
+        const age = calculateAge(player, GameState.currentYear || START_YEAR);
+        const pos = translatePosition(player.primaryPosition);
+        const ovr = calculateCurrentOverall(player);
+        const phrase = eg5PlayerHumanDescription(player).split(".")[0] + ".";
+        return `${phrase} ${pos}, ${age} anos, OVR ${ovr}.`;
+    }
+
+    function eg8RenderMicroWeekEvents(context = {}) {
+        const club = GameState.club || { name: "o clube" };
+        const opponent = getClubById(GameState.nextOpponentId) || pickNextOpponent();
+        const morale = getSquadMoraleSummary ? getSquadMoraleSummary() : { average: 70 };
+        const events = [
+            { day: "Segunda", title: "O peso do último jogo", text: morale.average < 55 ? "O vestiário chegou quieto. Esse tipo de silêncio não pede discurso. Pede leitura." : "O grupo chegou leve. Até quem não jogou parecia carregar menos peso nas costas." },
+            { day: "Terça", title: "Trabalho silencioso", text: "O assistente trouxe duas observações do treino. Uma sobre o campo. Outra sobre pessoas." },
+            { day: "Quarta", title: "O próximo adversário aparece", text: `${opponent.name} começa a ocupar a semana. O jogo ainda está longe, mas já entrou na cabeça do clube.` },
+            { day: "Sexta", title: "A decisão pequena", text: "Um jogador pediu conversa antes do treino leve. Você percebe que a semana nunca é apenas sobre futebol." }
+        ];
+        return events;
+    }
+
     function eg7CareerSteps(active) {
         const steps = ["País", "Liga", "Clube", "Contrato"];
         return `<ol class="eg7-career-steps">${steps.map((step, index) => `<li class="${index <= active ? "is-active" : ""}">${escapeHtml(step)}</li>`).join("")}</ol>`;
@@ -5620,35 +5706,29 @@
         if (!selectedCountry) {
             const countries = eg7GetCareerCountries();
             const countryRows = countries.map((entry) => {
-                const meta = eg7CountryMeta(entry.country);
+                const count = Array.isArray(entry.leagues) ? entry.leagues.length : entry.leagues;
                 return `
-                    <button class="eg7-country-row" type="button" data-career-country="${escapeHtml(entry.country)}">
-                        <span class="eg7-flag eg7-flag-${escapeHtml(meta.code || "world")}" aria-label="${escapeHtml(translateCountry(entry.country))}"></span>
-                        <span class="eg7-row-main">
+                    <button class="eg8-choice-row country" type="button" data-career-country="${escapeHtml(entry.country)}">
+                        <span class="eg8-flag eg8-flag-${escapeHtml(eg8CountryFlag(entry.country))}" aria-label="${escapeHtml(translateCountry(entry.country))}"></span>
+                        <span class="eg8-row-main">
                             <strong>${escapeHtml(translateCountry(entry.country))}</strong>
-                            <small>${escapeHtml(meta.line)}</small>
+                            <small>${escapeHtml(eg8CountryLine(entry.country))}</small>
                         </span>
-                        <span class="eg7-row-meta">${entry.leagues} ligas · ${entry.clubs} clubes</span>
-                        <span class="eg7-row-arrow" aria-hidden="true">›</span>
+                        <span class="eg8-row-meta">${count} ligas</span>
+                        <span class="eg8-row-arrow" aria-hidden="true">›</span>
                     </button>
                 `;
             }).join("");
             root.innerHTML = `
-                <section class="screen eg7-career-flow" aria-label="Nova carreira: escolha do país">
-                    <header class="eg7-career-hero">
+                <section class="screen eg8-career-stage" aria-label="Nova carreira: país">
+                    <header class="eg8-stage-hero">
                         ${eg7CareerSteps(0)}
-                        <span class="eg5-eyebrow">Contrato de ${START_YEAR}</span>
+                        ${eg7RenderBackButton("Menu", "menu")}
+                        <span class="eg5-eyebrow">Nova carreira · ${START_YEAR}</span>
                         <h1>Onde você quer escrever sua história?</h1>
-                        <p>Escolha primeiro uma cultura de futebol. Ligas e clubes aparecem depois, no momento certo.</p>
+                        <p>Escolha uma cultura de futebol. As ligas e os clubes vêm depois. Uma decisão por vez.</p>
                     </header>
-                    <div class="eg7-list-panel">
-                        <div class="eg7-list-head">
-                            <h2>Países disponíveis</h2>
-                            <p>Uma decisão de carreira começa pelo mundo em que você quer viver.</p>
-                        </div>
-                        <div class="eg7-list">${countryRows}</div>
-                    </div>
-                    ${eg7RenderBackButton("Voltar ao menu", "menu")}
+                    <div class="eg8-stage-list">${countryRows}</div>
                 </section>
             `;
             document.querySelectorAll("[data-career-country]").forEach((button) => button.addEventListener("click", () => {
@@ -5661,39 +5741,28 @@
         }
 
         if (!selectedLeague) {
-            const meta = eg7CountryMeta(selectedCountry);
-            const leagues = eg7GetCountryLeagues(selectedCountry);
-            const leagueRows = leagues.map((league) => {
-                const clubs = eg6GetLeagueClubs(league.id);
-                return `
-                    <button class="eg7-league-row" type="button" data-career-league="${escapeHtml(league.id)}">
-                        <span class="eg7-division-badge">${escapeHtml(String(league.division || "?"))}</span>
-                        <span class="eg7-row-main">
-                            <strong>${escapeHtml(league.name)}</strong>
-                            <small>${escapeHtml(eg7LeagueLine(league))}</small>
-                        </span>
-                        <span class="eg7-row-meta">${clubs.length} clubes · ${escapeHtml(eg7DivisionName(league.division))}</span>
-                        <span class="eg7-row-arrow" aria-hidden="true">›</span>
-                    </button>
-                `;
-            }).join("");
+            const leagues = leagueCatalog.filter((league) => league.country === selectedCountry).sort((a, b) => (a.division || 1) - (b.division || 1));
+            const leagueRows = leagues.map((league) => `
+                <button class="eg8-choice-row league" type="button" data-career-league="${escapeHtml(league.id)}">
+                    <span class="eg8-league-mark">${escapeHtml(String(league.division || 1))}</span>
+                    <span class="eg8-row-main">
+                        <strong>${escapeHtml(league.name)}</strong>
+                        <small>${escapeHtml(eg8LeagueLine(league))}</small>
+                    </span>
+                    <span class="eg8-row-meta">${league.clubs.length} clubes</span>
+                    <span class="eg8-row-arrow" aria-hidden="true">›</span>
+                </button>
+            `).join("");
             root.innerHTML = `
-                <section class="screen eg7-career-flow" aria-label="Nova carreira: escolha da liga">
-                    <header class="eg7-career-hero compact">
+                <section class="screen eg8-career-stage" aria-label="Nova carreira: liga">
+                    <header class="eg8-stage-hero compact">
                         ${eg7CareerSteps(1)}
                         ${eg7RenderBackButton("Países", "countries")}
-                        <span class="eg7-hero-flag" aria-hidden="true">${escapeHtml(meta.flag)}</span>
-                        <span class="eg5-eyebrow">${escapeHtml(meta.region)}</span>
-                        <h1>${escapeHtml(translateCountry(selectedCountry))}</h1>
-                        <p>${escapeHtml(meta.line)}</p>
+                        <span class="eg5-eyebrow">${escapeHtml(translateCountry(selectedCountry))}</span>
+                        <h1>Em que nível você quer começar?</h1>
+                        <p>A liga define a pressão, os recursos e o tipo de história que o treinador vai viver.</p>
                     </header>
-                    <div class="eg7-list-panel">
-                        <div class="eg7-list-head">
-                            <h2>Ligas do país</h2>
-                            <p>Escolha o nível onde a carreira começa. O clube vem depois.</p>
-                        </div>
-                        <div class="eg7-list">${leagueRows}</div>
-                    </div>
+                    <div class="eg8-stage-list">${leagueRows}</div>
                 </section>
             `;
             document.querySelectorAll("[data-career-league]").forEach((button) => button.addEventListener("click", () => {
@@ -5704,41 +5773,35 @@
             return;
         }
 
-        const story = eg6LeagueStory(selectedLeague.id);
         const clubs = eg6GetLeagueClubs(selectedLeague.id);
         const clubRows = clubs.map((club) => {
-            const pressure = eg6FormatClubPressure(club);
+            const colors = eg8ClubColors(club);
+            const pressure = eg6FormatClubPressure(club).replace("Pressão ", "");
             const objective = club.objectives?.[0] || "Construir identidade";
             const repLabel = club.reputation >= 86 ? "Gigante" : club.reputation >= 75 ? "Grande" : club.reputation >= 62 ? "Médio" : "Pequeno";
             return `
-                <button class="eg7-club-row" type="button" data-preview-club="${escapeHtml(club.id)}" style="--club-a:${club.colors?.[0] || club.color};--club-b:${club.colors?.[1] || "#f7f8f4"}">
-                    ${renderClubCrest(club, "offer")}
-                    <span class="eg7-row-main">
+                <button class="eg8-club-line" type="button" data-preview-club="${escapeHtml(club.id)}" style="--club-a:${colors[0]};--club-b:${colors[1]}">
+                    ${renderClubCrest({ ...club, colors }, "offer")}
+                    <span class="eg8-row-main">
                         <strong>${escapeHtml(club.name)}</strong>
                         <small>${escapeHtml(club.city)} · ${escapeHtml(repLabel)}</small>
                     </span>
-                    <span class="eg7-club-pill">${escapeHtml(pressure)}</span>
-                    <span class="eg7-row-meta">${escapeHtml(objective)}</span>
-                    <span class="eg7-row-arrow" aria-hidden="true">›</span>
+                    <span class="eg8-club-tag">${escapeHtml(pressure)}</span>
+                    <span class="eg8-row-meta">${escapeHtml(objective)}</span>
+                    <span class="eg8-row-arrow" aria-hidden="true">›</span>
                 </button>
             `;
         }).join("");
         root.innerHTML = `
-            <section class="screen eg7-career-flow" aria-label="Nova carreira: escolha do clube">
-                <header class="eg7-career-hero compact">
+            <section class="screen eg8-career-stage" aria-label="Nova carreira: clube">
+                <header class="eg8-stage-hero compact">
                     ${eg7CareerSteps(2)}
                     ${eg7RenderBackButton("Ligas", "leagues")}
-                    <span class="eg5-eyebrow">${escapeHtml(selectedLeague.country)} · ${escapeHtml(story.newspaper)}</span>
-                    <h1>${escapeHtml(selectedLeague.name)}</h1>
-                    <p>${escapeHtml(story.description)}</p>
+                    <span class="eg5-eyebrow">${escapeHtml(translateCountry(selectedCountry))} · ${escapeHtml(selectedLeague.name)}</span>
+                    <h1>Qual clube chama você?</h1>
+                    <p>Lista compacta: escolha um clube para conhecer. O contrato só vem depois.</p>
                 </header>
-                <div class="eg7-list-panel">
-                    <div class="eg7-list-head">
-                        <h2>Clubes da liga</h2>
-                        <p>Lista compacta. Clique para conhecer o clube antes de assinar.</p>
-                    </div>
-                    <div class="eg7-list club-list">${clubRows}</div>
-                </div>
+                <div class="eg8-club-directory">${clubRows}</div>
             </section>
         `;
         document.querySelectorAll("[data-preview-club]").forEach((card) => card.addEventListener("click", () => renderCareerClubPreview(card.dataset.previewClub)));
@@ -5753,61 +5816,68 @@
         updateChrome();
         const copy = eg6ClubCopy(club);
         const league = getLeagueById(club.leagueId);
-        const squadPreview = eg6RenderMiniSquadPreview(club, 9);
+        const colors = eg8ClubColors(club);
+        const squadPreview = eg6RenderMiniSquadPreview(club, 10);
+        const memories = eg8ClubMemoryList(club);
         const root = document.getElementById("screen-root");
         root.innerHTML = `
-            <section class="screen eg7-club-profile" aria-label="Conhecer clube" style="--club-a:${club.colors?.[0] || club.color};--club-b:${club.colors?.[1] || "#f7f8f4"}">
-                <header class="eg7-club-hero">
+            <section class="screen eg8-club-profile" aria-label="Conhecer clube" style="--club-a:${colors[0]};--club-b:${colors[1]}">
+                <header class="eg8-club-cover">
                     ${eg7CareerSteps(3)}
                     <button class="eg7-back-link" type="button" data-back-to-clubs>← Clubes</button>
-                    <div class="eg7-club-identity">
-                        ${renderClubCrest(club, "large")}
+                    <div class="eg8-club-title">
+                        ${renderClubCrest({ ...club, colors }, "large")}
                         <div>
-                            <span class="eg5-eyebrow">${escapeHtml(league?.name || "Liga")} · ${escapeHtml(club.city)}</span>
+                            <span class="eg5-eyebrow">${escapeHtml(league?.name || "Liga")} · ${escapeHtml(club.city)} · ${START_YEAR}</span>
                             <h1>${escapeHtml(club.name)}</h1>
-                            <p>${escapeHtml(copy.essence)}</p>
+                            <p>${escapeHtml(copy.essence || `${club.name} chega a ${START_YEAR} com uma história que começou antes de você e continuará depois.`)}</p>
                         </div>
                     </div>
                 </header>
 
-                <div class="eg7-club-profile-grid">
-                    <article class="eg7-story-card primary">
+                <main class="eg8-club-journey">
+                    <section class="eg8-journey-panel wide">
                         <span>Identidade</span>
-                        <h2>${escapeHtml(club.name)} não é apenas um cargo.</h2>
+                        <h2>Esse clube é para você?</h2>
                         <p>${escapeHtml(copy.contractLine)}</p>
-                    </article>
-                    <article class="eg7-story-card">
+                    </section>
+                    <section class="eg8-journey-panel">
                         <span>Estádio</span>
                         <h3>${escapeHtml(club.stadium?.name || club.name)}</h3>
-                        <p>${escapeHtml(club.stadium?.capacity ? `${club.stadium.capacity.toLocaleString("pt-BR")} lugares. Em dias grandes, o bairro para antes do apito inicial.` : "A casa ainda precisa escrever sua próxima noite grande.")}</p>
-                    </article>
-                    <article class="eg7-story-card">
+                        <p>${escapeHtml(club.stadium?.capacity ? `${club.stadium.capacity.toLocaleString("pt-BR")} lugares. Em dias grandes, o bairro muda de som antes do apito inicial.` : "A casa ainda precisa escrever sua próxima noite grande.")}</p>
+                    </section>
+                    <section class="eg8-journey-panel">
                         <span>Torcida</span>
-                        <h3>${escapeHtml(copy.fanVoice)}</h3>
-                        <p>Paciência: ${club.boardConfidence >= 75 ? "média" : "curta"}. Cobrança: ${eg6FormatClubPressure(club).toLowerCase()}.</p>
-                    </article>
-                    <article class="eg7-story-card">
-                        <span>Diretoria</span>
-                        <h3>${escapeHtml(club.objectives[0])}</h3>
+                        <h3>Uma voz antes do contrato</h3>
+                        <p>“${escapeHtml(copy.fanVoice)}”</p>
+                    </section>
+                    <section class="eg8-journey-panel">
+                        <span>Presidente</span>
+                        <h3>Conversa franca</h3>
+                        <p>“Vou ser direto. Se você entender o que este clube significa para esta cidade, eu estarei do seu lado quando ficar difícil. E vai ficar difícil.”</p>
+                    </section>
+                    <section class="eg8-journey-panel">
+                        <span>Desafio</span>
+                        <h3>${escapeHtml(club.objectives?.[0] || "Construir identidade")}</h3>
                         <p>${escapeHtml(copy.challenge)}</p>
-                    </article>
-                    <article class="eg7-story-card wide">
-                        <span>Pessoas e memória</span>
-                        <h3>${copy.idols.map(escapeHtml).join(" · ")}</h3>
-                        <p>O clube já tinha história antes de você. A pergunta é se a sua passagem vai virar parte dela.</p>
-                    </article>
-                    <article class="eg7-story-card wide">
+                    </section>
+                    <section class="eg8-journey-panel wide">
+                        <span>Pessoas e memórias</span>
+                        <h3>${memories.map(escapeHtml).join(" · ")}</h3>
+                        <p>Ídolos e personagens aparecem apenas quando fazem sentido para este clube e para a época. O passado não será genérico.</p>
+                    </section>
+                    <section class="eg8-journey-panel wide">
                         <span>Vestiário de 1970</span>
                         <h3>Primeiros nomes que você vai encontrar</h3>
-                        ${squadPreview}
-                    </article>
-                </div>
+                        <div class="eg8-squad-preview">${squadPreview}</div>
+                    </section>
+                </main>
 
-                <footer class="eg7-contract-choice">
+                <footer class="eg8-contract-bar">
                     <div>
-                        <span class="eg5-eyebrow">Contrato de ${START_YEAR}</span>
-                        <strong>Você aceita este desafio?</strong>
-                        <p>Assinar muda o mundo do jogo. A primeira manchete virá depois disso.</p>
+                        <span class="eg5-eyebrow">Assinatura</span>
+                        <strong>Você conheceu o clube. Aceita este desafio?</strong>
+                        <p>A primeira manchete virá assim que o contrato for assinado.</p>
                     </div>
                     <div class="button-row">
                         <button class="btn btn-primary" type="button" data-start-club="${club.id}">Assinar contrato</button>
@@ -6203,115 +6273,80 @@
         const opponent = getClubById(GameState.nextOpponentId) || pickNextOpponent();
         const position = currentPosition();
         const leagueRow = getClubLeagueRow(GameState.club.id);
-        const objective = getObjectiveSummary();
-        const finances = getFinanceSummary();
         const morale = getSquadMoraleSummary();
         const fanMood = getFanMood();
         const rhythm = eg4GetRhythmState();
         const nextMatchDate = getNextMatchDate();
-        const matchLocation = GameState.round % 2 === 1 ? t("home.home") : t("home.away");
-        const latestNews = getLatestNews(3);
-        const financeAlerts = updateFinanceAlerts(finances);
-        const alerts = [
-            ...financeAlerts.slice(0, 1).map((alert) => ({ icon: "⚠", text: alert.text, action: "finances" })),
-            morale.average < 55 ? { icon: "🧠", text: "O grupo precisa de uma conversa antes do próximo jogo.", action: "dressing" } : null,
-            fanMood.score < 48 ? { icon: "📣", text: "A arquibancada está perdendo paciência.", action: "fans" } : null
-        ].filter(Boolean).slice(0, 2);
-        const news = latestNews.length ? latestNews : [{ title: "Semana de trabalho", category: "Clube", text: "O clube prepara o próximo compromisso." }];
+        const weekEvents = eg8RenderMicroWeekEvents();
+        const urgent = morale.average < 55 ? "O vestiário precisa ser lido antes do próximo treino." : `${opponent.name} já começou a ocupar a semana.`;
         document.body.dataset.clubRhythm = rhythm.key;
-
         document.getElementById("screen-root").innerHTML = `
-            <section class="screen eg4-dashboard ${escapeHtml(rhythm.className)}" aria-label="Sala do treinador">
-                <div class="eg4-dashboard-grid">
-                    <section class="eg4-match-hero" data-director-action="match" role="button" tabindex="0">
-                        <div class="eg4-match-top">
-                            <span>${escapeHtml(rhythm.label)}</span>
-                            <em>${escapeHtml(rhythm.tone)}</em>
-                        </div>
-                        <div class="eg4-match-body">
-                            <div class="eg4-team">
-                                ${renderClubCrest(GameState.club, "large")}
-                                <strong>${escapeHtml(GameState.club.name)}</strong>
-                                <small>${position}º · ${leagueRow.points} pts</small>
-                            </div>
-                            <div class="eg4-versus">
-                                <b>VS</b>
-                                <span>${escapeHtml(nextMatchDate)}</span>
-                                <small>${escapeHtml(GameState.league.name)}</small>
-                            </div>
-                            <div class="eg4-team">
-                                ${renderClubCrest(opponent, "large")}
-                                <strong>${escapeHtml(opponent.name)}</strong>
-                                <small>${escapeHtml(matchLocation)}</small>
-                            </div>
-                        </div>
-                        <p class="eg4-match-story">${escapeHtml(eg4GetNextMatchStory(opponent, matchLocation, rhythm))}</p>
-                        <div class="eg4-match-actions">
-                            <button class="btn btn-primary" type="button" data-director-action="match">${escapeHtml(t("home.prepareMatch"))} →</button>
-                            <button class="btn btn-ghost" id="advance-week" type="button">${escapeHtml(t("home.advanceWeek"))}</button>
-                        </div>
-                    </section>
-
-                    <aside class="eg4-coach-panel">
-                        <span class="eg4-eyebrow">Pergunta da semana</span>
-                        <h2>${escapeHtml(eg4GetCoachQuestion(rhythm))}</h2>
-                        <div class="eg4-club-pulse">
-                            <p><span>Vestiário</span><strong>${morale.average}/99</strong></p>
-                            <p><span>Torcida</span><strong>${escapeHtml(fanMood.label)}</strong></p>
-                            <p><span>Diretoria</span><strong>${GameState.boardConfidence}%</strong></p>
-                        </div>
+            <section class="screen eg8-dashboard" aria-label="Escritório do treinador">
+                <header class="eg8-office-hero">
+                    <div>
+                        <span class="eg5-eyebrow">${escapeHtml(GameState.club.name)} · ${GameState.season}</span>
+                        <h1>O que precisa da sua atenção hoje?</h1>
+                        <p>${escapeHtml(urgent)}</p>
+                    </div>
+                    <aside>
+                        <span>${escapeHtml(rhythm.label)}</span>
+                        <strong>${position}º</strong>
+                        <small>${leagueRow.points} pts · ${escapeHtml(fanMood.label)}</small>
                     </aside>
-
-                    <section class="eg4-main-column">
-                        ${alerts.length ? `<div class="eg4-alerts">${alerts.map((alert) => `
-                            <button class="eg4-alert" type="button" data-director-action="${escapeHtml(alert.action)}"><span>${escapeHtml(alert.icon)}</span><strong>${escapeHtml(alert.text)}</strong><em>Resolver →</em></button>
-                        `).join("")}</div>` : ""}
-                        <section class="eg4-panel">
-                            <div class="eg4-panel-head"><span>O clube hoje</span><strong>${news.length}</strong></div>
-                            <div class="eg4-news-feed">
-                                ${news.slice(0, 3).map((item) => `
-                                    <button class="eg4-news-line" type="button" data-director-action="news">
-                                        <span>${escapeHtml(item.category || "Clube")}</span>
-                                        <strong>${escapeHtml(item.title || item.text)}</strong>
-                                        <small>${escapeHtml(item.text || "Acompanhe os bastidores do clube.")}</small>
-                                    </button>
-                                `).join("")}
-                            </div>
-                        </section>
+                </header>
+                <main class="eg8-office-grid">
+                    <section class="eg8-next-match-card" data-director-action="match" role="button" tabindex="0">
+                        <span>Próxima partida</span>
+                        <div class="eg8-matchline">
+                            <strong>${escapeHtml(GameState.club.name)}</strong>
+                            <b>vs</b>
+                            <strong>${escapeHtml(opponent.name)}</strong>
+                        </div>
+                        <p>${escapeHtml(nextMatchDate)} · ${escapeHtml(GameState.league.name)}. O jogo começa antes do apito, dentro do CT.</p>
+                        <button class="btn btn-primary" type="button" data-director-action="match">Preparar partida →</button>
                     </section>
-
-                    <aside class="eg4-secondary-column">
-                        <details class="eg4-accordion" open>
-                            <summary><span>Objetivo da diretoria</span><strong>${objective.progressValue}%</strong></summary>
-                            <div>
-                                <h3>${escapeHtml(objective.main)}</h3>
-                                <p>${escapeHtml(objective.progress)}</p>
-                                <i class="eg4-progress"><b style="width:${clamp(objective.progressValue || 0, 0, 100)}%"></b></i>
-                            </div>
-                        </details>
-                        <details class="eg4-accordion">
-                            <summary><span>Finanças</span><strong>${money(GameState.budget)}</strong></summary>
-                            <div class="eg4-lines">
-                                <p><span>Receita semanal</span><strong>${money(finances.weekIncome)}</strong></p>
-                                <p><span>Despesa semanal</span><strong>${money(finances.weekExpenses)}</strong></p>
-                                <p><span>Saldo projetado</span><strong>${money(GameState.budget + finances.weekIncome - finances.weekExpenses)}</strong></p>
-                            </div>
-                        </details>
-                    </aside>
-                </div>
+                    <section class="eg8-today-decision">
+                        <span>Uma decisão pendente</span>
+                        <h2>${morale.average < 55 ? "Falar ou esperar?" : "Manter o plano ou ajustar?"}</h2>
+                        <p>${morale.average < 55 ? "O grupo não precisa de bronca automática. Precisa saber se você percebeu o silêncio." : "O assistente acha que há espaço para uma mudança pequena antes do domingo."}</p>
+                    </section>
+                    <section class="eg8-week-feed">
+                        <div class="eg8-section-head"><span>A semana aconteceu</span><button class="btn btn-ghost" id="advance-week" type="button">Avançar semana</button></div>
+                        ${weekEvents.map((item) => `<article><strong>${escapeHtml(item.day)} · ${escapeHtml(item.title)}</strong><p>${escapeHtml(item.text)}</p></article>`).join("")}
+                    </section>
+                </main>
             </section>
         `;
         document.querySelectorAll("[data-director-action]").forEach((button) => {
-            button.addEventListener("click", (event) => {
-                event.stopPropagation();
-                handleDirectorAction(button.dataset.directorAction);
-            });
-            button.addEventListener("keydown", (event) => {
-                if (event.key === "Enter" || event.key === " ") handleDirectorAction(button.dataset.directorAction);
-            });
+            button.addEventListener("click", (event) => { event.stopPropagation(); handleDirectorAction(button.dataset.directorAction); });
+            button.addEventListener("keydown", (event) => { if (event.key === "Enter" || event.key === " ") handleDirectorAction(button.dataset.directorAction); });
         });
         document.getElementById("advance-week")?.addEventListener("click", advanceWeek);
         updateChrome();
+    }
+
+
+
+    function renderWeekLivedMoment(context = {}) {
+        GameState.currentScreen = "weekMoment";
+        updateChrome();
+        const events = eg8RenderMicroWeekEvents(context);
+        const opponent = getClubById(GameState.nextOpponentId) || pickNextOpponent();
+        document.getElementById("screen-root").innerHTML = `
+            <section class="screen eg8-week-moment" aria-label="Semana vivida">
+                <article class="eg8-newspaper-card">
+                    <span class="eg8-paper-name">THE GENESIS CHRONICLE</span>
+                    <span class="eg8-paper-date">Semana ${GameState.round} · ${GameState.currentYear}</span>
+                    <h1>A SEMANA NÃO PASSOU. ELA ACONTECEU.</h1>
+                    <p>O clube chega ao próximo compromisso contra ${escapeHtml(opponent.name)} carregando pequenas histórias que não aparecem na tabela.</p>
+                    <div class="eg8-week-lines">
+                        ${events.map((item) => `<section><strong>${escapeHtml(item.day)} — ${escapeHtml(item.title)}</strong><p>${escapeHtml(item.text)}</p></section>`).join("")}
+                    </div>
+                    <button class="btn btn-primary" id="eg8-enter-office" type="button">Voltar ao CT</button>
+                </article>
+            </section>
+        `;
+        document.getElementById("eg8-enter-office")?.addEventListener("click", () => switchScreen("home", { silent: true }));
     }
 
     function renderMessages() {
@@ -7348,9 +7383,8 @@
         }, context);
         const summary = createWeeklySummary(context, finances);
         runWeeklyStep("Salvar automaticamente", saveCareer, context);
-        renderDashboard();
+        renderWeekLivedMoment(context);
         updateQuestionModal();
-        showWeeklySummaryModal(summary);
         pushMessage(`Semana ${beforeRound} concluída com novos acontecimentos no clube.`);
     }
 
@@ -9024,39 +9058,24 @@
     }
 
     function renderMarketPlayerCard(player) {
-        const age = calculateAge(player, GameState.currentYear);
-        const overall = calculateCurrentOverall(player);
-        const observed = GameState.transferMarket.observedPlayerIds.includes(player.id);
         const favorite = isMarketFavorite(player.id);
-        const negotiation = GameState.transferMarket.negotiations[player.id];
-        const statusText = negotiation ? (negotiation.status === "counter" ? "Clube pediu resposta" : negotiation.status === "rejected" ? "Oferta recusada" : negotiation.status === "accepted" ? "Aceito" : "Em conversa") : "Sem negociação";
+        const ovr = calculateCurrentOverall(player);
+        const age = calculateAge(player, GameState.currentYear);
         return `
-            <article class="market-player-card eg5-market-card">
-                <button class="market-card-main" type="button" data-market-detail="${player.id}">
-                    <div class="market-avatar" aria-hidden="true"><i></i><b></b></div>
-                    <div class="market-player-summary">
-                        <div class="row-main">
-                            <strong>${escapeHtml(player.name)}</strong>
-                            <span class="overall-badge">${overall}</span>
-                        </div>
-                        <div class="meta">
-                            <span>${escapeHtml(translatePosition(player.primaryPosition))}</span>
-                            <span>${age} ${escapeHtml(t("market.years"))}</span>
-                            <span>${escapeHtml(translateCountry(player.country))}</span>
-                        </div>
-                        <p class="eg5-human-line">${escapeHtml(eg5PlayerHumanDescription(player))}</p>
-                    </div>
+            <article class="eg8-player-row" data-market-detail="${player.id}">
+                <button type="button" class="eg8-player-main" data-market-detail="${player.id}">
+                    <span class="eg8-player-pos">${escapeHtml(translatePosition(player.primaryPosition).slice(0, 3))}</span>
+                    <span class="eg8-row-main">
+                        <strong>${escapeHtml(player.name)}</strong>
+                        <small>${escapeHtml(eg8HumanizePlayerLine(player))}</small>
+                    </span>
+                    <span class="eg8-player-meta">OVR ${ovr}<br><em>POT ${player.potential}</em></span>
+                    <span class="eg8-player-price">${money(player.marketValue)}</span>
                 </button>
-                <div class="eg5-market-strip">
-                    <div><span>POT</span><strong>${player.potential}</strong></div>
-                    <div><span>Valor</span><strong>${money(player.marketValue)}</strong></div>
-                    <div><span>Clube</span><strong>${escapeHtml(getPlayerCurrentClub(player))}</strong></div>
-                    <div><span>Status</span><strong>${escapeHtml(statusText)}</strong></div>
-                </div>
-                <div class="market-actions eg5-market-actions">
-                    <button class="btn" type="button" data-observe-player="${player.id}">${escapeHtml(t(observed ? "market.watched" : "market.watch"))}</button>
-                    <button class="btn btn-primary" type="button" data-offer-player="${player.id}">${escapeHtml(t("market.makeOffer"))}</button>
-                    <button class="btn btn-ghost" type="button" data-favorite-player="${player.id}">${escapeHtml(t(favorite ? "market.removeFavorite" : "market.addFavorite"))}</button>
+                <div class="eg8-row-actions">
+                    <button type="button" data-observe-player="${player.id}">${GameState.transferMarket.observedPlayerIds.includes(player.id) ? "Observado" : "Observar"}</button>
+                    <button type="button" data-offer-player="${player.id}">Negociar</button>
+                    <button type="button" data-favorite-player="${player.id}">${favorite ? "★" : "☆"}</button>
                 </div>
             </article>
         `;
@@ -9160,7 +9179,7 @@
                     <button class="eg3-filter-trigger ${hasFilters ? "has-filters" : ""}" id="market-filters-open" type="button">Filtros${hasFilters ? " •" : ""}</button>
                 </div>
                 <div class="eg3-chip-row eg4-chip-row eg5-chips">
-                    ${["ST", "CAM", "CM", "CB", "GK"].map((position) => `<button class="chip-pos ${GameState.marketView.filters.position === position ? "active" : ""}" type="button" data-market-pos="${position}">${escapeHtml(translatePosition(position))}</button>`).join("")}
+                    ${["GK", "RB", "LB", "CB", "CDM", "CM", "CAM", "RW", "LW", "ST"].map((position) => `<button class="chip-pos ${GameState.marketView.filters.position === position ? "active" : ""}" type="button" data-market-pos="${position}">${escapeHtml(translatePosition(position))}</button>`).join("")}
                     <button class="chip-pos ${GameState.marketView.sort === "potential" ? "active" : ""}" type="button" data-market-sort-fast="potential">Potencial</button>
                     <button class="chip-pos ${GameState.marketView.sort === "value" ? "active" : ""}" type="button" data-market-sort-fast="value">Valor</button>
                     ${(hasFilters || GameState.marketView.search) ? `<button class="chip-pos eg3-clear-chip" id="market-clear-filters" type="button">Limpar</button>` : ""}
@@ -9328,7 +9347,7 @@
                     <button class="eg3-filter-trigger ${hasAdvancedFilters ? "has-filters" : ""}" type="button" id="scout-filter-toggle">Filtros${hasAdvancedFilters ? " •" : ""}</button>
                 </div>
                 <div class="eg3-chip-row eg4-chip-row eg5-chips" aria-label="Filtros rápidos">
-                    ${["ST", "CF", "CAM", "CM", "CB", "GK"].map((pos) => `<button class="chip-pos ${search.position === pos ? "active" : ""}" type="button" data-scout-chip="${pos}">${escapeHtml(translatePosition(pos))}</button>`).join("")}
+                    ${["GK", "RB", "LB", "CB", "CDM", "CM", "CAM", "RW", "LW", "ST"].map((pos) => `<button class="chip-pos ${search.position === pos ? "active" : ""}" type="button" data-scout-chip="${pos}">${escapeHtml(translatePosition(pos))}</button>`).join("")}
                     <button class="chip-pos ${search.potential === "o88" ? "active" : ""}" type="button" data-scout-potential="o88">★★★★★</button>
                     <button class="chip-pos ${search.age === "u21" ? "active" : ""}" type="button" data-scout-age="u21">Jovem</button>
                     ${(hasAdvancedFilters || keyword) ? `<button class="chip-pos eg3-clear-chip" type="button" id="scout-clear-filters">Limpar</button>` : ""}
