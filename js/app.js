@@ -5,7 +5,7 @@
     const MENU_PREFS_KEY = "legendsDirectorMenuPrefs";
     const MARKET_FAVORITES_KEY = "legendsDirectorMarketFavorites";
     const SAVE_VERSION = 4;
-    const GAME_VERSION = "Alpha 0.5.1";
+    const GAME_VERSION = "Alpha 0.6.0 - Analog Era";
     const START_YEAR = 1970;
     const NEWS_CATEGORIES = ["Clube", "Liga", "Mercado", "Diretoria", "Torcida", "Lesões", "Jovens", "Financeiro"];
     const PLAYER_POSITIONS = ["GK", "RB", "CB", "LB", "RWB", "LWB", "CDM", "CM", "CAM", "RM", "LM", "RW", "LW", "CF", "ST"];
@@ -6285,7 +6285,7 @@
                 <header class="eg8-office-hero">
                     <div>
                         <span class="eg5-eyebrow">${escapeHtml(GameState.club.name)} · ${GameState.season}</span>
-                        <h1>O que precisa da sua atenção hoje?</h1>
+                        <h1>Escritório do treinador.</h1>
                         <p>${escapeHtml(urgent)}</p>
                     </div>
                     <aside>
@@ -6302,7 +6302,7 @@
                             <b>vs</b>
                             <strong>${escapeHtml(opponent.name)}</strong>
                         </div>
-                        <p>${escapeHtml(nextMatchDate)} · ${escapeHtml(GameState.league.name)}. O jogo começa antes do apito, dentro do CT.</p>
+                        <p>${escapeHtml(nextMatchDate)} · ${escapeHtml(GameState.league.name)}. O jogo começa antes do apito: no rádio, no vestiário e no silêncio do CT.</p>
                         <button class="btn btn-primary" type="button" data-director-action="match">Preparar partida →</button>
                     </section>
                     <section class="eg8-today-decision">
