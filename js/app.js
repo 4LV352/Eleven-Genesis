@@ -5175,6 +5175,10 @@
 
     function switchScreen(screen, options = {}) {
         if (!GameState) GameState = createBaseState();
+        if (!options.instant && window.EG18Scene && GameState.club && !window.EGNavigation?.MENU_SCREENS?.includes(screen)) {
+            window.EG18Scene.transition(() => switchScreen(screen, { ...options, instant: true }), screen);
+            return;
+        }
         const root = document.getElementById("screen-root");
         if (window.EGNavigation) window.EGNavigation.animateScreen(root);
         GameState.currentScreen = screen;
