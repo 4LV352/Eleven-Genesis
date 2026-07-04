@@ -53,11 +53,11 @@
     }
 
     function ensureOverlay() {
-        let overlay = document.getElementById("eg18-transition");
+        let overlay = document.getElementById("eg20-transition") || document.getElementById("eg18-transition");
         if (overlay) return overlay;
         overlay = document.createElement("div");
-        overlay.id = "eg18-transition";
-        overlay.className = "eg18-transition";
+        overlay.id = "eg20-transition";
+        overlay.className = "eg18-transition eg20-transition";
         overlay.innerHTML = `
             <div class="eg18-transition__shade"></div>
             <div class="eg18-transition__ball" aria-hidden="true">⚽</div>
@@ -83,7 +83,7 @@
         transitionLocked = true;
         const overlay = ensureOverlay();
         const label = LABELS[screen] || "Eleven Genesis";
-        overlay.className = `eg18-transition eg18-transition--${transitionType(screen)}`;
+        overlay.className = `eg18-transition eg20-transition eg18-transition--${transitionType(screen)} eg20-transition--${transitionType(screen)}`;
         $(".eg18-transition__label", overlay).textContent = label;
         void overlay.offsetWidth;
         overlay.classList.add("is-active");
@@ -178,6 +178,7 @@
         if (lastHubSignature === signature && $(".eg18-room-hub", screenRoot)) return;
         lastHubSignature = signature;
         screenRoot.classList.remove("eg18-screen-shell");
+        screenRoot.dataset.eg20Scene = "office";
         screenRoot.innerHTML = `
             <section class="eg18-room-hub scene-office" aria-label="Sala viva do treinador">
                 <div class="eg18-camera-frame" aria-hidden="true"></div>
@@ -187,7 +188,7 @@
                 </div>
                 <header class="eg18-room-title">
                     <span class="eg18-kicker">${escapeHtml(snap.clubName)} · ${escapeHtml(String(snap.year))} · ${escapeHtml(snap.era.title)}</span>
-                    <h1>Sala do treinador</h1>
+                    <h1><span>EG</span> Sala do treinador</h1>
                     <p>${escapeHtml(snap.era.room)} ${escapeHtml(snap.era.philosophy)}</p>
                 </header>
                 <main class="eg18-desk" aria-label="Mesa do treinador">
@@ -236,9 +237,15 @@
         installSwitchWrapper();
         const screenRoot = root();
         if (!screenRoot) return;
-        document.body.classList.toggle("eg18-scene-mode", hasCareer());
+        const careerActive = hasCareer() && !isMenuScreen(currentScreen());
+        document.body.classList.toggle("eg18-scene-mode", careerActive);
+        document.body.classList.toggle("eg20-scene-mode", careerActive);
+        document.body.classList.toggle("eg20-career-active", careerActive);
+        document.body.classList.toggle("eg20-menu-active", !careerActive);
+        document.body.dataset.eg20CurrentScene = currentScreen() || "menu";
         if (!hasCareer() || isMenuScreen(currentScreen())) {
             screenRoot.classList.remove("eg18-screen-shell");
+            screenRoot.removeAttribute("data-eg20-scene");
             return;
         }
         if (currentScreen() === "home") {
@@ -247,6 +254,7 @@
         }
         lastHubSignature = "";
         screenRoot.classList.add("eg18-screen-shell");
+        screenRoot.dataset.eg20Scene = currentScreen();
         if (!$(".eg18-back-home", screenRoot)) {
             screenRoot.insertAdjacentHTML("afterbegin", `<button class="eg18-back-home" type="button" data-eg18-screen="home">Voltar para a sala</button>`);
         }
@@ -276,7 +284,11 @@
         document.addEventListener("click", screenClickHandler, true);
         document.addEventListener("click", actionClickHandler, true);
         applySceneFrame();
-        window.EG18Scene = { go, transition, applySceneFrame };
+        const api = { go, transition, applySceneFrame };
+        window.EG18Scene = api;
+        window.SceneManager = api;
+        window.TransitionManager = { transition };
+        window.RoomManager = { renderHub, applySceneFrame };
     }
 
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);

@@ -16,6 +16,85 @@ body.eg18-scene-mode {
   background: #050806;
 }
 
+body.eg20-menu-active .eg15-radio,
+body.eg20-menu-active .eg15-object-drawer,
+body.eg20-menu-active .eg16-object-drawer,
+body.eg20-menu-active .eg18-transition,
+body.eg20-menu-active .eg20-transition {
+  pointer-events: none;
+}
+
+body.eg20-menu-active .eg15-radio,
+body.eg20-menu-active .eg15-office-map,
+body.eg20-menu-active .eg15-era-strip,
+body.eg20-menu-active .eg16-time-office,
+body.eg20-menu-active .eg18-scene-bar,
+body.eg20-menu-active .eg18-back-home {
+  display: none !important;
+}
+
+body.eg20-menu-active .splash-screen,
+body.eg20-menu-active .main-menu {
+  position: relative;
+  z-index: 100;
+}
+
+html:has(#app.splash-active),
+body:has(#app.splash-active),
+#app.splash-active,
+#app.splash-active #screen-root {
+  width: 100%;
+  height: 100dvh;
+  min-height: 100dvh;
+  overflow: hidden !important;
+}
+
+#app.splash-active .splash-screen {
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+#app.splash-active .splash-card {
+  width: min(420px, calc(100vw - 32px));
+  max-width: calc(100vw - 32px);
+  margin-inline: auto;
+}
+
+#app.splash-active .splash-progress {
+  width: min(280px, calc(100vw - 48px)) !important;
+  max-width: calc(100vw - 48px) !important;
+  margin-inline: auto;
+}
+
+body.eg20-menu-active .splash-card,
+body.eg20-menu-active .menu-emblem,
+body.eg20-menu-active .eg5-menu-center {
+  position: relative;
+  z-index: 110;
+}
+
+body.eg20-menu-active .splash-logo-wrap,
+body.eg20-menu-active .splash-logo,
+body.eg20-menu-active .main-menu .menu-emblem img {
+  max-width: 100%;
+  object-fit: contain;
+}
+
+body.eg20-menu-active .splash-logo-wrap {
+  isolation: isolate;
+}
+
+body.eg20-menu-active .splash-logo {
+  display: grid;
+  place-items: center;
+  line-height: 1;
+}
+
+body.eg20-menu-active .splash-card h1,
+body.eg20-menu-active .main-menu h1 {
+  overflow-wrap: anywhere;
+}
+
 body.eg18-scene-mode #app {
   min-height: 100dvh;
   display: block !important;
@@ -46,6 +125,13 @@ body.eg18-scene-mode #screen-root {
   min-height: 100dvh;
   padding: 0 !important;
   overflow: hidden;
+}
+
+body.eg20-scene-mode .eg15-radio,
+body.eg20-scene-mode .eg15-office-map,
+body.eg20-scene-mode .eg15-era-strip,
+body.eg20-scene-mode .eg16-time-office {
+  display: none !important;
 }
 
 body.eg18-scene-mode #screen-root > .eg16-time-office {
@@ -178,6 +264,21 @@ body.eg18-scene-mode #screen-root > .eg16-time-office {
   line-height: .9;
   text-transform: uppercase;
   text-shadow: 0 22px 35px rgba(0, 0, 0, .55);
+}
+
+.eg18-room-title h1 span {
+  display: inline-grid;
+  place-items: center;
+  width: clamp(48px, 8vw, 82px);
+  height: clamp(48px, 8vw, 82px);
+  margin-right: .35em;
+  border: 1px solid rgba(215, 173, 69, .5);
+  border-radius: 18px;
+  color: #241508;
+  background: linear-gradient(145deg, #f2d88e, #b57b31);
+  font-family: Georgia, serif;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, .35);
+  vertical-align: middle;
 }
 
 .eg18-room-title p {
@@ -398,6 +499,40 @@ body.eg18-scene-mode #screen-root > .eg16-time-office {
   overscroll-behavior: contain;
 }
 
+#screen-root.eg18-screen-shell[data-eg20-scene="league"] > .screen,
+#screen-root.eg18-screen-shell[data-eg20-scene="newsCenter"] > .screen,
+#screen-root.eg18-screen-shell[data-eg20-scene="newsDetail"] > .screen {
+  background:
+    linear-gradient(90deg, rgba(72, 43, 20, .1), transparent 16%, transparent 84%, rgba(72, 43, 20, .18)),
+    #e6d0a0;
+  color: #21170f;
+}
+
+#screen-root.eg18-screen-shell[data-eg20-scene="marketing"] > .screen {
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255, 221, 105, .16), transparent 28%),
+    linear-gradient(145deg, rgba(20, 55, 58, .92), rgba(32, 20, 12, .94));
+}
+
+#screen-root.eg18-screen-shell[data-eg20-scene="market"] > .screen,
+#screen-root.eg18-screen-shell[data-eg20-scene="squad"] > .screen {
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, .12), transparent 16%, rgba(0, 0, 0, .18)),
+    linear-gradient(180deg, rgba(92, 48, 24, .9), rgba(32, 17, 10, .96));
+}
+
+#screen-root.eg18-screen-shell[data-eg20-scene="tactics"] > .screen {
+  background:
+    radial-gradient(circle at 50% 35%, rgba(255, 255, 255, .04), transparent 38%),
+    linear-gradient(145deg, rgba(23, 58, 43, .92), rgba(9, 25, 18, .96));
+}
+
+#screen-root.eg18-screen-shell[data-eg20-scene="calendar"] > .screen {
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, .04) 0 1px, transparent 1px 28px),
+    linear-gradient(180deg, rgba(68, 43, 24, .92), rgba(24, 15, 9, .96));
+}
+
 .eg18-action-pulse {
   animation: eg18-action-pulse .48s ease both;
 }
@@ -416,6 +551,10 @@ body.eg18-scene-mode #screen-root > .eg16-time-office {
   opacity: 0;
   visibility: hidden;
   transition: opacity .18s ease, visibility .18s ease;
+}
+
+.eg20-transition {
+  z-index: 10020;
 }
 
 .eg18-transition.is-active {
@@ -568,7 +707,12 @@ body.eg18-scene-mode #screen-root > .eg16-time-office {
   }
 
   .eg18-room-title h1 {
-    font-size: 42px;
+    font-size: 38px;
+  }
+
+  .eg18-room-title h1 span {
+    display: grid;
+    margin: 0 auto .45rem;
   }
 
   .eg18-desk {

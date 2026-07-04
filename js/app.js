@@ -5388,10 +5388,6 @@
             renderMenu();
             return;
         }
-        if (window.matchMedia && window.matchMedia("(min-width: 901px)").matches) {
-            renderMenu();
-            return;
-        }
         if (app) app.classList.add("splash-active");
         updateChrome();
         updateQuestionModal();
