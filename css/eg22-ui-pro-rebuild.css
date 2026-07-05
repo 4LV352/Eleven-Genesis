@@ -1,0 +1,423 @@
+/* EG22 — UX/UI Pro Rebuild
+   Objetivo: preservar identidade, eliminar invasões de jornal/radio/dock, transformar telas em cenas de jogo.
+   Camada de apresentação apenas: HTML/CSS/JS puro, sem quebrar GameState. */
+:root{
+  --eg22-bg:#030705;
+  --eg22-panel:rgba(7,13,10,.88);
+  --eg22-panel-2:rgba(18,11,7,.88);
+  --eg22-gold:#d7ad45;
+  --eg22-gold-soft:#f2d58b;
+  --eg22-green:#1bb36f;
+  --eg22-paper:#e7d0a0;
+  --eg22-ink:#20160e;
+  --eg22-wood:#60351d;
+  --eg22-text:#fff4d6;
+  --eg22-muted:#cbb98d;
+  --eg22-line:rgba(215,173,69,.26);
+  --eg22-radius:26px;
+  --eg22-top:64px;
+  --eg22-bottom:78px;
+  --eg22-shadow:0 28px 90px rgba(0,0,0,.48);
+}
+
+/* Base: a aplicação deve parecer console de jogo, não página longa. */
+body.eg18-scene-mode.eg22-ux,
+body.eg20-scene-mode.eg22-ux{
+  background:var(--eg22-bg)!important;
+  color:var(--eg22-text);
+}
+
+body.eg22-ux.eg20-menu-active .eg15-newspaper,
+body.eg22-ux.eg20-menu-active .eg15-pin-board,
+body.eg22-ux.eg20-menu-active .eg15-era-strip,
+body.eg22-ux.eg20-menu-active .eg15-office-map,
+body.eg22-ux.eg20-menu-active .eg15-radio,
+body.eg22-ux.eg20-menu-active .eg18-scene-bar,
+body.eg22-ux.eg20-menu-active .eg18-back-home{
+  display:none!important;
+}
+
+/* Jornal é cena/evento, nunca rodapé global. */
+body.eg22-ux.eg18-scene-mode:not([data-eg20-current-scene="newsCenter"]):not([data-eg20-current-scene="newsDetail"]) .eg15-newspaper,
+body.eg22-ux.eg18-scene-mode:not([data-eg20-current-scene="calendar"]) .eg15-pin-board,
+body.eg22-ux.eg18-scene-mode .eg15-era-strip,
+body.eg22-ux.eg18-scene-mode .eg15-office-map,
+body.eg22-ux.eg18-scene-mode .eg16-time-office{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+/* Header de carreira: compacto, sem competir com a cena. */
+body.eg22-ux.eg18-scene-mode .topbar{
+  height:48px!important;
+  min-height:48px!important;
+  padding:7px 12px!important;
+  border-radius:999px!important;
+  z-index:120!important;
+  background:linear-gradient(90deg,rgba(17,8,4,.92),rgba(13,20,14,.90))!important;
+  border:1px solid rgba(215,173,69,.34)!important;
+}
+body.eg22-ux.eg18-scene-mode .topbar strong{font-size:clamp(14px,1.3vw,19px)!important;letter-spacing:.02em;}
+body.eg22-ux.eg18-scene-mode .topbar span{font-size:11px!important;letter-spacing:.08em;}
+body.eg22-ux.eg18-scene-mode .icon-action{min-width:36px;height:36px;border-radius:50%;}
+
+/* Shell de cenas: uma tela = uma decisão. */
+body.eg22-ux.eg18-scene-mode #app,
+body.eg22-ux.eg18-scene-mode #screen-root{
+  width:100%!important;
+  height:100dvh!important;
+  max-height:100dvh!important;
+  min-height:100dvh!important;
+  overflow:hidden!important;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell{
+  position:relative;
+  display:grid;
+  place-items:center;
+  width:100%;
+  height:100dvh!important;
+  min-height:100dvh!important;
+  padding:var(--eg22-top) clamp(10px,2.2vw,32px) var(--eg22-bottom)!important;
+  overflow:hidden!important;
+  background:
+    radial-gradient(circle at 50% -8%,rgba(215,173,69,.12),transparent 34%),
+    linear-gradient(180deg,#06120c 0%,#0d100a 46%,#050403 100%)!important;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell > .screen{
+  width:min(1180px,100%)!important;
+  height:calc(100dvh - var(--eg22-top) - var(--eg22-bottom))!important;
+  max-height:calc(100dvh - var(--eg22-top) - var(--eg22-bottom))!important;
+  margin:0 auto!important;
+  overflow:hidden!important;
+  border-radius:var(--eg22-radius)!important;
+  border:1px solid var(--eg22-line)!important;
+  background:var(--eg22-panel)!important;
+  box-shadow:var(--eg22-shadow)!important;
+}
+
+/* Remove a nota artificial EG21 que poluía as cenas. */
+.eg21-scene-purpose{display:none!important;}
+
+/* Dock: apoio, não protagonista. */
+body.eg22-ux .eg18-scene-bar{
+  bottom:calc(12px + env(safe-area-inset-bottom))!important;
+  padding:5px!important;
+  gap:5px!important;
+  opacity:.58!important;
+  z-index:86!important;
+  transform:translateX(-50%) scale(.9)!important;
+  background:rgba(7,7,5,.72)!important;
+  border-color:rgba(215,173,69,.22)!important;
+  box-shadow:0 16px 44px rgba(0,0,0,.42)!important;
+}
+body.eg22-ux .eg18-scene-bar:hover,
+body.eg22-ux .eg18-scene-bar:focus-within{opacity:1!important;transform:translateX(-50%) scale(1)!important;}
+body.eg22-ux .eg18-scene-bar button{width:36px!important;height:36px!important;font-size:15px!important;}
+
+/* Botão voltar: não cobre rodapé; vira controle de cena. */
+body.eg22-ux .eg18-back-home{
+  top:10px!important;
+  left:50%!important;
+  bottom:auto!important;
+  transform:translateX(-50%)!important;
+  z-index:122!important;
+  height:34px!important;
+  padding:0 14px!important;
+  border-radius:999px!important;
+  font-size:11px!important;
+  letter-spacing:.04em!important;
+  background:rgba(5,7,5,.74)!important;
+  color:#f2d58b!important;
+  backdrop-filter:blur(10px)!important;
+}
+
+/* Rádio: status discreto. */
+body.eg22-ux.eg18-scene-mode .eg15-radio{
+  right:16px!important;
+  bottom:16px!important;
+  width:42px!important;
+  height:42px!important;
+  max-width:42px!important;
+  padding:5px!important;
+  border-radius:50%!important;
+  z-index:84!important;
+  opacity:.72!important;
+}
+body.eg22-ux.eg18-scene-mode .eg15-radio:hover,
+body.eg22-ux.eg18-scene-mode .eg15-radio:focus-within{
+  width:min(310px,calc(100vw - 32px))!important;
+  max-width:min(310px,calc(100vw - 32px))!important;
+  opacity:1!important;
+}
+
+/* OFFICE / SALA — cenário, não dashboard. */
+body.eg22-ux .eg18-room-hub{
+  height:100dvh!important;
+  min-height:100dvh!important;
+  overflow:hidden!important;
+  background:
+    radial-gradient(circle at 50% 13%,rgba(218,175,73,.18),transparent 23%),
+    radial-gradient(circle at 14% 66%,rgba(91,49,24,.30),transparent 28%),
+    linear-gradient(180deg,#06130d 0%,#07100b 52%,#050302 100%)!important;
+}
+body.eg22-ux .eg18-window{
+  top:62px!important;
+  width:min(560px,52vw)!important;
+  height:clamp(88px,13vh,136px)!important;
+  border-width:10px!important;
+  border-bottom-width:14px!important;
+  opacity:.86;
+}
+body.eg22-ux .eg18-wall-memory{top:82px!important;right:clamp(20px,6vw,110px)!important;transform:scale(.82);transform-origin:top right;opacity:.86;}
+body.eg22-ux .eg18-room-title{
+  position:absolute!important;
+  left:50%!important;
+  top:calc(62px + clamp(88px,13vh,136px) + 24px)!important;
+  width:min(880px,92vw)!important;
+  padding:0!important;
+  transform:translateX(-50%)!important;
+  text-align:center!important;
+  z-index:5!important;
+}
+body.eg22-ux .eg18-room-title .eg18-kicker{font-size:10px!important;letter-spacing:.22em!important;color:#d7ad45!important;}
+body.eg22-ux .eg18-room-title h1{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  gap:2px!important;
+  margin:6px 0 4px!important;
+  font-family:Inter,Arial,sans-serif!important;
+  line-height:.88!important;
+  text-transform:uppercase!important;
+  letter-spacing:-.07em!important;
+  color:#fff7df!important;
+  text-shadow:0 20px 60px rgba(0,0,0,.65)!important;
+}
+body.eg22-ux .eg18-room-title h1 .eg21-brand-line,
+body.eg22-ux .eg18-room-title h1 span:first-child{
+  display:block!important;
+  width:auto!important;height:auto!important;margin:0!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;
+  color:#fff7df!important;
+  font-family:Inter,Arial,sans-serif!important;
+  font-size:clamp(34px,5.8vw,82px)!important;
+  line-height:.82!important;
+}
+body.eg22-ux .eg18-room-title h1 .eg21-room-line{
+  display:block!important;
+  color:#e2bd63!important;
+  font-size:clamp(16px,2.1vw,32px)!important;
+  line-height:1!important;
+  letter-spacing:.08em!important;
+  font-weight:900!important;
+}
+body.eg22-ux .eg18-room-title p{
+  max-width:680px!important;
+  font-size:clamp(12px,1.2vw,15px)!important;
+  opacity:.82!important;
+}
+body.eg22-ux .eg18-quick-status{
+  top:-50px!important;left:24px!important;right:24px!important;justify-content:center!important;gap:7px!important;
+}
+body.eg22-ux .eg18-pill{padding:7px 10px!important;font-size:10px!important;background:rgba(7,7,5,.66)!important;}
+body.eg22-ux .eg18-desk{
+  width:min(1060px,92vw)!important;
+  height:clamp(260px,39vh,380px)!important;
+  bottom:0!important;
+  padding:22px 26px 70px!important;
+  border-radius:30px 30px 0 0!important;
+  overflow:visible!important;
+}
+body.eg22-ux .eg18-object-grid{
+  height:100%!important;
+  display:grid!important;
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  grid-auto-rows:minmax(78px,1fr)!important;
+  gap:10px!important;
+}
+body.eg22-ux .eg18-object{
+  min-height:0!important;
+  padding:12px!important;
+  border-radius:18px!important;
+  border-color:rgba(238,203,134,.24)!important;
+  background:rgba(18,10,6,.34)!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.05)!important;
+}
+body.eg22-ux .eg18-object:hover{transform:translateY(-5px) rotate(-.35deg)!important;background:rgba(80,43,23,.70)!important;}
+body.eg22-ux .eg18-object .ico{font-size:clamp(20px,2.4vw,32px)!important;}
+body.eg22-ux .eg18-object strong{font-size:clamp(12px,1vw,15px)!important;}
+body.eg22-ux .eg18-object small{font-size:10px!important;}
+
+/* Mercado — fichário/control room. */
+body.eg22-ux #screen-root[data-eg20-scene="market"] > .screen{
+  padding:22px!important;
+  display:grid!important;
+  grid-template-rows:auto auto auto minmax(0,1fr)!important;
+  gap:12px!important;
+  background:
+    linear-gradient(120deg,rgba(96,53,29,.86),rgba(24,12,7,.96) 48%,rgba(5,11,8,.94))!important;
+}
+body.eg22-ux #screen-root[data-eg20-scene="market"] .eg5-section-hero,
+body.eg22-ux #screen-root[data-eg20-scene="market"] .eg5-market-room{
+  min-height:0!important;
+  padding:18px!important;
+  border-radius:22px!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:end!important;
+  gap:18px!important;
+}
+body.eg22-ux #screen-root[data-eg20-scene="market"] .eg5-section-hero h1{font-size:clamp(30px,4.2vw,62px)!important;line-height:.9!important;max-width:760px;}
+body.eg22-ux #screen-root[data-eg20-scene="market"] .eg5-section-hero p{font-size:14px!important;max-width:680px!important;}
+body.eg22-ux #screen-root[data-eg20-scene="market"] .eg5-section-hero aside strong{font-size:clamp(28px,4vw,50px)!important;white-space:nowrap;}
+body.eg22-ux #screen-root[data-eg20-scene="market"] .eg5-toolbar{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:10px!important;margin:0!important;}
+body.eg22-ux #screen-root[data-eg20-scene="market"] .eg5-chips{max-height:42px!important;overflow:auto hidden!important;white-space:nowrap!important;flex-wrap:nowrap!important;padding-bottom:2px!important;}
+body.eg22-ux #screen-root[data-eg20-scene="market"] .eg5-market-list,
+body.eg22-ux #screen-root[data-eg20-scene="market"] .eg4-market-list{
+  min-height:0!important;
+  overflow:auto!important;
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  align-content:start!important;
+  gap:12px!important;
+  padding:2px 4px 10px!important;
+}
+body.eg22-ux #screen-root[data-eg20-scene="market"] .eg4-market-card,
+body.eg22-ux #screen-root[data-eg20-scene="market"] .eg5-market-card,
+body.eg22-ux #screen-root[data-eg20-scene="market"] [class*="market-player"]{
+  min-height:112px!important;
+  max-height:150px!important;
+  overflow:hidden!important;
+}
+
+/* League — central de campeonato, não página com jornal. */
+body.eg22-ux #screen-root[data-eg20-scene="league"] > .screen{
+  padding:22px!important;
+  display:grid!important;
+  grid-template-rows:auto minmax(0,1fr)!important;
+  gap:16px!important;
+  background:linear-gradient(180deg,#e6d0a0 0%,#d8bc78 100%)!important;
+  color:#20160e!important;
+}
+body.eg22-ux #screen-root[data-eg20-scene="league"] > .screen > div:first-child h1{font-size:clamp(28px,4vw,60px)!important;line-height:.9!important;color:#2a1a0f!important;}
+body.eg22-ux #screen-root[data-eg20-scene="league"] .card,
+body.eg22-ux #screen-root[data-eg20-scene="league"] .card-pad{
+  min-height:0!important;
+  overflow:hidden!important;
+  background:rgba(5,18,12,.90)!important;
+  border-radius:22px!important;
+}
+body.eg22-ux #screen-root[data-eg20-scene="league"] .table-wrap{
+  height:100%!important;
+  max-height:100%!important;
+  overflow:auto!important;
+  border-radius:18px!important;
+}
+body.eg22-ux #screen-root[data-eg20-scene="league"] table{font-size:clamp(12px,1vw,15px)!important;}
+body.eg22-ux #screen-root[data-eg20-scene="league"] th,
+body.eg22-ux #screen-root[data-eg20-scene="league"] td{padding:10px 12px!important;}
+
+/* Clube — dossiê, não formulário. */
+body.eg22-ux #screen-root[data-eg20-scene="club"] > .screen{
+  padding:22px!important;
+  display:grid!important;
+  grid-template-rows:auto auto minmax(0,1fr)!important;
+  gap:12px!important;
+  background:linear-gradient(130deg,rgba(4,14,10,.96),rgba(12,28,19,.92) 54%,rgba(28,14,8,.94))!important;
+}
+body.eg22-ux #screen-root[data-eg20-scene="club"] > .screen h1{font-size:clamp(34px,4.5vw,68px)!important;line-height:.9!important;}
+body.eg22-ux #screen-root[data-eg20-scene="club"] .club-profile-card,
+body.eg22-ux #screen-root[data-eg20-scene="club"] .card{
+  min-height:0!important;
+  overflow:auto!important;
+}
+body.eg22-ux #screen-root[data-eg20-scene="club"] .stat-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:10px!important;}
+body.eg22-ux #screen-root[data-eg20-scene="club"] .stat{padding:12px!important;border-radius:16px!important;}
+
+/* Tática, elenco, agenda: cenas com painéis internos roláveis, não página inteira. */
+body.eg22-ux #screen-root[data-eg20-scene="tactics"] > .screen,
+body.eg22-ux #screen-root[data-eg20-scene="calendar"] > .screen,
+body.eg22-ux #screen-root[data-eg20-scene="squad"] > .screen,
+body.eg22-ux #screen-root[data-eg20-scene="scout"] > .screen,
+body.eg22-ux #screen-root[data-eg20-scene="marketing"] > .screen{
+  padding:22px!important;
+  display:grid!important;
+  gap:14px!important;
+  overflow:hidden!important;
+}
+body.eg22-ux #screen-root[data-eg20-scene="calendar"] .grid,
+body.eg22-ux #screen-root[data-eg20-scene="squad"] .eg3-card-list,
+body.eg22-ux #screen-root[data-eg20-scene="scout"] .grid,
+body.eg22-ux #screen-root[data-eg20-scene="marketing"] .grid{
+  min-height:0!important;
+  overflow:auto!important;
+}
+body.eg22-ux #screen-root[data-eg20-scene="tactics"] .tactics-layout{min-height:0!important;overflow:hidden!important;}
+body.eg22-ux #screen-root[data-eg20-scene="tactics"] .pitch{min-height:360px!important;max-height:calc(100dvh - 260px)!important;}
+
+/* News: único lugar onde o Correio Esportivo pode dominar. */
+body.eg22-ux #screen-root[data-eg20-scene="newsCenter"] > .screen,
+body.eg22-ux #screen-root[data-eg20-scene="newsDetail"] > .screen{
+  padding:0!important;
+  overflow:auto!important;
+  background:var(--eg22-paper)!important;
+  color:var(--eg22-ink)!important;
+}
+
+/* Tipografia: reduzir gritaria visual nas cenas internas. */
+body.eg22-ux #screen-root.eg18-screen-shell > .screen h1{
+  letter-spacing:-.065em!important;
+  text-wrap:balance;
+}
+body.eg22-ux #screen-root.eg18-screen-shell > .screen p{opacity:.88;}
+
+/* Mobile — outra composição, não desktop espremido. */
+@media(max-width:820px){
+  :root{--eg22-top:58px;--eg22-bottom:68px;--eg22-radius:18px;}
+  body.eg22-ux #screen-root.eg18-screen-shell{padding:var(--eg22-top) 8px var(--eg22-bottom)!important;}
+  body.eg22-ux .eg18-back-home{top:auto!important;bottom:calc(10px + env(safe-area-inset-bottom))!important;left:10px!important;transform:none!important;max-width:98px!important;height:38px!important;z-index:90!important;}
+  body.eg22-ux .eg18-scene-bar{max-width:calc(100vw - 128px)!important;left:calc(50% + 48px)!important;bottom:calc(10px + env(safe-area-inset-bottom))!important;overflow-x:auto!important;}
+  body.eg22-ux .eg18-scene-bar button{width:34px!important;height:34px!important;flex:0 0 34px!important;}
+  body.eg22-ux .eg18-window{top:60px!important;width:86vw!important;height:86px!important;}
+  body.eg22-ux .eg18-room-title{top:158px!important;width:94vw!important;}
+  body.eg22-ux .eg18-room-title h1 .eg21-brand-line,
+  body.eg22-ux .eg18-room-title h1 span:first-child{font-size:clamp(28px,11vw,46px)!important;}
+  body.eg22-ux .eg18-room-title h1 .eg21-room-line{font-size:clamp(13px,4.2vw,19px)!important;letter-spacing:.05em!important;}
+  body.eg22-ux .eg18-room-title p{display:none!important;}
+  body.eg22-ux .eg18-desk{width:100vw!important;height:52dvh!important;padding:16px 12px 62px!important;overflow:auto!important;border-radius:22px 22px 0 0!important;}
+  body.eg22-ux .eg18-object-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-auto-rows:100px!important;gap:8px!important;height:auto!important;}
+  body.eg22-ux .eg18-object.primary,
+  body.eg22-ux .eg18-object.wide{grid-column:span 2!important;}
+  body.eg22-ux .eg18-object{padding:11px!important;}
+  body.eg22-ux .eg18-quick-status{display:none!important;}
+  body.eg22-ux #screen-root.eg18-screen-shell > .screen{height:calc(100dvh - var(--eg22-top) - var(--eg22-bottom))!important;border-radius:18px!important;}
+  body.eg22-ux #screen-root[data-eg20-scene="market"] > .screen,
+  body.eg22-ux #screen-root[data-eg20-scene="club"] > .screen,
+  body.eg22-ux #screen-root[data-eg20-scene="league"] > .screen,
+  body.eg22-ux #screen-root[data-eg20-scene="calendar"] > .screen,
+  body.eg22-ux #screen-root[data-eg20-scene="squad"] > .screen,
+  body.eg22-ux #screen-root[data-eg20-scene="tactics"] > .screen{padding:14px!important;}
+  body.eg22-ux #screen-root[data-eg20-scene="market"] .eg5-section-hero{grid-template-columns:1fr!important;gap:8px!important;}
+  body.eg22-ux #screen-root[data-eg20-scene="market"] .eg5-section-hero h1{font-size:clamp(27px,10vw,42px)!important;}
+  body.eg22-ux #screen-root[data-eg20-scene="market"] .eg5-section-hero aside strong{font-size:28px!important;}
+  body.eg22-ux #screen-root[data-eg20-scene="market"] .eg5-market-list,
+  body.eg22-ux #screen-root[data-eg20-scene="market"] .eg4-market-list{grid-template-columns:1fr!important;}
+  body.eg22-ux #screen-root[data-eg20-scene="club"] .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  body.eg22-ux #screen-root[data-eg20-scene="league"] th,
+  body.eg22-ux #screen-root[data-eg20-scene="league"] td{padding:8px 10px!important;font-size:12px!important;}
+}
+
+@media(max-height:700px) and (min-width:821px){
+  :root{--eg22-top:56px;--eg22-bottom:64px;}
+  body.eg22-ux .eg18-window{top:54px!important;height:82px!important;}
+  body.eg22-ux .eg18-room-title{top:154px!important;}
+  body.eg22-ux .eg18-room-title p{display:none!important;}
+  body.eg22-ux .eg18-desk{height:42vh!important;padding-bottom:58px!important;}
+  body.eg22-ux .eg18-object-grid{grid-auto-rows:minmax(68px,1fr)!important;}
+}
+
+@media(prefers-reduced-motion:reduce){
+  body.eg22-ux *{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}
+}

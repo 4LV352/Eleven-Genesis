@@ -1,0 +1,103 @@
+(function(){
+  'use strict';
+  const ROOT_ID = 'screen-root';
+  const q = (s,c=document)=>c.querySelector(s);
+  const qa = (s,c=document)=>Array.from(c.querySelectorAll(s));
+  const nonNewsScenes = () => !['newsCenter','newsDetail'].includes(document.body.dataset.eg20CurrentScene || q('#'+ROOT_ID)?.dataset.eg20Scene || '');
+
+  function root(){ return document.getElementById(ROOT_ID); }
+
+  function removePollution(){
+    const r = root();
+    if(!r) return;
+    // Remove EG21 artificial helper notes.
+    qa('.eg21-scene-purpose', r).forEach(el=>el.remove());
+    const scene = r.dataset.eg20Scene || document.body.dataset.eg20CurrentScene || '';
+    // A newspaper must not be a global footer/panel outside its own scene.
+    if(!['newsCenter','newsDetail'].includes(scene)){
+      qa('.eg15-newspaper', r).forEach(el=>el.remove());
+    }
+    if(scene !== 'calendar'){
+      qa('.eg15-pin-board', r).forEach(el=>el.remove());
+    }
+    qa('.eg15-era-strip,.eg15-office-map,.eg16-time-office', r).forEach(el=>el.remove());
+  }
+
+  function markScenes(){
+    document.body.classList.add('eg22-ux');
+    const r = root();
+    if(!r) return;
+    const scene = r.dataset.eg20Scene || document.body.dataset.eg20CurrentScene || '';
+    if(scene) document.body.dataset.eg22Scene = scene;
+    r.classList.toggle('eg22-shell', r.classList.contains('eg18-screen-shell'));
+    const screen = q(':scope > .screen', r);
+    if(screen){
+      screen.classList.add('eg22-scene');
+      screen.setAttribute('data-eg22-scene', scene || 'unknown');
+    }
+  }
+
+  function fixBrand(){
+    const title = q('.eg18-room-title h1');
+    if(!title) return;
+    // Normalize every broken title state into two clear lines.
+    const already = q('.eg21-brand-line', title) && q('.eg21-room-line', title);
+    if(!already){
+      title.innerHTML = '<span class="eg21-brand-line">Eleven Genesis</span><span class="eg21-room-line">Sala do treinador</span>';
+    }
+  }
+
+  function improveSceneCopy(){
+    const r = root();
+    if(!r || !r.classList.contains('eg18-screen-shell')) return;
+    const scene = r.dataset.eg20Scene || '';
+    const screen = q(':scope > .screen', r);
+    if(!screen || screen.dataset.eg22Tuned === '1') return;
+    screen.dataset.eg22Tuned = '1';
+    const h1 = q('h1', screen);
+    if(h1){
+      const labels = {
+        market:'Sala de negociações',
+        league:'Central da liga',
+        club:'Dossiê do clube',
+        tactics:'Quadro tático',
+        calendar:'Agenda da semana',
+        squad:'Pasta do elenco',
+        scout:'Telefone dos olheiros',
+        marketing:'Rádio e torcida',
+        newsCenter:'Correio Esportivo'
+      };
+      if(labels[scene]) h1.setAttribute('aria-label', labels[scene]);
+    }
+  }
+
+  function ensureSafeScroll(){
+    // Avoid global scroll wars; only the current scene or internal panels can scroll.
+    if(document.body.classList.contains('eg18-scene-mode')){
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+    }
+  }
+
+  function apply(){
+    markScenes();
+    fixBrand();
+    removePollution();
+    improveSceneCopy();
+    ensureSafeScroll();
+  }
+
+  function init(){
+    apply();
+    const r = root();
+    if(r) new MutationObserver(()=>requestAnimationFrame(apply)).observe(r,{childList:true,subtree:true,attributes:true,attributeFilter:['class','data-eg20-scene']});
+    const app = document.getElementById('app');
+    if(app) new MutationObserver(()=>requestAnimationFrame(apply)).observe(app,{attributes:true,attributeFilter:['class']});
+    window.addEventListener('resize', apply, {passive:true});
+    window.EG22UX = { apply };
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
