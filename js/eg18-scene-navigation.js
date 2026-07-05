@@ -71,9 +71,9 @@
 
     function transitionType(screen) {
         const eraId = engine()?.getCurrentEra()?.id || "70";
-        if (screen === "home") return "logo";
+        if (screen === "home") return "eg-logo";
         if (["league", "newsCenter", "newsDetail"].includes(screen)) return "paper";
-        if (["matchPreview", "matchResult"].includes(screen)) return "football";
+        if (["matchPreview", "matchResult"].includes(screen)) return "ball-swipe";
         if (["marketing"].includes(screen) && ["70", "80", "90"].includes(eraId)) return "crt";
         return "fade";
     }
@@ -83,7 +83,9 @@
         transitionLocked = true;
         const overlay = ensureOverlay();
         const label = LABELS[screen] || "Eleven Genesis";
-        overlay.className = `eg18-transition eg20-transition eg18-transition--${transitionType(screen)} eg20-transition--${transitionType(screen)}`;
+        const type = transitionType(screen);
+        const legacyType = type === "eg-logo" ? "logo" : type === "ball-swipe" ? "football" : type;
+        overlay.className = `eg18-transition eg20-transition eg18-transition--${legacyType} eg20-transition--${type}`;
         $(".eg18-transition__label", overlay).textContent = label;
         void overlay.offsetWidth;
         overlay.classList.add("is-active");
@@ -108,6 +110,14 @@
             originalSwitchScreen(screen, { ...options, instant: true });
             window.requestAnimationFrame(applySceneFrame);
         }, screen);
+    }
+
+    function current() {
+        return currentScreen() || "menu";
+    }
+
+    function backToOffice(options = {}) {
+        go("home", options);
     }
 
     function installSwitchWrapper() {
@@ -205,7 +215,8 @@
                         <button class="eg18-object" type="button" data-eg18-screen="scout" data-eg18-camera="phone"><span class="ico">☎</span><span><strong>Telefone</strong><small>Olheiros e relatórios</small></span></button>
                         <button class="eg18-object" type="button" data-eg18-screen="squad" data-eg18-camera="photos"><span class="ico">▧</span><span><strong>Fotos</strong><small>Elenco</small></span></button>
                         <button class="eg18-object wide" type="button" data-eg18-screen="calendar" data-eg18-camera="agenda"><span class="ico">📓</span><span><strong>Agenda</strong><small>Semana e calendário</small></span></button>
-                        <button class="eg18-object" type="button" data-eg18-screen="league" data-eg18-camera="paper"><span class="ico">📰</span><span><strong>Jornal</strong><small>Liga e notícias</small></span></button>
+                        <button class="eg18-object" type="button" data-eg18-screen="newsCenter" data-eg18-camera="paper"><span class="ico">📰</span><span><strong>Jornal</strong><small>Correio Esportivo</small></span></button>
+                        <button class="eg18-object" type="button" data-eg18-screen="league" data-eg18-camera="paper"><span class="ico">▦</span><span><strong>Liga</strong><small>Classificação</small></span></button>
                         <button class="eg18-object eg18-radio-object" type="button" data-eg18-screen="marketing" data-eg18-camera="radio"><span class="ico">◉</span><span><strong>Rádio</strong><small>Torcida e marca</small></span><i></i></button>
                         <button class="eg18-object" type="button" data-eg18-screen="club" data-eg18-camera="envelope"><span class="ico">✉</span><span><strong>Envelope</strong><small>Diretoria e estrutura</small></span></button>
                         <button class="eg18-object" type="button" data-action="advance-week"><span class="ico">▶</span><span><strong>Avançar</strong><small>Semana seguinte</small></span></button>
@@ -227,6 +238,8 @@
                 <button type="button" data-eg18-screen="home" title="Sala">⌂</button>
                 <button type="button" data-eg18-screen="tactics" title="Tática">📋</button>
                 <button type="button" data-eg18-screen="market" title="Mercado">▤</button>
+                <button type="button" data-eg18-screen="league" title="Liga">▦</button>
+                <button type="button" data-eg18-screen="newsCenter" title="Jornal">📰</button>
                 <button type="button" data-eg18-screen="squad" title="Elenco">▧</button>
                 <button type="button" data-eg18-screen="calendar" title="Agenda">📓</button>
                 <button type="button" data-action="advance-week" title="Avançar">▶</button>
@@ -284,7 +297,7 @@
         document.addEventListener("click", screenClickHandler, true);
         document.addEventListener("click", actionClickHandler, true);
         applySceneFrame();
-        const api = { go, transition, applySceneFrame };
+        const api = { go, current, backToOffice, transition, applySceneFrame };
         window.EG18Scene = api;
         window.SceneManager = api;
         window.TransitionManager = { transition };

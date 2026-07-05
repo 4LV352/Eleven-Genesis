@@ -1,0 +1,300 @@
+/* EG21 — UX/UI zero-scroll: cenas focadas, identidade preservada, desktop e mobile. */
+:root{
+  --eg-bg:#050806;
+  --eg-panel:rgba(11,18,13,.82);
+  --eg-gold:#d7ad45;
+  --eg-green:#33c778;
+  --eg-paper:#e8d4a6;
+  --eg-wood:#5d321b;
+  --eg-text:#f7e8c4;
+  --eg-muted:#d8c79d;
+  --eg21-safe-bottom: calc(88px + env(safe-area-inset-bottom));
+  --eg21-scene-top: 74px;
+  --eg21-panel: rgba(11,18,13,.82);
+  --eg21-gold: #d7ad45;
+  --eg21-paper: #e8d4a6;
+}
+
+#app.splash-active .splash-progress{
+  justify-self:center!important;
+  margin-inline:auto!important;
+  transform:none!important;
+}
+
+.eg-scene{
+  min-width:0;
+  color:var(--eg-text);
+}
+.eg-panel{
+  border-color:rgba(215,173,69,.25)!important;
+  background:var(--eg-panel);
+}
+.eg-dock{
+  border-color:rgba(215,173,69,.32)!important;
+}
+.eg-table-wrap{
+  max-height:100%;
+  overflow:auto;
+  overscroll-behavior:contain;
+}
+.eg-drawer{
+  max-height:86dvh;
+  overflow:auto;
+}
+
+/* A carreira roda como jogo: o body nao vira a area de scroll. */
+html:has(body.eg18-scene-mode),
+body.eg18-scene-mode{
+  width:100%;
+  height:100dvh;
+  overflow:hidden!important;
+  overscroll-behavior:none;
+}
+
+body.eg18-scene-mode #app{
+  width:100%;
+  height:100dvh;
+  overflow:hidden!important;
+}
+
+body.eg18-scene-mode #screen-root{
+  height:100dvh;
+  max-height:100dvh;
+  overflow:hidden!important;
+}
+
+/* Elementos analógicos de EG15 deixam de invadir todas as cenas. */
+body.eg18-scene-mode #screen-root > .eg15-era-strip,
+body.eg18-scene-mode #screen-root > .eg15-newspaper,
+body.eg18-scene-mode #screen-root > .eg15-pin-board,
+body.eg18-scene-mode #screen-root > .eg15-office-map{
+  display:none!important;
+}
+
+/* O jornal agora e objeto/cena, nao rodape global que cobre logo e conteúdo. */
+body.eg18-scene-mode .eg15-newspaper:not(.eg21-news-scene),
+body.eg18-scene-mode .eg15-pin-board:not(.eg21-calendar-scene){
+  display:none!important;
+}
+
+#screen-root.eg18-screen-shell[data-eg20-scene="newsCenter"] .eg15-newspaper,
+#screen-root.eg18-screen-shell[data-eg20-scene="newsDetail"] .eg15-newspaper{
+  display:block!important;
+  max-height:calc(100dvh - var(--eg21-scene-top) - var(--eg21-safe-bottom) - 48px);
+  overflow:auto;
+}
+
+/* A radio deixa de parecer toast invasivo. */
+body.eg18-scene-mode .eg15-radio{
+  right:18px;
+  bottom:calc(18px + env(safe-area-inset-bottom));
+  width:56px;
+  height:56px;
+  max-width:56px;
+  padding:7px;
+  border-radius:50%;
+  overflow:hidden;
+  z-index:74;
+  transition:max-width .22s ease,width .22s ease,border-radius .22s ease,background .22s ease;
+}
+body.eg18-scene-mode .eg15-radio:hover,
+body.eg18-scene-mode .eg15-radio:focus-within{
+  width:min(390px,calc(100vw - 36px));
+  max-width:min(390px,calc(100vw - 36px));
+  border-radius:999px;
+}
+body.eg18-scene-mode .eg15-radio > div{
+  opacity:0;
+  width:0;
+  transition:opacity .18s ease,width .18s ease;
+}
+body.eg18-scene-mode .eg15-radio:hover > div,
+body.eg18-scene-mode .eg15-radio:focus-within > div{
+  opacity:1;
+  width:auto;
+}
+
+/* Header discreto, sem disputar com a cena. */
+body.eg18-scene-mode .topbar{
+  min-height:48px;
+  padding:8px 12px;
+}
+body.eg18-scene-mode .topbar strong,
+body.eg18-scene-mode .topbar span{
+  line-height:1.1;
+}
+
+/* Cenas: uma viewport, um propósito. */
+#screen-root.eg18-screen-shell{
+  height:100dvh;
+  padding:var(--eg21-scene-top) clamp(12px,2.4vw,36px) var(--eg21-safe-bottom)!important;
+  overflow:hidden!important;
+}
+
+#screen-root.eg18-screen-shell > .screen{
+  width:min(1180px,100%);
+  height:calc(100dvh - var(--eg21-scene-top) - var(--eg21-safe-bottom));
+  max-height:none!important;
+  margin:0 auto!important;
+  overflow:auto;
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable;
+  border-radius:24px;
+}
+
+/* Títulos menores e mais úteis: menos landing-page, mais painel de jogo. */
+#screen-root.eg18-screen-shell > .screen h1{
+  font-size:clamp(2rem,4vw,4.2rem)!important;
+  line-height:.92!important;
+  letter-spacing:-.06em;
+}
+#screen-root.eg18-screen-shell > .screen h2{
+  font-size:clamp(1.15rem,2vw,2rem);
+}
+#screen-root.eg18-screen-shell > .screen p{
+  max-width:76ch;
+}
+
+/* Hero das cenas mais compacto para não empurrar a ação principal. */
+#screen-root.eg18-screen-shell .internal-hero,
+#screen-root.eg18-screen-shell .market-header,
+#screen-root.eg18-screen-shell .calendar-hero{
+  min-height:auto!important;
+  padding:clamp(14px,2vw,24px)!important;
+}
+#screen-root.eg18-screen-shell .internal-hero-content{
+  min-height:auto!important;
+}
+
+/* Mercado: fichário legível, sem sensação de loja infinita. */
+#screen-root.eg18-screen-shell[data-eg20-scene="market"] .market-screen{
+  display:grid;
+  grid-template-rows:auto auto 1fr;
+  gap:14px;
+}
+#screen-root.eg18-screen-shell[data-eg20-scene="market"] .market-tools{
+  position:sticky;
+  top:0;
+  z-index:4;
+  padding:8px;
+  border-radius:16px;
+  background:rgba(15,28,20,.88);
+  backdrop-filter:blur(12px);
+}
+#screen-root.eg18-screen-shell[data-eg20-scene="market"] .market-player-list{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  align-content:start;
+}
+#screen-root.eg18-screen-shell[data-eg20-scene="market"] .market-player-card{
+  min-height:0;
+  box-shadow:none;
+}
+
+/* Clube/Liga: telas de consulta com foco, não blocos empilhados. */
+#screen-root.eg18-screen-shell[data-eg20-scene="club"] .internal-screen,
+#screen-root.eg18-screen-shell[data-eg20-scene="league"] .internal-screen{
+  display:grid;
+  grid-template-rows:auto auto 1fr;
+  gap:14px;
+}
+#screen-root.eg18-screen-shell[data-eg20-scene="league"] table,
+#screen-root.eg18-screen-shell[data-eg20-scene="club"] table{
+  font-size:clamp(.78rem,.9vw,.95rem);
+}
+
+/* Barra inferior: apoio de cena, não menu dominante. */
+.eg18-scene-bar{
+  bottom:calc(18px + env(safe-area-inset-bottom));
+  z-index:72;
+  opacity:.86;
+}
+.eg18-scene-bar:hover,
+.eg18-scene-bar:focus-within{
+  opacity:1;
+}
+.eg18-back-home{
+  bottom:calc(18px + env(safe-area-inset-bottom));
+  z-index:73;
+}
+
+/* Sala: reforça Eleven Genesis, reduz cara de dashboard. */
+.eg18-room-title h1{
+  letter-spacing:-.055em;
+}
+.eg18-room-title h1 .eg21-brand-line{
+  display:block;
+  margin-bottom:.08em;
+  font-size:clamp(2.4rem,5vw,5.9rem);
+  color:#fffaf0;
+  text-shadow:0 18px 42px rgba(0,0,0,.44);
+}
+.eg18-room-title h1 .eg21-room-line{
+  display:block;
+  font-size:clamp(1.7rem,3.2vw,3.8rem);
+  color:#f2d58b;
+  letter-spacing:-.035em;
+}
+.eg18-room-title h1 span:not(.eg21-brand-line):not(.eg21-room-line){
+  display:none!important;
+}
+
+/* Mobile: mesma experiência, outro enquadramento, sem desktop espremido. */
+@media(max-width:760px){
+  :root{
+    --eg21-scene-top:64px;
+    --eg21-safe-bottom:calc(78px + env(safe-area-inset-bottom));
+  }
+  body.eg18-scene-mode .topbar{
+    left:8px;right:8px;top:6px;
+    border-radius:18px;
+  }
+  #screen-root.eg18-screen-shell{
+    padding:var(--eg21-scene-top) 8px var(--eg21-safe-bottom)!important;
+  }
+  #screen-root.eg18-screen-shell > .screen{
+    height:calc(100dvh - var(--eg21-scene-top) - var(--eg21-safe-bottom));
+    border-radius:18px;
+  }
+  #screen-root.eg18-screen-shell > .screen h1{
+    font-size:clamp(2rem,11vw,3.4rem)!important;
+  }
+  #screen-root.eg18-screen-shell[data-eg20-scene="market"] .market-player-list{
+    grid-template-columns:1fr;
+  }
+  .eg18-scene-bar{
+    left:50%;
+    right:auto;
+    max-width:calc(100vw - 112px);
+    padding:6px;
+    gap:6px;
+    overflow-x:auto;
+  }
+  .eg18-scene-bar button{
+    width:40px;height:40px;flex:0 0 40px;
+  }
+  .eg18-back-home{
+    left:8px;
+    max-width:96px;
+    padding:10px 11px;
+    white-space:normal;
+    line-height:1.05;
+  }
+  body.eg18-scene-mode .eg15-radio{
+    right:8px;
+    bottom:calc(18px + env(safe-area-inset-bottom));
+    width:48px;height:48px;max-width:48px;
+  }
+  body.eg18-scene-mode .eg15-radio:hover,
+  body.eg18-scene-mode .eg15-radio:focus-within{
+    width:calc(100vw - 16px);
+    max-width:calc(100vw - 16px);
+  }
+}
+
+@media(max-height:720px) and (min-width:761px){
+  :root{--eg21-scene-top:62px;--eg21-safe-bottom:76px;}
+  .eg18-room-title{padding-top:210px;}
+  .eg18-window{top:58px;height:110px;}
+  .eg18-desk{height:34vh;}
+  .eg18-object-grid{grid-auto-rows:minmax(92px,1fr);}
+}
