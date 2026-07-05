@@ -463,3 +463,307 @@ body.eg22-ux #screen-root[data-eg20-scene="club"] .eg-text{
     padding:12px 14px!important;
   }
 }
+
+/* Menu and career start: keep the brand clean and stop long cards from crushing the viewport. */
+body:has(.main-menu) #screen-root{
+  overflow:hidden!important;
+}
+
+.main-menu.eg5-menu,
+.main-menu{
+  min-width:0!important;
+}
+
+.eg5-menu-stage{
+  min-width:0!important;
+  max-height:100dvh!important;
+}
+
+.eg5-menu-center,
+.eg5-menu-story,
+.eg5-save-card{
+  min-width:0!important;
+}
+
+.eg5-menu-center h1{
+  letter-spacing:0!important;
+  text-wrap:balance;
+}
+
+.eg5-save-card,
+.menu-info-item{
+  overflow-wrap:anywhere!important;
+}
+
+.club-select-screen{
+  min-height:0!important;
+  overflow:hidden!important;
+}
+
+.club-select-screen .club-offer-grid,
+.club-select-screen .eg6-league-grid,
+.club-select-screen .eg6-club-grid{
+  min-height:0!important;
+  overflow:auto!important;
+  align-content:start!important;
+}
+
+.club-select-screen .club-offer-card,
+.club-select-screen .eg6-league-card,
+.club-select-screen .eg6-club-card{
+  min-height:0!important;
+  overflow:visible!important;
+}
+
+.eg6-contract-signed{
+  min-height:100dvh!important;
+  display:grid!important;
+  place-items:center!important;
+  padding:clamp(14px,3vw,32px)!important;
+  overflow:auto!important;
+}
+
+.eg6-contract-signed .eg6-newspaper-front{
+  width:min(920px,100%)!important;
+  max-height:calc(100dvh - 32px)!important;
+  overflow:auto!important;
+  color:var(--eg23-ink)!important;
+  background:linear-gradient(180deg,#fff4d0,#e6c891)!important;
+}
+
+.eg6-contract-signed .eg6-newspaper-front h1,
+.eg6-contract-signed .eg6-newspaper-front h2,
+.eg6-contract-signed .eg6-newspaper-front p,
+.eg6-contract-signed .eg6-paper-briefs span{
+  color:var(--eg23-ink)!important;
+  letter-spacing:0!important;
+  overflow-wrap:anywhere!important;
+}
+
+/* Office hub polish: objects stay usable without colliding with dock or radio. */
+body.eg22-ux .eg18-room-hub{
+  isolation:isolate;
+}
+
+body.eg22-ux .eg18-desk{
+  max-height:calc(100dvh - 280px)!important;
+  min-height:240px!important;
+}
+
+body.eg22-ux .eg18-object{
+  min-width:0!important;
+  overflow:hidden!important;
+}
+
+body.eg22-ux .eg18-object span:last-child{
+  min-width:0!important;
+}
+
+body.eg22-ux .eg18-object strong,
+body.eg22-ux .eg18-object small{
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+
+body.eg22-ux .eg18-object strong{
+  white-space:nowrap!important;
+}
+
+body.eg22-ux .eg18-object small{
+  display:-webkit-box!important;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+}
+
+/* Drawers, filters, modals and toasts: stable stacking above scenes, below tension moments. */
+.eg-drawer-overlay,
+.eg3-filter-sheet,
+.weekly-summary-overlay,
+.question-modal-backdrop,
+.modal-root:not(:empty){
+  z-index:320!important;
+}
+
+.eg-drawer-panel,
+.eg3-filter-panel,
+.weekly-summary-modal,
+.question-modal,
+.modal-card{
+  max-height:calc(100dvh - 28px)!important;
+  overflow:auto!important;
+  overscroll-behavior:contain;
+}
+
+.eg-drawer-panel{
+  width:min(760px,calc(100vw - 24px))!important;
+  border-radius:22px!important;
+}
+
+.eg-drawer-content{
+  min-width:0!important;
+}
+
+.toast{
+  z-index:360!important;
+  max-width:min(420px,calc(100vw - 24px))!important;
+  right:12px!important;
+  bottom:calc(12px + env(safe-area-inset-bottom))!important;
+  overflow-wrap:anywhere!important;
+}
+
+.tension-overlay{
+  z-index:9999!important;
+}
+
+/* Player and market detail scenes. */
+body.eg22-ux #screen-root[data-eg20-scene="playerDetail"] > .screen,
+body.eg22-ux #screen-root[data-eg20-scene="market"] > .screen:has(.market-detail-screen){
+  overflow:auto!important;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell .player-hero,
+body.eg22-ux #screen-root.eg18-screen-shell .market-detail-hero{
+  display:grid!important;
+  grid-template-columns:auto minmax(0,1fr)!important;
+  gap:16px!important;
+  align-items:center!important;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell .player-hero h1,
+body.eg22-ux #screen-root.eg18-screen-shell .market-detail-hero h1{
+  font-size:clamp(30px,4vw,58px)!important;
+  line-height:1!important;
+  letter-spacing:0!important;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell .player-detail-grid,
+body.eg22-ux #screen-root.eg18-screen-shell .market-detail-grid,
+body.eg22-ux #screen-root.eg18-screen-shell .attribute-grid,
+body.eg22-ux #screen-root.eg18-screen-shell .mini-bars{
+  min-height:0!important;
+  max-width:100%!important;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell .attribute-grid{
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr))!important;
+}
+
+/* Staff, training, academy and marketing grids. */
+body.eg22-ux #screen-root.eg18-screen-shell .staff-grid,
+body.eg22-ux #screen-root.eg18-screen-shell .training-grid,
+body.eg22-ux #screen-root.eg18-screen-shell .academy-list,
+body.eg22-ux #screen-root.eg18-screen-shell .eg3-academy-list,
+body.eg22-ux #screen-root.eg18-screen-shell .marketing-proposal-grid,
+body.eg22-ux #screen-root.eg18-screen-shell .marketing-mini-grid{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr))!important;
+  gap:12px!important;
+  min-height:0!important;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell .manager-panel,
+body.eg22-ux #screen-root.eg18-screen-shell .academy-card,
+body.eg22-ux #screen-root.eg18-screen-shell .eg3-academy-card,
+body.eg22-ux #screen-root.eg18-screen-shell .marketing-card,
+body.eg22-ux #screen-root.eg18-screen-shell .sponsor-card{
+  min-width:0!important;
+  max-width:100%!important;
+  overflow:visible!important;
+  border-radius:18px!important;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell .field{
+  min-width:0!important;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell .field input,
+body.eg22-ux #screen-root.eg18-screen-shell .field select{
+  width:100%!important;
+}
+
+/* Tables and long rows. */
+body.eg22-ux #screen-root.eg18-screen-shell .table-wrap{
+  max-width:100%!important;
+  overflow:auto!important;
+  overscroll-behavior:contain;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell table{
+  border-collapse:separate!important;
+  border-spacing:0!important;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell td,
+body.eg22-ux #screen-root.eg18-screen-shell th{
+  white-space:nowrap;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell td:nth-child(2),
+body.eg22-ux #screen-root.eg18-screen-shell th:nth-child(2){
+  white-space:normal;
+  min-width:160px;
+}
+
+@media(max-width:900px){
+  .eg5-menu-stage{
+    overflow:auto!important;
+    align-content:start!important;
+  }
+
+  .eg5-menu-story{
+    display:none!important;
+  }
+
+  .eg5-save-card{
+    max-height:28dvh!important;
+    overflow:auto!important;
+  }
+
+  .club-select-screen{
+    overflow:auto!important;
+  }
+
+  .eg6-contract-signed .eg6-newspaper-front{
+    max-height:none!important;
+  }
+
+  body.eg22-ux .eg18-desk{
+    max-height:none!important;
+  }
+
+  body.eg22-ux #screen-root.eg18-screen-shell .player-hero,
+  body.eg22-ux #screen-root.eg18-screen-shell .market-detail-hero{
+    grid-template-columns:1fr!important;
+    align-items:start!important;
+  }
+
+  .eg-drawer-panel{
+    width:calc(100vw - 16px)!important;
+    max-height:calc(100dvh - 16px)!important;
+  }
+}
+
+@media(max-width:520px){
+  body.eg22-ux .eg18-object-grid{
+    grid-auto-rows:minmax(82px,auto)!important;
+  }
+
+  body.eg22-ux .eg18-object strong{
+    white-space:normal!important;
+  }
+
+  body.eg22-ux #screen-root.eg18-screen-shell .staff-grid,
+  body.eg22-ux #screen-root.eg18-screen-shell .training-grid,
+  body.eg22-ux #screen-root.eg18-screen-shell .academy-list,
+  body.eg22-ux #screen-root.eg18-screen-shell .eg3-academy-list,
+  body.eg22-ux #screen-root.eg18-screen-shell .marketing-proposal-grid,
+  body.eg22-ux #screen-root.eg18-screen-shell .marketing-mini-grid{
+    grid-template-columns:1fr!important;
+  }
+
+  .toast{
+    left:10px!important;
+    right:10px!important;
+    bottom:calc(10px + env(safe-area-inset-bottom))!important;
+  }
+}

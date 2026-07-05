@@ -20,6 +20,15 @@ Ela e carregada depois do EG22 no `index.html`, preservando a logica existente, 
 
 ## Correcoes aplicadas
 
+### Passada 2 - estabilidade de cenas
+
+- Entrada, selecao de clube e contrato foram estabilizados para reduzir cortes, scroll global e colisao com a marca.
+- Objetos da sala ganharam protecao contra texto estourado e colisao com dock/radio.
+- Drawers, filtros, modais, resumo semanal e toast receberam camadas e limites de altura mais previsiveis.
+- Detalhes de jogador e mercado foram ajustados para caber melhor em cena, com grids fluidos.
+- Staff, treino, academia e marketing receberam grids responsivos para reduzir sobreposicao de cards.
+- Tabelas passaram a usar overflow interno controlado, sem empurrar a cena inteira.
+
 ### Jornal
 
 - `newsCenter` e `newsDetail` agora usam contraste forte, fundo de papel claro e tinta escura.
@@ -66,6 +75,16 @@ Foram adicionados ajustes para telas que ainda ficavam fora do acabamento EG22:
 - `index.html`
 - `css/eg23-ux-readability.css`
 - `RELATORIO_EG23_UX_READABILITY.md`
+
+## Validacao executada
+
+- `node --check js\storage.js`
+- `node --check js\navigation.js`
+- `node --check js\ui.js`
+- `node --check js\app.js`
+- `node --check js\eg18-scene-navigation.js`
+- `node --check js\eg22-ui-pro-rebuild.js`
+- Carga inicial via Microsoft Edge headless em 1366x768, com screenshot validando logo e texto Eleven Genesis visiveis na home.
 
 ## Validacao recomendada
 
