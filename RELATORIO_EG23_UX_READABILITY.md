@@ -29,6 +29,18 @@ Ela e carregada depois do EG22 no `index.html`, preservando a logica existente, 
 - Staff, treino, academia e marketing receberam grids responsivos para reduzir sobreposicao de cards.
 - Tabelas passaram a usar overflow interno controlado, sem empurrar a cena inteira.
 
+### Passada 3 - cenas internas antigas
+
+- Cenas internas antigas passaram a usar grid de viewport com cabecalho compacto e painel principal rolavel.
+- Liga recebeu limites de tabela e resultados para reduzir pagina longa.
+- Calendario passou a caber melhor em cena, com agenda e acoes compactas.
+- Clube, estadio e estrutura foram tratados como dossies com grids fluidos e secoes internas controladas.
+- Marketing/radio ganhou area de propostas rolavel e campanhas menos largas.
+- Notificacoes passaram a usar grid responsivo com rolagem interna.
+- Vestiario, torcida, partida, resultado, diretoria e financas receberam protecao contra scroll global e cards sobrepostos.
+- Botoes, formularios, `row-card`, `stat` e textos longos ganharam quebras mais seguras em desktop e mobile.
+- Home mobile recebeu correcao especifica para impedir corte do texto Eleven Genesis, botoes e metadados da ultima carreira.
+
 ### Jornal
 
 - `newsCenter` e `newsDetail` agora usam contraste forte, fundo de papel claro e tinta escura.

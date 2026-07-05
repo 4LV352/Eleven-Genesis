@@ -744,6 +744,100 @@ body.eg22-ux #screen-root.eg18-screen-shell th:nth-child(2){
 }
 
 @media(max-width:520px){
+  .main-menu,
+  .eg5-menu-stage,
+  .eg5-menu-center,
+  .eg5-save-card{
+    box-sizing:border-box!important;
+    width:100%!important;
+    max-width:calc(100vw - 28px)!important;
+  }
+
+  .main-menu.screen,
+  .main-menu .menu-shell,
+  .main-menu.eg5-menu,
+  .eg5-menu-stage{
+    left:auto!important;
+    right:auto!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+    transform:none!important;
+    overflow-x:hidden!important;
+  }
+
+  .main-menu .menu-shell{
+    box-sizing:border-box!important;
+    width:100%!important;
+    max-width:calc(100vw - 28px)!important;
+    padding-left:0!important;
+    padding-right:0!important;
+  }
+
+  .eg5-menu-center h1,
+  .main-menu h1{
+    max-width:min(340px,calc(100vw - 36px))!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+    white-space:normal!important;
+    overflow-wrap:normal!important;
+    text-align:center!important;
+    font-size:clamp(38px,11vw,52px)!important;
+    line-height:.92!important;
+  }
+
+  .eg5-menu-center .btn,
+  .main-menu .btn,
+  .main-menu button{
+    width:100%!important;
+    max-width:min(314px,calc(100vw - 76px))!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+  }
+
+  .eg5-menu-actions,
+  .main-menu .button-row,
+  .main-menu .menu-actions{
+    width:100%!important;
+    max-width:min(314px,calc(100vw - 76px))!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+  }
+
+  .eg5-save-card{
+    padding-left:18px!important;
+    padding-right:18px!important;
+  }
+
+  .eg5-save-card .eg5-save-meta,
+  .main-menu .eg5-save-meta{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:8px!important;
+  }
+
+  .eg5-save-card .eg5-save-meta div,
+  .main-menu .eg5-save-meta div{
+    min-width:0!important;
+  }
+
+  .eg5-save-card .eg5-save-meta b,
+  .main-menu .eg5-save-meta b{
+    white-space:normal!important;
+    overflow-wrap:anywhere!important;
+  }
+
+  .eg5-save-card .menu-info-grid,
+  .main-menu .menu-info-grid{
+    grid-template-columns:1fr!important;
+    gap:10px!important;
+  }
+
+  .eg5-save-card .menu-info-item,
+  .main-menu .menu-info-item{
+    min-width:0!important;
+    overflow:visible!important;
+  }
+
   body.eg22-ux .eg18-object-grid{
     grid-auto-rows:minmax(82px,auto)!important;
   }
@@ -765,5 +859,316 @@ body.eg22-ux #screen-root.eg18-screen-shell th:nth-child(2){
     left:10px!important;
     right:10px!important;
     bottom:calc(10px + env(safe-area-inset-bottom))!important;
+  }
+}
+
+/* Pass 3: make older internal screens behave like focused game scenes. */
+body.eg22-ux #screen-root.eg18-screen-shell > .screen.internal-screen,
+body.eg22-ux #screen-root.eg18-screen-shell > .screen.calendar-screen,
+body.eg22-ux #screen-root.eg18-screen-shell > .screen.marketing-screen,
+body.eg22-ux #screen-root.eg18-screen-shell > .screen.notifications-screen{
+  display:grid!important;
+  grid-template-rows:auto minmax(0,1fr)!important;
+  gap:12px!important;
+  padding:14px!important;
+  overflow:hidden!important;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell > .screen.marketing-screen{
+  grid-template-rows:auto auto minmax(0,1fr)!important;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell > .screen > .internal-hero,
+body.eg22-ux #screen-root.eg18-screen-shell > .screen > .calendar-hero,
+body.eg22-ux #screen-root.eg18-screen-shell > .screen > .screen-header{
+  min-height:0!important;
+  max-height:clamp(112px,18dvh,178px)!important;
+  padding:clamp(12px,2vw,20px)!important;
+  overflow:hidden!important;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell .internal-hero h1,
+body.eg22-ux #screen-root.eg18-screen-shell .calendar-hero h1,
+body.eg22-ux #screen-root.eg18-screen-shell .screen-header h1{
+  font-size:clamp(24px,3.5vw,48px)!important;
+  line-height:1!important;
+  letter-spacing:0!important;
+  text-wrap:balance;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell .internal-hero p,
+body.eg22-ux #screen-root.eg18-screen-shell .calendar-hero p,
+body.eg22-ux #screen-root.eg18-screen-shell .screen-header p{
+  display:block!important;
+  max-width:76ch!important;
+  margin:4px 0 0!important;
+  font-size:clamp(12px,1.1vw,15px)!important;
+  line-height:1.35!important;
+  overflow-wrap:anywhere!important;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell > .screen > .internal-panel,
+body.eg22-ux #screen-root.eg18-screen-shell > .screen > .club-room,
+body.eg22-ux #screen-root.eg18-screen-shell > .screen > .stadium-room,
+body.eg22-ux #screen-root.eg18-screen-shell > .screen > .structure-room,
+body.eg22-ux #screen-root.eg18-screen-shell > .screen > .finance-room,
+body.eg22-ux #screen-root.eg18-screen-shell > .screen > .news-panel,
+body.eg22-ux #screen-root.eg18-screen-shell > .screen > .news-detail-card,
+body.eg22-ux #screen-root.eg18-screen-shell > .screen > .dressing-room,
+body.eg22-ux #screen-root.eg18-screen-shell > .screen > .fan-room{
+  min-height:0!important;
+  height:100%!important;
+  overflow:auto!important;
+  overscroll-behavior:contain;
+  padding:clamp(12px,1.8vw,22px)!important;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell .internal-panel > :first-child,
+body.eg22-ux #screen-root.eg18-screen-shell .club-room > :first-child,
+body.eg22-ux #screen-root.eg18-screen-shell .stadium-room > :first-child,
+body.eg22-ux #screen-root.eg18-screen-shell .structure-room > :first-child,
+body.eg22-ux #screen-root.eg18-screen-shell .finance-room > :first-child{
+  margin-top:0!important;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell .row-card,
+body.eg22-ux #screen-root.eg18-screen-shell .notification-card,
+body.eg22-ux #screen-root.eg18-screen-shell .stadium-upgrade,
+body.eg22-ux #screen-root.eg18-screen-shell .structure-department,
+body.eg22-ux #screen-root.eg18-screen-shell .marketing-proposal,
+body.eg22-ux #screen-root.eg18-screen-shell .sponsor-card{
+  min-width:0!important;
+  overflow-wrap:anywhere!important;
+  word-break:normal!important;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell .row-main,
+body.eg22-ux #screen-root.eg18-screen-shell .meta,
+body.eg22-ux #screen-root.eg18-screen-shell .button-row,
+body.eg22-ux #screen-root.eg18-screen-shell .marketing-actions{
+  min-width:0!important;
+  flex-wrap:wrap!important;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell .row-main > *,
+body.eg22-ux #screen-root.eg18-screen-shell .meta > *,
+body.eg22-ux #screen-root.eg18-screen-shell .button-row > *,
+body.eg22-ux #screen-root.eg18-screen-shell .marketing-actions > *{
+  min-width:0!important;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell .stat{
+  min-width:0!important;
+  overflow:visible!important;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell .stat span,
+body.eg22-ux #screen-root.eg18-screen-shell .stat strong,
+body.eg22-ux #screen-root.eg18-screen-shell .row-card strong,
+body.eg22-ux #screen-root.eg18-screen-shell .notification-card h2{
+  white-space:normal!important;
+  overflow-wrap:anywhere!important;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell .stat strong{
+  font-size:clamp(16px,1.7vw,24px)!important;
+  line-height:1.08!important;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell .muted,
+body.eg22-ux #screen-root.eg18-screen-shell .notification-card p,
+body.eg22-ux #screen-root.eg18-screen-shell .eg-text{
+  color:rgba(255,244,214,.78)!important;
+  line-height:1.45!important;
+}
+
+/* League, calendar and notifications keep their density inside the viewport. */
+body.eg22-ux #screen-root[data-eg20-scene="league"] .table-wrap{
+  max-height:42dvh!important;
+}
+
+body.eg22-ux #screen-root[data-eg20-scene="league"] .list{
+  min-height:0!important;
+  max-height:22dvh!important;
+  overflow:auto!important;
+  overscroll-behavior:contain;
+}
+
+body.eg22-ux #screen-root[data-eg20-scene="calendar"] .calendar-hero{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:12px!important;
+}
+
+body.eg22-ux #screen-root[data-eg20-scene="calendar"] .calendar-layout,
+body.eg22-ux #screen-root[data-eg20-scene="calendar"] .calendar-grid{
+  min-height:0!important;
+  overflow:auto!important;
+}
+
+body.eg22-ux #screen-root[data-eg20-scene="notifications"] .notifications-list{
+  min-height:0!important;
+  max-height:100%!important;
+  overflow:auto!important;
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr))!important;
+  gap:12px!important;
+  align-content:start!important;
+}
+
+body.eg22-ux #screen-root[data-eg20-scene="notifications"] .notification-card{
+  height:auto!important;
+}
+
+/* Club, stadium and structure become dossiers with controlled sections. */
+body.eg22-ux #screen-root[data-eg20-scene="club"] .club-heading,
+body.eg22-ux #screen-root[data-eg20-scene="stadium"] .club-heading{
+  align-items:center!important;
+  gap:14px!important;
+}
+
+body.eg22-ux #screen-root[data-eg20-scene="club"] .club-heading h2,
+body.eg22-ux #screen-root[data-eg20-scene="stadium"] .club-heading h2{
+  font-size:clamp(24px,3vw,42px)!important;
+  line-height:1!important;
+  letter-spacing:0!important;
+}
+
+body.eg22-ux #screen-root[data-eg20-scene="club"] .club-identity-grid,
+body.eg22-ux #screen-root[data-eg20-scene="stadium"] .stadium-upgrades,
+body.eg22-ux #screen-root[data-eg20-scene="structure"] .structure-grid{
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr))!important;
+  gap:12px!important;
+}
+
+body.eg22-ux #screen-root[data-eg20-scene="stadium"] .stadium-projects,
+body.eg22-ux #screen-root[data-eg20-scene="structure"] .stadium-projects{
+  min-height:0!important;
+  max-height:24dvh!important;
+  overflow:auto!important;
+  overscroll-behavior:contain;
+}
+
+/* Marketing/radio scene: less store page, more control surface. */
+body.eg22-ux #screen-root[data-eg20-scene="marketing"] > .screen{
+  overflow:auto!important;
+}
+
+body.eg22-ux #screen-root[data-eg20-scene="marketing"] .stat-grid:first-of-type{
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr))!important;
+}
+
+body.eg22-ux #screen-root[data-eg20-scene="marketing"] .marketing-campaign-grid{
+  grid-template-columns:repeat(auto-fit,minmax(190px,1fr))!important;
+  gap:12px!important;
+}
+
+body.eg22-ux #screen-root[data-eg20-scene="marketing"] .marketing-proposal-grid{
+  max-height:32dvh!important;
+  overflow:auto!important;
+  overscroll-behavior:contain;
+  padding-right:4px!important;
+}
+
+/* Match/result, dressing room and fans must not become long webpages. */
+body.eg22-ux #screen-root[data-eg20-scene="matchPreview"] .match-preview-panel,
+body.eg22-ux #screen-root[data-eg20-scene="resultDetails"] .result-panel,
+body.eg22-ux #screen-root[data-eg20-scene="dressingRoom"] .dressing-room,
+body.eg22-ux #screen-root[data-eg20-scene="fanMood"] .fan-room,
+body.eg22-ux #screen-root[data-eg20-scene="boardRoom"] .board-room,
+body.eg22-ux #screen-root[data-eg20-scene="finances"] .finance-room{
+  display:grid!important;
+  gap:12px!important;
+  align-content:start!important;
+}
+
+body.eg22-ux #screen-root[data-eg20-scene="dressingRoom"] .dressing-room > div:not(.stat-grid),
+body.eg22-ux #screen-root[data-eg20-scene="fanMood"] .fan-room > div:not(.stat-grid){
+  min-height:0!important;
+}
+
+/* Form controls and action buttons keep usable touch targets without forcing columns apart. */
+body.eg22-ux #screen-root.eg18-screen-shell .field{
+  gap:7px!important;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell .field span{
+  overflow-wrap:anywhere!important;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell .btn,
+body.eg22-ux #screen-root.eg18-screen-shell button:not(.eg18-scene-bar button):not(.eg18-back-home){
+  min-height:40px!important;
+  white-space:normal!important;
+  line-height:1.12!important;
+}
+
+@media(max-width:900px){
+  body.eg22-ux #screen-root.eg18-screen-shell > .screen.internal-screen,
+  body.eg22-ux #screen-root.eg18-screen-shell > .screen.calendar-screen,
+  body.eg22-ux #screen-root.eg18-screen-shell > .screen.marketing-screen,
+  body.eg22-ux #screen-root.eg18-screen-shell > .screen.notifications-screen{
+    padding:10px!important;
+    gap:10px!important;
+  }
+
+  body.eg22-ux #screen-root.eg18-screen-shell > .screen > .internal-hero,
+  body.eg22-ux #screen-root.eg18-screen-shell > .screen > .calendar-hero,
+  body.eg22-ux #screen-root.eg18-screen-shell > .screen > .screen-header{
+    max-height:150px!important;
+  }
+
+  body.eg22-ux #screen-root[data-eg20-scene="calendar"] .calendar-hero{
+    grid-template-columns:1fr!important;
+  }
+
+  body.eg22-ux #screen-root[data-eg20-scene="league"] .table-wrap{
+    max-height:48dvh!important;
+  }
+
+  body.eg22-ux #screen-root[data-eg20-scene="marketing"] .marketing-proposal-grid{
+    max-height:none!important;
+  }
+}
+
+@media(max-width:560px){
+  body.eg22-ux #screen-root.eg18-screen-shell{
+    padding:56px 8px 70px!important;
+  }
+
+  body.eg22-ux #screen-root.eg18-screen-shell > .screen{
+    border-radius:18px!important;
+  }
+
+  body.eg22-ux #screen-root.eg18-screen-shell .internal-hero p,
+  body.eg22-ux #screen-root.eg18-screen-shell .calendar-hero p,
+  body.eg22-ux #screen-root.eg18-screen-shell .screen-header p{
+    display:none!important;
+  }
+
+  body.eg22-ux #screen-root.eg18-screen-shell > .screen > .internal-hero,
+  body.eg22-ux #screen-root.eg18-screen-shell > .screen > .calendar-hero,
+  body.eg22-ux #screen-root.eg18-screen-shell > .screen > .screen-header{
+    max-height:104px!important;
+  }
+
+  body.eg22-ux #screen-root.eg18-screen-shell .stat-grid,
+  body.eg22-ux #screen-root[data-eg20-scene="notifications"] .notifications-list,
+  body.eg22-ux #screen-root[data-eg20-scene="club"] .club-identity-grid,
+  body.eg22-ux #screen-root[data-eg20-scene="stadium"] .stadium-upgrades,
+  body.eg22-ux #screen-root[data-eg20-scene="structure"] .structure-grid{
+    grid-template-columns:1fr!important;
+  }
+
+  body.eg22-ux #screen-root.eg18-screen-shell .button-row .btn,
+  body.eg22-ux #screen-root.eg18-screen-shell .marketing-actions .btn{
+    width:100%!important;
+  }
+
+  body.eg22-ux #screen-root[data-eg20-scene="league"] .table-wrap,
+  body.eg22-ux #screen-root[data-eg20-scene="stadium"] .stadium-projects,
+  body.eg22-ux #screen-root[data-eg20-scene="structure"] .stadium-projects{
+    max-height:42dvh!important;
   }
 }
