@@ -4,14 +4,13 @@
   const q = (s,c=document)=>c.querySelector(s);
   const qa = (s,c=document)=>Array.from(c.querySelectorAll(s));
   const nonNewsScenes = () => !['newsCenter','newsDetail'].includes(document.body.dataset.eg20CurrentScene || q('#'+ROOT_ID)?.dataset.eg20Scene || '');
+  let pending = false;
 
   function root(){ return document.getElementById(ROOT_ID); }
 
   function removePollution(){
     const r = root();
     if(!r) return;
-    // Remove EG21 artificial helper notes.
-    qa('.eg21-scene-purpose', r).forEach(el=>el.remove());
     const scene = r.dataset.eg20Scene || document.body.dataset.eg20CurrentScene || '';
     // A newspaper must not be a global footer/panel outside its own scene.
     if(!['newsCenter','newsDetail'].includes(scene)){
@@ -24,16 +23,18 @@
   }
 
   function markScenes(){
-    document.body.classList.add('eg22-ux');
+    if(!document.body.classList.contains('eg22-ux')) document.body.classList.add('eg22-ux');
     const r = root();
     if(!r) return;
     const scene = r.dataset.eg20Scene || document.body.dataset.eg20CurrentScene || '';
-    if(scene) document.body.dataset.eg22Scene = scene;
-    r.classList.toggle('eg22-shell', r.classList.contains('eg18-screen-shell'));
+    if(scene && document.body.dataset.eg22Scene !== scene) document.body.dataset.eg22Scene = scene;
+    const shell = r.classList.contains('eg18-screen-shell');
+    if(r.classList.contains('eg22-shell') !== shell) r.classList.toggle('eg22-shell', shell);
     const screen = q(':scope > .screen', r);
     if(screen){
-      screen.classList.add('eg22-scene');
-      screen.setAttribute('data-eg22-scene', scene || 'unknown');
+      if(!screen.classList.contains('eg22-scene')) screen.classList.add('eg22-scene');
+      const sceneName = scene || 'unknown';
+      if(screen.getAttribute('data-eg22-scene') !== sceneName) screen.setAttribute('data-eg22-scene', sceneName);
     }
   }
 
@@ -90,14 +91,23 @@
     ensureSafeScroll();
   }
 
+  function schedule(){
+    if(pending) return;
+    pending = true;
+    requestAnimationFrame(() => {
+      pending = false;
+      apply();
+    });
+  }
+
   function init(){
     apply();
     const r = root();
-    if(r) new MutationObserver(()=>requestAnimationFrame(apply)).observe(r,{childList:true,subtree:true,attributes:true,attributeFilter:['class','data-eg20-scene']});
+    if(r) new MutationObserver(schedule).observe(r,{childList:true,subtree:false,attributes:true,attributeFilter:['data-eg20-scene']});
     const app = document.getElementById('app');
-    if(app) new MutationObserver(()=>requestAnimationFrame(apply)).observe(app,{attributes:true,attributeFilter:['class']});
-    window.addEventListener('resize', apply, {passive:true});
-    window.EG22UX = { apply };
+    if(app) new MutationObserver(schedule).observe(app,{attributes:true,attributeFilter:['class']});
+    window.addEventListener('resize', schedule, {passive:true});
+    window.EG22UX = { apply, schedule };
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();

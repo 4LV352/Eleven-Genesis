@@ -38,6 +38,7 @@
   }
 
   function addScenePurpose(){
+    if(window.EG22UX || document.body.classList.contains('eg22-ux')) return;
     const r = root();
     if(!r || !r.classList.contains('eg18-screen-shell')) return;
     const screen = $(':scope > .screen', r);

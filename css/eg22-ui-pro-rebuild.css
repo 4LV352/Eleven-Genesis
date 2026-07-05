@@ -62,6 +62,15 @@ body.eg22-ux.eg18-scene-mode .topbar strong{font-size:clamp(14px,1.3vw,19px)!imp
 body.eg22-ux.eg18-scene-mode .topbar span{font-size:11px!important;letter-spacing:.08em;}
 body.eg22-ux.eg18-scene-mode .icon-action{min-width:36px;height:36px;border-radius:50%;}
 
+/* Navegação legada fica fora do palco; os objetos da sala e o dock EG18 comandam o jogo. */
+body.eg22-ux.eg18-scene-mode .desktop-sidebar,
+body.eg22-ux.eg18-scene-mode #desktop-sidebar,
+body.eg22-ux.eg18-scene-mode .bottom-nav,
+body.eg22-ux.eg18-scene-mode #bottom-nav{
+  display:none!important;
+  pointer-events:none!important;
+}
+
 /* Shell de cenas: uma tela = uma decisão. */
 body.eg22-ux.eg18-scene-mode #app,
 body.eg22-ux.eg18-scene-mode #screen-root{
@@ -96,6 +105,24 @@ body.eg22-ux #screen-root.eg18-screen-shell > .screen{
   border:1px solid var(--eg22-line)!important;
   background:var(--eg22-panel)!important;
   box-shadow:var(--eg22-shadow)!important;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell > .screen .card,
+body.eg22-ux #screen-root.eg18-screen-shell > .screen .card-pad,
+body.eg22-ux #screen-root.eg18-screen-shell > .screen .row-card,
+body.eg22-ux #screen-root.eg18-screen-shell > .screen .eg3-person-card,
+body.eg22-ux #screen-root.eg18-screen-shell > .screen .eg4-market-card,
+body.eg22-ux #screen-root.eg18-screen-shell > .screen .eg5-market-card{
+  border-radius:18px!important;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell > .screen :where(button,input,select){
+  max-width:100%;
+}
+
+body.eg22-ux #screen-root.eg18-screen-shell > .screen :where(button,[tabindex]):focus-visible{
+  outline:2px solid var(--eg22-gold-soft)!important;
+  outline-offset:3px!important;
 }
 
 /* Remove a nota artificial EG21 que poluía as cenas. */
@@ -291,6 +318,15 @@ body.eg22-ux #screen-root[data-eg20-scene="market"] [class*="market-player"]{
   max-height:150px!important;
   overflow:hidden!important;
 }
+body.eg22-ux #screen-root[data-eg20-scene="market"] .eg3-filter-sheet{
+  position:fixed!important;
+  inset:0!important;
+  z-index:180!important;
+}
+body.eg22-ux #screen-root[data-eg20-scene="market"] .eg3-filter-panel{
+  max-height:min(640px,calc(100dvh - 40px))!important;
+  overflow:auto!important;
+}
 
 /* League — central de campeonato, não página com jornal. */
 body.eg22-ux #screen-root[data-eg20-scene="league"] > .screen{
@@ -318,6 +354,20 @@ body.eg22-ux #screen-root[data-eg20-scene="league"] .table-wrap{
 body.eg22-ux #screen-root[data-eg20-scene="league"] table{font-size:clamp(12px,1vw,15px)!important;}
 body.eg22-ux #screen-root[data-eg20-scene="league"] th,
 body.eg22-ux #screen-root[data-eg20-scene="league"] td{padding:10px 12px!important;}
+body.eg22-ux #screen-root[data-eg20-scene="league"] > .screen.stack{
+  grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr)!important;
+  grid-template-rows:auto minmax(0,1fr) minmax(0,.72fr)!important;
+  align-items:stretch!important;
+}
+body.eg22-ux #screen-root[data-eg20-scene="league"] > .screen.stack > div:first-child{
+  grid-column:1/-1!important;
+}
+body.eg22-ux #screen-root[data-eg20-scene="league"] > .screen.stack > .card:nth-child(2){
+  grid-row:2/4!important;
+}
+body.eg22-ux #screen-root[data-eg20-scene="league"] .highlight-row{
+  box-shadow:inset 4px 0 var(--eg22-green)!important;
+}
 
 /* Clube — dossiê, não formulário. */
 body.eg22-ux #screen-root[data-eg20-scene="club"] > .screen{
@@ -335,6 +385,17 @@ body.eg22-ux #screen-root[data-eg20-scene="club"] .card{
 }
 body.eg22-ux #screen-root[data-eg20-scene="club"] .stat-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:10px!important;}
 body.eg22-ux #screen-root[data-eg20-scene="club"] .stat{padding:12px!important;border-radius:16px!important;}
+body.eg22-ux #screen-root[data-eg20-scene="club"] .club-heading{
+  display:grid!important;
+  grid-template-columns:auto minmax(0,1fr)!important;
+  gap:16px!important;
+  align-items:center!important;
+}
+body.eg22-ux #screen-root[data-eg20-scene="club"] .club-identity-grid{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:12px!important;
+}
 
 /* Tática, elenco, agenda: cenas com painéis internos roláveis, não página inteira. */
 body.eg22-ux #screen-root[data-eg20-scene="tactics"] > .screen,
@@ -356,6 +417,34 @@ body.eg22-ux #screen-root[data-eg20-scene="marketing"] .grid{
 }
 body.eg22-ux #screen-root[data-eg20-scene="tactics"] .tactics-layout{min-height:0!important;overflow:hidden!important;}
 body.eg22-ux #screen-root[data-eg20-scene="tactics"] .pitch{min-height:360px!important;max-height:calc(100dvh - 260px)!important;}
+body.eg22-ux #screen-root[data-eg20-scene="squad"] .eg3-squad{
+  display:grid!important;
+  grid-template-rows:auto auto minmax(0,1fr)!important;
+  gap:12px!important;
+}
+body.eg22-ux #screen-root[data-eg20-scene="squad"] .eg3-card-list{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  align-content:start!important;
+  gap:10px!important;
+  padding:2px 4px 10px!important;
+}
+body.eg22-ux #screen-root[data-eg20-scene="squad"] .eg3-person-card{
+  min-height:104px!important;
+  max-height:132px!important;
+  overflow:hidden!important;
+}
+body.eg22-ux #screen-root[data-eg20-scene="calendar"] .calendar-hero{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  gap:12px!important;
+  align-items:center!important;
+}
+body.eg22-ux #screen-root[data-eg20-scene="calendar"] .grid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  align-content:start!important;
+  gap:12px!important;
+}
 
 /* News: único lugar onde o Correio Esportivo pode dominar. */
 body.eg22-ux #screen-root[data-eg20-scene="newsCenter"] > .screen,
@@ -405,6 +494,23 @@ body.eg22-ux #screen-root.eg18-screen-shell > .screen p{opacity:.88;}
   body.eg22-ux #screen-root[data-eg20-scene="market"] .eg5-market-list,
   body.eg22-ux #screen-root[data-eg20-scene="market"] .eg4-market-list{grid-template-columns:1fr!important;}
   body.eg22-ux #screen-root[data-eg20-scene="club"] .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  body.eg22-ux #screen-root[data-eg20-scene="club"] .club-heading,
+  body.eg22-ux #screen-root[data-eg20-scene="club"] .club-identity-grid,
+  body.eg22-ux #screen-root[data-eg20-scene="calendar"] .calendar-hero,
+  body.eg22-ux #screen-root[data-eg20-scene="calendar"] .grid,
+  body.eg22-ux #screen-root[data-eg20-scene="squad"] .eg3-card-list{
+    grid-template-columns:1fr!important;
+  }
+  body.eg22-ux #screen-root[data-eg20-scene="league"] > .screen.stack{
+    grid-template-columns:1fr!important;
+    grid-template-rows:auto minmax(0,1fr) auto!important;
+  }
+  body.eg22-ux #screen-root[data-eg20-scene="league"] > .screen.stack > .card:nth-child(2){
+    grid-row:auto!important;
+  }
+  body.eg22-ux #screen-root[data-eg20-scene="league"] > .screen.stack > .card:nth-child(n+3){
+    max-height:150px!important;
+  }
   body.eg22-ux #screen-root[data-eg20-scene="league"] th,
   body.eg22-ux #screen-root[data-eg20-scene="league"] td{padding:8px 10px!important;font-size:12px!important;}
 }
