@@ -23,6 +23,7 @@
     let transitionLocked = false;
     let lastHubSignature = "";
     let rootObserver = null;
+    const sceneRegistry = new Map();
 
     function $(selector, context = document) {
         return context.querySelector(selector);
@@ -78,15 +79,28 @@
         return "fade";
     }
 
-    function transition(callback, screen) {
+    function normalizeTransitionType(type) {
+        if (type === "paper-turn") return "paper";
+        if (type === "football") return "ball-swipe";
+        if (type === "logo") return "eg-logo";
+        return type || "fade";
+    }
+
+    function transition(callback, screen, forcedType) {
         if (transitionLocked) return;
         transitionLocked = true;
         const overlay = ensureOverlay();
         const label = LABELS[screen] || "Eleven Genesis";
-        const type = transitionType(screen);
+        const type = normalizeTransitionType(forcedType || transitionType(screen));
         const legacyType = type === "eg-logo" ? "logo" : type === "ball-swipe" ? "football" : type;
         overlay.className = `eg18-transition eg20-transition eg18-transition--${legacyType} eg20-transition--${type}`;
         $(".eg18-transition__label", overlay).textContent = label;
+        if (window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) {
+            if (typeof callback === "function") callback();
+            transitionLocked = false;
+            applySceneFrame();
+            return;
+        }
         void overlay.offsetWidth;
         overlay.classList.add("is-active");
         window.setTimeout(() => {
@@ -99,8 +113,23 @@
         }, 720);
     }
 
+    function play(type = "fade", callback, options = {}) {
+        const scene = options.scene || currentScreen() || "home";
+        transition(callback, scene, type);
+    }
+
     function go(screen, options = {}) {
         if (!screen || !originalSwitchScreen) return;
+        const registered = sceneRegistry.get(screen);
+        if (registered && typeof registered === "function") {
+            const mount = () => {
+                registered(options);
+                window.requestAnimationFrame(applySceneFrame);
+            };
+            if (!hasCareer() || isMenuScreen(screen) || options.instant) mount();
+            else transition(mount, screen, options.transition);
+            return;
+        }
         if (!hasCareer() || isMenuScreen(screen) || options.instant) {
             originalSwitchScreen(screen, options);
             window.requestAnimationFrame(applySceneFrame);
@@ -118,6 +147,12 @@
 
     function backToOffice(options = {}) {
         go("home", options);
+    }
+
+    function register(screen, renderer) {
+        if (!screen || typeof renderer !== "function") return false;
+        sceneRegistry.set(screen, renderer);
+        return true;
     }
 
     function installSwitchWrapper() {
@@ -190,7 +225,7 @@
         screenRoot.classList.remove("eg18-screen-shell");
         screenRoot.dataset.eg20Scene = "office";
         screenRoot.innerHTML = `
-            <section class="eg18-room-hub scene-office" aria-label="Sala viva do treinador">
+            <section class="eg18-room-hub scene-office eg-scene eg-scene--office is-active" data-scene="office" aria-label="Sala viva do treinador">
                 <div class="eg18-camera-frame" aria-hidden="true"></div>
                 <div class="eg18-window" aria-hidden="true"><span>${escapeHtml(snap.era.window || "Campo de treino")}</span></div>
                 <div class="eg18-wall-memory" aria-label="Parede de memórias">
@@ -201,7 +236,7 @@
                     <h1><span>EG</span> Sala do treinador</h1>
                     <p>${escapeHtml(snap.era.room)} ${escapeHtml(snap.era.philosophy)}</p>
                 </header>
-                <main class="eg18-desk" aria-label="Mesa do treinador">
+                <main class="eg18-desk eg-scene-body" aria-label="Mesa do treinador">
                     <div class="eg18-quick-status" aria-label="Resumo da carreira">
                         <span class="eg18-pill">Posição <strong>${escapeHtml(String(snap.position))}</strong></span>
                         <span class="eg18-pill">Pontos <strong>${escapeHtml(String(snap.points))}</strong></span>
@@ -234,7 +269,7 @@
 
     function sceneBar() {
         return `
-            <nav class="eg18-scene-bar" aria-label="Atalhos de cena">
+            <nav class="eg18-scene-bar eg-dock" aria-label="Atalhos de cena">
                 <button type="button" data-eg18-screen="home" title="Sala">⌂</button>
                 <button type="button" data-eg18-screen="tactics" title="Tática">📋</button>
                 <button type="button" data-eg18-screen="market" title="Mercado">▤</button>
@@ -274,6 +309,11 @@
         if (!$(".eg18-scene-bar", screenRoot)) {
             screenRoot.insertAdjacentHTML("beforeend", sceneBar());
         }
+        const screen = $(":scope > .screen", screenRoot);
+        if (screen) {
+            screen.classList.add("eg-scene", "is-active");
+            screen.dataset.scene = currentScreen();
+        }
     }
 
     function observeRoot() {
@@ -297,10 +337,10 @@
         document.addEventListener("click", screenClickHandler, true);
         document.addEventListener("click", actionClickHandler, true);
         applySceneFrame();
-        const api = { go, current, backToOffice, transition, applySceneFrame };
+        const api = { go, current, backToOffice, register, transition, applySceneFrame };
         window.EG18Scene = api;
         window.SceneManager = api;
-        window.TransitionManager = { transition };
+        window.TransitionManager = { play, transition };
         window.RoomManager = { renderHub, applySceneFrame };
     }
 

@@ -1,6 +1,28 @@
 /* EG23 - readability and scene stability layer.
    Presentation-only fixes on top of EG22. No GameState or save behavior changes. */
 :root{
+  --eg-bg:var(--eg22-bg,#050806);
+  --eg-bg-2:#0a120d;
+  --eg-panel:var(--eg22-panel,rgba(8,18,13,.88));
+  --eg-panel-soft:rgba(13,28,21,.72);
+  --eg-gold:var(--eg22-gold,#d8a932);
+  --eg-gold-soft:var(--eg22-gold-soft,#f2d88a);
+  --eg-green:var(--eg22-green,#00a86b);
+  --eg-paper:var(--eg22-paper,#ead7a4);
+  --eg-paper-dark:#c49b57;
+  --eg-wood:var(--eg22-wood,#4b2818);
+  --eg-brown:#2a140d;
+  --eg-text:var(--eg22-text,#f7f2df);
+  --eg-muted:var(--eg22-muted,#9da89d);
+  --eg-danger:#a64242;
+  --eg-line:var(--eg22-line,rgba(216,169,50,.35));
+  --eg-radius-sm:8px;
+  --eg-radius-md:16px;
+  --eg-radius-lg:28px;
+  --eg-shadow:var(--eg22-shadow,0 22px 60px rgba(0,0,0,.45));
+  --eg-font-display:Inter,Impact,sans-serif;
+  --eg-font-body:Inter,system-ui,sans-serif;
+  --eg-font-mono:"Courier New",monospace;
   --eg23-paper:#f4e8c9;
   --eg23-paper-soft:#ead7ab;
   --eg23-ink:#17110b;
@@ -9,6 +31,57 @@
   --eg23-panel:rgba(8,15,11,.92);
   --eg23-panel-soft:rgba(14,24,18,.84);
   --eg23-gap:clamp(10px,1.5vw,18px);
+}
+
+.eg-app-shell{
+  min-width:0;
+}
+
+.eg-scene{
+  min-width:0;
+  color:var(--eg-text);
+}
+
+.eg-scene.is-active{
+  isolation:isolate;
+}
+
+.eg-scene-header,
+.eg-scene-body,
+.eg-scene-panel{
+  min-width:0;
+}
+
+.eg-scene-panel{
+  border:1px solid var(--eg-line);
+  background:var(--eg-panel);
+  box-shadow:var(--eg-shadow);
+}
+
+.eg-dock{
+  max-width:calc(100vw - 24px);
+}
+
+.eg-object{
+  touch-action:manipulation;
+}
+
+.eg-drawer,
+.eg-modal,
+.eg-transition-layer{
+  isolation:isolate;
+}
+
+@media(prefers-reduced-motion:reduce){
+  .eg-transition-layer,
+  .eg-transition-layer *,
+  .eg-scene,
+  .eg-object,
+  .eg-dock{
+    animation-duration:.01ms!important;
+    transition-duration:.01ms!important;
+    scroll-behavior:auto!important;
+  }
 }
 
 body.eg22-ux #screen-root.eg18-screen-shell > .screen,
@@ -469,9 +542,18 @@ body:has(.main-menu) #screen-root{
   overflow:hidden!important;
 }
 
+html:has(.main-menu),
+body:has(.main-menu){
+  width:100%!important;
+  height:100dvh!important;
+  overflow:hidden!important;
+}
+
 .main-menu.eg5-menu,
 .main-menu{
   min-width:0!important;
+  max-height:100dvh!important;
+  overflow:hidden!important;
 }
 
 .eg5-menu-stage{
@@ -773,6 +855,10 @@ body.eg22-ux #screen-root.eg18-screen-shell th:nth-child(2){
     padding-right:0!important;
   }
 
+  .eg5-menu-stage{
+    gap:10px!important;
+  }
+
   .eg5-menu-center h1,
   .main-menu h1{
     max-width:min(340px,calc(100vw - 36px))!important;
@@ -781,8 +867,21 @@ body.eg22-ux #screen-root.eg18-screen-shell th:nth-child(2){
     white-space:normal!important;
     overflow-wrap:normal!important;
     text-align:center!important;
-    font-size:clamp(38px,11vw,52px)!important;
+    font-size:clamp(36px,10.5vw,48px)!important;
     line-height:.92!important;
+  }
+
+  .eg5-menu-emblem,
+  .main-menu .menu-emblem{
+    width:74px!important;
+    height:74px!important;
+  }
+
+  .eg5-menu-center p,
+  .main-menu .menu-brand p{
+    margin-top:6px!important;
+    font-size:14px!important;
+    line-height:1.25!important;
   }
 
   .eg5-menu-center .btn,
@@ -801,18 +900,42 @@ body.eg22-ux #screen-root.eg18-screen-shell th:nth-child(2){
     max-width:min(314px,calc(100vw - 76px))!important;
     margin-left:auto!important;
     margin-right:auto!important;
+    gap:8px!important;
+  }
+
+  .eg5-menu-actions .menu-button,
+  .main-menu .menu-actions .menu-button{
+    min-height:38px!important;
+    padding-top:9px!important;
+    padding-bottom:9px!important;
   }
 
   .eg5-save-card{
-    padding-left:18px!important;
-    padding-right:18px!important;
+    max-height:224px!important;
+    padding:14px 16px!important;
+    overflow:auto!important;
+  }
+
+  .eg5-save-card > strong{
+    font-size:clamp(24px,7vw,30px)!important;
+    line-height:1!important;
+  }
+
+  .eg5-save-card p{
+    margin:6px 0 10px!important;
+    font-size:13px!important;
+    line-height:1.25!important;
+  }
+
+  .eg5-save-card .menu-button{
+    display:none!important;
   }
 
   .eg5-save-card .eg5-save-meta,
   .main-menu .eg5-save-meta{
     display:grid!important;
-    grid-template-columns:1fr!important;
-    gap:8px!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:7px!important;
   }
 
   .eg5-save-card .eg5-save-meta div,
@@ -820,10 +943,23 @@ body.eg22-ux #screen-root.eg18-screen-shell th:nth-child(2){
     min-width:0!important;
   }
 
+  .eg5-save-card .eg5-save-meta div:nth-child(3),
+  .main-menu .eg5-save-meta div:nth-child(3){
+    grid-column:1 / -1!important;
+  }
+
   .eg5-save-card .eg5-save-meta b,
   .main-menu .eg5-save-meta b{
     white-space:normal!important;
     overflow-wrap:anywhere!important;
+    font-size:10px!important;
+    line-height:1.08!important;
+  }
+
+  .eg5-save-card .eg5-save-meta span,
+  .main-menu .eg5-save-meta span{
+    font-size:9px!important;
+    line-height:1.1!important;
   }
 
   .eg5-save-card .menu-info-grid,

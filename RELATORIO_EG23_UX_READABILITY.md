@@ -41,6 +41,15 @@ Ela e carregada depois do EG22 no `index.html`, preservando a logica existente, 
 - Botoes, formularios, `row-card`, `stat` e textos longos ganharam quebras mais seguras em desktop e mobile.
 - Home mobile recebeu correcao especifica para impedir corte do texto Eleven Genesis, botoes e metadados da ultima carreira.
 
+### Passada 4 - alinhamento com Production Bible
+
+- O ZIP `EG22_UX_UI_Production_Bible.zip` foi analisado como direcao de produto, design system, UX, wireframes e arquitetura.
+- `SceneManager` recebeu `register(sceneName, renderer)` para suportar cenas futuras sem criar navegacao paralela.
+- `TransitionManager` recebeu `play(type, callback, options)` com aliases para `ball-swipe`, `eg-logo`, `paper-turn`, `fade` e `crt`.
+- Cenas, dock, objetos, drawers, modais e transicoes passaram a receber classes padrao da Biblia.
+- Tokens CSS `--eg-*` foram mapeados para a camada atual para facilitar consolidacao futura sem trocar a identidade visual.
+- `prefers-reduced-motion` foi reforcado para transicoes e objetos.
+
 ### Jornal
 
 - `newsCenter` e `newsDetail` agora usam contraste forte, fundo de papel claro e tinta escura.

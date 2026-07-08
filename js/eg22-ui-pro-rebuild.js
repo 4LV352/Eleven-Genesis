@@ -24,6 +24,8 @@
 
   function markScenes(){
     if(!document.body.classList.contains('eg22-ux')) document.body.classList.add('eg22-ux');
+    const app = document.getElementById('app');
+    if(app && !app.classList.contains('eg-app-shell')) app.classList.add('eg-app-shell');
     const r = root();
     if(!r) return;
     const scene = r.dataset.eg20Scene || document.body.dataset.eg20CurrentScene || '';
@@ -33,9 +35,18 @@
     const screen = q(':scope > .screen', r);
     if(screen){
       if(!screen.classList.contains('eg22-scene')) screen.classList.add('eg22-scene');
+      screen.classList.add('eg-scene','is-active');
       const sceneName = scene || 'unknown';
       if(screen.getAttribute('data-eg22-scene') !== sceneName) screen.setAttribute('data-eg22-scene', sceneName);
+      if(screen.getAttribute('data-scene') !== sceneName) screen.setAttribute('data-scene', sceneName);
+      q('.internal-hero,.calendar-hero,.screen-header', screen)?.classList.add('eg-scene-header');
+      q('.internal-panel,.news-panel,.news-detail-card,.club-room,.stadium-room,.structure-room,.finance-room,.dressing-room,.fan-room,.match-preview-panel,.result-panel', screen)?.classList.add('eg-scene-body','eg-scene-panel');
     }
+    qa('.eg18-scene-bar', r).forEach(el => el.classList.add('eg-dock'));
+    qa('.eg18-object', r).forEach(el => el.classList.add('eg-object'));
+    qa('.eg-drawer-overlay', document).forEach(el => el.classList.add('eg-drawer'));
+    qa('.modal-root,.question-modal-backdrop,.weekly-summary-overlay', document).forEach(el => el.classList.add('eg-modal'));
+    qa('.eg18-transition,.eg20-transition', document).forEach(el => el.classList.add('eg-transition-layer'));
   }
 
   function fixBrand(){
